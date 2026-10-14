@@ -21,7 +21,9 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-    # La base de datos no se publica fuera de Docker: solo el backend la alcanza.
+    # Solo escucha en 127.0.0.1 del servidor (no en internet): para mirarla con pgAdmin se entra con un túnel SSH hacia el puerto 15432.
+    ports:
+      - "127.0.0.1:15432:5432"
 
   backend:
     build: ./backend
