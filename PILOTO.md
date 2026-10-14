@@ -163,3 +163,14 @@ docker compose exec -T db psql -U publitours_app -d restaurada -q -f /tmp/respal
 
 Lo que este piloto **no** puede decirte: cómo responde con muchos usuarios a la vez (no hay pruebas de carga) ni la seguridad frente a un
 ataque real (hay pruebas automáticas de permisos y campos, pero no una prueba de intrusión).
+
+## Despliegue con Dokploy
+
+Usa `docker-compose.dokploy.yml` (no publica puertos y declara 2 proxies delante del backend: Traefik y nginx).
+
+1. **DNS:** crea un registro `A` de tu dominio (y de `www`, si lo usas) hacia la IP del VPS.
+2. **Proyecto:** en Dokploy crea un servicio *Compose* con origen GitHub (`stivenzambrano0208DJ/PubliTours`, rama `main`) y **Compose Path** `./docker-compose.dokploy.yml`.
+3. **Variables** (pestaña *Environment*; los secretos viven solo ahí): `DB_PASSWORD`, `JWT_SECRET` (64 caracteres aleatorios), `CORS_ORIGIN=https://tu-dominio`, `EMAIL_USER`, `EMAIL_PASS` (sin correo configurado el backend **no arranca** en producción), y opcionalmente `ANTHROPIC_API_KEY`, `COMISION_PORCENTAJE`. No pongas `TRUST_PROXY` salvo que cambie la cadena de proxies.
+4. **Dominio:** pestaña *Domains* → servicio `frontend`, puerto `80`, HTTPS activado (Let's Encrypt).
+5. **Administrador:** tras el primer despliegue, desde la terminal del contenedor `backend`: `node src/scripts/seedAdmin.js correo "Nombre" clave`. Escribe la clave tú; no la compartas por chat.
+6. **Respaldos:** programa en Dokploy el respaldo de la base y de los volúmenes `pgdata` y `uploads` hacia un almacenamiento fuera del VPS, y prueba una restauración.
