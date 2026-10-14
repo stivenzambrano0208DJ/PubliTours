@@ -166,11 +166,12 @@ ataque real (hay pruebas automáticas de permisos y campos, pero no una prueba d
 
 ## Despliegue con Dokploy
 
-Usa `docker-compose.dokploy.yml` (no publica puertos y declara 2 proxies delante del backend: Traefik y nginx).
+Usa `docker-compose.dokploy.yml` (no publica puertos, declara 2 proxies delante del backend —Traefik y nginx— y **no incluye la base de datos**: esa es un servicio *Database* (PostgreSQL) de Dokploy, creado aparte).
 
 1. **DNS:** crea un registro `A` de tu dominio (y de `www`, si lo usas) hacia la IP del VPS.
 2. **Proyecto:** en Dokploy crea un servicio *Compose* con origen GitHub (`stivenzambrano0208DJ/PubliTours`, rama `main`) y **Compose Path** `./docker-compose.dokploy.yml`.
-3. **Variables** (pestaña *Environment*; los secretos viven solo ahí): `DB_PASSWORD`, `JWT_SECRET` (64 caracteres aleatorios), `CORS_ORIGIN=https://tu-dominio`, `EMAIL_USER`, `EMAIL_PASS` (sin correo configurado el backend **no arranca** en producción), y opcionalmente `ANTHROPIC_API_KEY`, `COMISION_PORCENTAJE`. No pongas `TRUST_PROXY` salvo que cambie la cadena de proxies.
-4. **Dominio:** pestaña *Domains* → servicio `frontend`, puerto `80`, HTTPS activado (Let's Encrypt).
-5. **Administrador:** tras el primer despliegue, desde la terminal del contenedor `backend`: `node src/scripts/seedAdmin.js correo "Nombre" clave`. Escribe la clave tú; no la compartas por chat.
-6. **Respaldos:** programa en Dokploy el respaldo de la base y de los volúmenes `pgdata` y `uploads` hacia un almacenamiento fuera del VPS, y prueba una restauración.
+3. **Base de datos:** en el proyecto, *Create Service → Database → PostgreSQL* (imagen `postgres:18`), base `publitours`, usuario `publitours_app` y una clave aleatoria. Copia el *Internal Host* que muestra y úsalo como `DB_HOST`. Los respaldos programados se configuran en la pestaña *Backups* de ese servicio.
+4. **Variables** (pestaña *Environment*; los secretos viven solo ahí): `DB_HOST`, `DB_NAME=publitours`, `DB_USER=publitours_app`, `DB_PASSWORD` (la de la base), `JWT_SECRET` (64 caracteres aleatorios), `CORS_ORIGIN=https://tu-dominio`, `EMAIL_USER`, `EMAIL_PASS` (sin correo configurado el backend **no arranca** en producción), y opcionalmente `ANTHROPIC_API_KEY`, `COMISION_PORCENTAJE`. No pongas `TRUST_PROXY` salvo que cambie la cadena de proxies.
+5. **Dominio:** pestaña *Domains* → servicio `frontend`, puerto `80`, HTTPS activado (Let's Encrypt).
+6. **Administrador:** tras el primer despliegue, desde la terminal del contenedor `backend`: `node src/scripts/seedAdmin.js correo "Nombre" clave`. Escribe la clave tú; no la compartas por chat.
+7. **Respaldos:** programa el respaldo del servicio *Database* y del volumen `uploads` hacia un almacenamiento fuera del VPS, y prueba una restauración.

@@ -1,4 +1,6 @@
 # PubliTours para Dokploy (u otro panel con proxy Traefik delante). Diferencias con docker-compose.yml:
+#  - La base de datos NO está aquí: es un servicio "Database" (PostgreSQL) de Dokploy, con sus propios respaldos y su propio
+#    ciclo de vida. El backend la alcanza por la red "dokploy-network" usando DB_HOST (el nombre interno que muestra el panel).
 #  - No publica puertos en el servidor: Dokploy enruta el dominio al servicio "frontend" (puerto 80) y pone el HTTPS.
 #  - TRUST_PROXY=2: hay DOS proxies delante del backend (Traefik y el nginx del frontend). Con 1, todos los visitantes
 #    parecerían tener la IP de Traefik y compartirían un único límite de intentos de acceso.
@@ -7,35 +9,14 @@
 name: publitours
 
 services:
-  db:
-    image: postgres:18-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${DB_NAME:-publitours}
-      POSTGRES_USER: ${DB_USER:-publitours_app}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD en el archivo .env}
-    volumes:
-      - pgdata:/var/lib/postgresql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-    # Solo escucha en 127.0.0.1 del servidor (no en internet): para mirarla con pgAdmin se entra con un túnel SSH hacia el puerto 15432.
-    ports:
-      - "127.0.0.1:15432:5432"
-
   backend:
     build: ./backend
     restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
     environment:
       NODE_ENV: production
       PORT: 4000
       TRUST_PROXY: ${TRUST_PROXY:-2} # Traefik + nginx delante: la IP real llega en X-Forwarded-For
-      DB_HOST: db
+      DB_HOST: ${DB_HOST:?Define DB_HOST (nombre interno de la base de datos de Dokploy)}
       DB_PORT: 5432
       DB_NAME: ${DB_NAME:-publitours}
       DB_USER: ${DB_USER:-publitours_app}
@@ -49,6 +30,9 @@ services:
       COMISION_PORCENTAJE: ${COMISION_PORCENTAJE:-10}
     volumes:
       - uploads:/app/public/uploads
+    networks:
+      - default
+      - dokploy-network # para llegar a la base de datos de Dokploy
 
   frontend:
     build: ./frontend
@@ -60,5 +44,8 @@ services:
       - "80"
 
 volumes:
-  pgdata:
   uploads:
+
+networks:
+  dokploy-network:
+    external: true
