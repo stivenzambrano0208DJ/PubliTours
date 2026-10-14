@@ -1,0 +1,58 @@
+# PubliTours completo: base de datos + API + frontend (nginx). Las variables salen del archivo .env de esta carpeta
+# (copia .env.example a .env y complétalo). Uso: docker compose up -d --build
+name: publitours
+
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-publitours}
+      POSTGRES_USER: ${DB_USER:-publitours_app}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD en el archivo .env}
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # La base de datos no se publica fuera de Docker: solo el backend la alcanza.
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      TRUST_PROXY: 1 # hay un proxy (nginx) delante: la IP real llega en X-Forwarded-For
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-publitours}
+      DB_USER: ${DB_USER:-publitours_app}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET en el archivo .env}
+      CORS_ORIGIN: ${CORS_ORIGIN:?Define CORS_ORIGIN en el archivo .env}
+      FRONTEND_URL: ${CORS_ORIGIN}
+      EMAIL_USER: ${EMAIL_USER:-}
+      EMAIL_PASS: ${EMAIL_PASS:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      COMISION_PORCENTAJE: ${COMISION_PORCENTAJE:-10}
+    volumes:
+      - uploads:/app/public/uploads
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${PUERTO_WEB:-8080}:80"
+
+volumes:
+  pgdata:
+  uploads:

@@ -1,0 +1,17 @@
+node_modules/
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite.backup
+*.log
+dist/
+backend/public/uploads/
+.claude/
+backups/
+test-results/
+playwright-report/
+frontend/e2e/.tmp/
+
+# Clave generada para el administrador de desarrollo: se guarda en un gestor de contraseñas y se borra
+.clave-admin-*.txt

@@ -1,0 +1,91 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/auth";
+import { useMisReservas } from "../hooks/useMisReservas";
+import ModalCalificar from "../components/ModalCalificar";
+import EditarReserva from "../components/EditarReserva";
+import { ResumenViajero, ProximoViaje } from "../components/reservas/EncabezadoReservas";
+import FiltrosReservas from "../components/reservas/FiltrosReservas";
+import TarjetaReserva from "../components/reservas/TarjetaReserva";
+import PanelAyudaReservas from "../components/reservas/PanelAyudaReservas";
+
+// Las reservas del turista: estado real de cada solicitud y lo que puede hacer con ella. La lógica vive en useMisReservas.
+export default function MisReservas() {
+  const { usuario } = useAuth();
+  const navigate = useNavigate();
+  const mis = useMisReservas();
+  const [editando, setEditando] = useState(null);
+  const [calificando, setCalificando] = useState(null);
+
+  return (
+    <div className="w-full max-w-[1360px] mx-auto px-margin-mobile md:px-margin py-space-xl">
+      <section className="mb-space-xl">
+        <ResumenViajero
+          nombre={usuario?.nombre}
+          proximaFecha={mis.proximaReserva?.fecha_servicio}
+          totalConfirmado={mis.totalConfirmado}
+          totalReservas={mis.reservas.length}
+        />
+        {mis.proximaReserva && <ProximoViaje reserva={mis.proximaReserva} />}
+        <FiltrosReservas filtro={mis.filtro} onFiltro={mis.setFiltro} conteos={mis.conteos} busqueda={mis.busqueda} onBusqueda={mis.setBusqueda} />
+      </section>
+
+      {mis.cargando && <p className="font-body-md text-body-md text-on-surface-variant">Cargando...</p>}
+      {mis.error && <p className="text-error font-body-sm text-body-sm">{mis.error}</p>}
+
+      {!mis.cargando && !mis.error && (
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+          <div className="lg:col-span-8 flex flex-col gap-space-lg">
+            {mis.visibles.length === 0 && (
+              <div className="bg-surface-container-lowest rounded-3xl p-space-xl text-center">
+                <p className="font-body-md text-body-md text-on-surface-variant">
+                  {mis.reservas.length === 0
+                    ? "Aún no tienes reservas. Genera un itinerario y reserva alguna experiencia."
+                    : "No hay reservas que coincidan con el filtro."}
+                </p>
+                {mis.reservas.length === 0 && (
+                  <button
+                    onClick={() => navigate("/itinerario")}
+                    className="mt-space-md inline-flex items-center gap-2 px-space-lg py-3 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
+                    <span>Generar itinerario</span>
+                  </button>
+                )}
+              </div>
+            )}
+
+            {mis.visibles.map((r) => (
+              <TarjetaReserva
+                key={r.id}
+                reserva={r}
+                diasGracia={mis.diasGracia}
+                cancelando={mis.cancelando === r.id}
+                onEditar={setEditando}
+                onCancelar={mis.cancelar}
+                onCalificar={setCalificando}
+              />
+            ))}
+          </div>
+
+          <PanelAyudaReservas />
+        </section>
+      )}
+
+      {editando && (
+        <EditarReserva
+          reserva={editando}
+          onCerrar={() => setEditando(null)}
+          onGuardada={(actualizada) => { mis.actualizar(editando.id, actualizada); setEditando(null); }}
+        />
+      )}
+      {calificando && (
+        <ModalCalificar
+          reserva={calificando}
+          onCerrar={() => setCalificando(null)}
+          onGuardado={(resena) => { mis.actualizar(calificando.id, { resena }); setCalificando(null); }}
+        />
+      )}
+    </div>
+  );
+}

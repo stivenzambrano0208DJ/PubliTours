@@ -1,0 +1,160 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colores — sistema Material 3 definido en el diseño de Stitch */
+  --color-outline-variant: #bfc9c3;
+  --color-error: #ba1a1a;
+  --color-secondary-container: #6cf8bb;
+  --color-primary-container: #064e3b;
+  --color-inverse-primary: #95d3ba;
+  --color-on-primary: #ffffff;
+  --color-secondary-fixed: #6ffbbe;
+  --color-on-surface-variant: #404944;
+  --color-on-tertiary-fixed: #2a1700;
+  --color-tertiary-container: #623c00;
+  --color-on-tertiary-fixed-variant: #653e00;
+  --color-primary-fixed-dim: #95d3ba;
+  --color-surface-container: #eaedff;
+  --color-on-error-container: #93000a;
+  --color-surface-tint: #2b6954;
+  --color-tertiary-fixed: #ffddb8;
+  --color-surface-container-low: #f2f3ff;
+  --color-secondary: #006c49;
+  --color-on-error: #ffffff;
+  --color-on-primary-fixed: #002117;
+  --color-on-secondary: #ffffff;
+  --color-tertiary: #442800;
+  --color-error-container: #ffdad6;
+  --color-secondary-fixed-dim: #4edea3;
+  --color-outline: #707974;
+  --color-on-surface: #131b2e;
+  --color-primary: #003527;
+  --color-surface-container-high: #e2e7ff;
+  --color-surface-variant: #dae2fd;
+  --color-on-secondary-fixed-variant: #005236;
+  --color-primary-fixed: #b0f0d6;
+  --color-on-secondary-container: #00714d;
+  --color-inverse-surface: #283044;
+  --color-on-tertiary-container: #f69f0d;
+  --color-surface-dim: #d2d9f4;
+  --color-background: #faf8ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-highest: #dae2fd;
+  --color-surface-bright: #faf8ff;
+  --color-on-background: #131b2e;
+  --color-on-tertiary: #ffffff;
+  --color-on-secondary-fixed: #002113;
+  --color-inverse-on-surface: #eef0ff;
+  --color-tertiary-fixed-dim: #ffb95f;
+  --color-on-primary-container: #80bea6;
+  --color-surface: #faf8ff;
+
+  /* Tipografía */
+  --font-display-lg-mobile: "Outfit", sans-serif;
+  --font-label-xs: "Outfit", sans-serif;
+  --font-headline-xl-mobile: "Outfit", sans-serif;
+  --font-headline-xl: "Outfit", sans-serif;
+  --font-title-sm: "Outfit", sans-serif;
+  --font-body-lg: "Inter", sans-serif;
+  --font-body-sm: "Inter", sans-serif;
+  --font-headline-md: "Outfit", sans-serif;
+  --font-title-lg: "Outfit", sans-serif;
+  --font-display-lg: "Outfit", sans-serif;
+  --font-body-md: "Inter", sans-serif;
+  --font-label-md: "Outfit", sans-serif;
+
+  --text-display-lg-mobile: 36px;
+  --text-display-lg-mobile--line-height: 44px;
+  --text-display-lg-mobile--letter-spacing: -0.02em;
+  --text-display-lg-mobile--font-weight: 700;
+
+  --text-label-xs: 11px;
+  --text-label-xs--line-height: 16px;
+  --text-label-xs--letter-spacing: 0.04em;
+  --text-label-xs--font-weight: 600;
+
+  --text-headline-xl-mobile: 28px;
+  --text-headline-xl-mobile--line-height: 36px;
+  --text-headline-xl-mobile--letter-spacing: -0.015em;
+  --text-headline-xl-mobile--font-weight: 600;
+
+  --text-headline-xl: 40px;
+  --text-headline-xl--line-height: 48px;
+  --text-headline-xl--letter-spacing: -0.015em;
+  --text-headline-xl--font-weight: 600;
+
+  --text-title-sm: 16px;
+  --text-title-sm--line-height: 24px;
+  --text-title-sm--font-weight: 600;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+  --text-body-lg--font-weight: 400;
+
+  --text-body-sm: 13px;
+  --text-body-sm--line-height: 20px;
+  --text-body-sm--font-weight: 400;
+
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 32px;
+  --text-headline-md--letter-spacing: -0.01em;
+  --text-headline-md--font-weight: 600;
+
+  --text-title-lg: 20px;
+  --text-title-lg--line-height: 28px;
+  --text-title-lg--font-weight: 600;
+
+  --text-display-lg: 56px;
+  --text-display-lg--line-height: 64px;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 700;
+
+  --text-body-md: 15px;
+  --text-body-md--line-height: 24px;
+  --text-body-md--font-weight: 400;
+
+  --text-label-md: 14px;
+  --text-label-md--line-height: 20px;
+  --text-label-md--letter-spacing: 0.01em;
+  --text-label-md--font-weight: 500;
+
+  /* Bordes */
+  --radius-DEFAULT: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+  /* Espaciado con nombre */
+  --spacing-space-xs: 0.25rem;
+  --spacing-gutter: 1.5rem;
+  --spacing-margin-mobile: 1.25rem;
+  --spacing-gutter-mobile: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2.5rem;
+  --spacing-margin: 3rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+}
+
+@layer base {
+  html, body { margin: 0; padding: 0; }
+  body { overscroll-behavior: none; background-color: var(--color-surface); font-family: "Inter", sans-serif; }
+}
+
+::-webkit-scrollbar { display: none; }
+
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
