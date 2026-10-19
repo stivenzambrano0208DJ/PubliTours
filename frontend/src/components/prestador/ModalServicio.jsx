@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api, urlImagen } from "../../api/client";
+import { CATEGORIAS_NEGOCIO } from "../../constants";
 import MapaSeleccionar from "../MapaSeleccionar";
 import { advertirSiBajaResolucion } from "../../utils/imagenes";
 import FechasBloqueadas from "./FechasBloqueadas";
@@ -10,6 +11,12 @@ const SITIO_VACIO = { nombre: "", categoria: "", municipio: "", precio: "", hora
   precio_nino: "", grupo_min_personas: "", grupo_descuento_pct: "", temporadas: [] };
 const INPUT = "px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary";
 const TIPOS_IMAGEN = "image/jpeg,image/png,image/webp,image/gif";
+
+// Categorías predeterminadas (las mismas del registro del negocio y de los filtros de búsqueda). Un servicio nuevo parte de la
+// categoría del propio negocio; uno antiguo con una categoría escrita a mano la conserva como opción para no perderla al editarlo.
+const categoriaInicial = (perfil) => (CATEGORIAS_NEGOCIO.some((c) => c.value === perfil?.categoria) ? perfil.categoria : "");
+const opcionesCategoria = (actual) =>
+  !actual || CATEGORIAS_NEGOCIO.some((c) => c.value === actual) ? CATEGORIAS_NEGOCIO : [...CATEGORIAS_NEGOCIO, { value: actual, label: actual }];
 
 // Modal de crear/editar servicio. Se monta solo mientras está abierto, así su estado nace limpio cada vez.
 export default function ModalServicio({ perfil, sitio, ubicacionPrevia, onCerrar, onGuardado }) {
@@ -22,7 +29,7 @@ export default function ModalServicio({ perfil, sitio, ubicacionPrevia, onCerrar
           temporadas: (sitio.tarifas || []).map((t) => ({ nombre: t.nombre, fecha_desde: t.fecha_desde, fecha_hasta: t.fecha_hasta, precio: t.precio, precio_nino: t.precio_nino ?? "" })),
           latitud: sitio.latitud || "", longitud: sitio.longitud || "",
         }
-      : { ...SITIO_VACIO, municipio: perfil.municipio, latitud: ubicacionPrevia?.latitud || "", longitud: ubicacionPrevia?.longitud || "" }
+      : { ...SITIO_VACIO, categoria: categoriaInicial(perfil), municipio: perfil.municipio, latitud: ubicacionPrevia?.latitud || "", longitud: ubicacionPrevia?.longitud || "" }
   );
   const [guardando, setGuardando] = useState(false);
   const [imagenFile, setImagenFile] = useState(null);
@@ -148,7 +155,10 @@ export default function ModalServicio({ perfil, sitio, ubicacionPrevia, onCerrar
 
         <input className={INPUT} placeholder="Nombre" required {...campo("nombre")} />
         <div className="grid grid-cols-2 gap-3">
-          <input className={INPUT} placeholder="Categoría" required {...campo("categoria")} />
+          <select className={INPUT} aria-label="Categoría" required {...campo("categoria")}>
+            <option value="" disabled>Selecciona una categoría...</option>
+            {opcionesCategoria(form.categoria).map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+          </select>
           <input className={INPUT} placeholder="Municipio" required {...campo("municipio")} />
         </div>
         <div className="grid grid-cols-2 gap-3">

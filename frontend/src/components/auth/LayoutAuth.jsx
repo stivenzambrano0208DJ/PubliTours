@@ -7,7 +7,7 @@ const ETIQUETA = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-bla
 // hero = { imagen, titulo: [primeraLinea, lineaResaltada], descripcion, etiquetas: [{ icono, texto }] }
 export default function LayoutAuth({ hero, children }) {
   return (
-    <div className="h-dvh w-full flex flex-col lg:flex-row overflow-hidden">
+    <div className="relative h-dvh w-full flex flex-col lg:flex-row overflow-hidden">
       <section className="relative hidden lg:flex lg:w-1/2 flex-col justify-between p-10 xl:p-14 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img alt="Paisaje aéreo de la Amazonía del Caquetá" className="w-full h-full object-cover object-center" src={hero.imagen} />

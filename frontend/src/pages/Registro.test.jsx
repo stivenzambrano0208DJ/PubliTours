@@ -48,19 +48,29 @@ describe("Registro", () => {
     expect(screen.getByRole("button", { name: /Registrar mi negocio/ })).toBeInTheDocument();
   });
 
-  it("el correo y la contraseña quedan al final, después de los datos del negocio", async () => {
+  it("el orden es: rol, datos de la cuenta, datos del negocio y al final el envío", () => {
     montar("/registro?rol=prestador");
-    const antes = (a, b) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING);
+    const antes = (x, y) => Boolean(x.compareDocumentPosition(y) & Node.DOCUMENT_POSITION_FOLLOWING);
+    const rol = screen.getByRole("button", { name: "Turista" });
     const nombre = screen.getByPlaceholderText("Tu nombre completo");
-    const negocio = screen.getByLabelText("Nombre del negocio");
     const correo = screen.getByPlaceholderText("correo@dominio.com");
     const clave = screen.getByPlaceholderText("Mínimo 8 caracteres");
+    const negocio = screen.getByLabelText("Nombre del negocio");
     const enviar = screen.getByRole("button", { name: /Registrar mi negocio/ });
 
-    expect(antes(nombre, negocio)).toBe(true);
-    expect(antes(negocio, correo)).toBe(true);
+    expect(antes(rol, nombre)).toBe(true);
+    expect(antes(nombre, correo)).toBe(true);
     expect(antes(correo, clave)).toBe(true);
-    expect(antes(clave, enviar)).toBe(true);
+    expect(antes(clave, negocio)).toBe(true);
+    expect(antes(negocio, enviar)).toBe(true);
+  });
+
+  it("la pantalla de alto fijo contiene a los controles ocultos: sin \"relative\" la página entera se desplaza y deja una franja en blanco", () => {
+    const { container } = montar("/registro?rol=prestador");
+    const raiz = container.firstElementChild;
+    const clases = raiz.className.split(" ");
+    expect(clases).toContain("overflow-hidden");
+    expect(clases).toContain("relative");
   });
 
   it("entrando con ?rol=prestador ya muestra los datos del negocio", () => {

@@ -18,6 +18,8 @@ const CORREO_POR_TIPO = {
   reserva_recordatorio: { asunto: "Recordatorio: tu viaje es mañana", titulo: "¡Mañana es tu experiencia!", ruta: "/mis-reservas", texto: "Ver mi comprobante" },
   reserva_no_asistio: { asunto: "Se registró que no asististe a tu reserva", titulo: "Reserva marcada como no asistida", ruta: "/mis-reservas", texto: "Ver mis reservas" },
   mensaje_nuevo: { asunto: "Tienes un mensaje nuevo en PubliTours", titulo: "Mensaje nuevo", ruta: "/mensajes", texto: "Abrir mis mensajes" },
+  prestador_aprobado: { asunto: "¡Tu negocio fue aprobado en PubliTours!", titulo: "¡Tu negocio fue aprobado!", ruta: "/mi-negocio", texto: "Ir a mi negocio" },
+  prestador_rechazado: { asunto: "Tu negocio necesita cambios para ser aprobado", titulo: "Tu negocio no fue aprobado todavía", ruta: "/mi-negocio", texto: "Corregir mi perfil" },
   reserva_completada: { asunto: "¿Cómo te fue? Califica tu experiencia", titulo: "Cuéntanos tu experiencia", ruta: "/mis-reservas", texto: "Calificar ahora" },
 };
 

@@ -1,4 +1,5 @@
 const test = require("node:test");
+const nodemailer = require("nodemailer");
 const assert = require("node:assert/strict");
 const { request, app, sequelize, registrar, auth } = require("./helpers");
 const { Prestador, SitioTuristico, Reserva, Usuario, Notificacion, Auditoria } = require("../src/models");
@@ -160,4 +161,38 @@ test("el CSV de tendencias trae una fila por mes", async () => {
   assert.equal(filas[0], "mes;turistas_nuevos;prestadores_nuevos;solicitudes;aceptadas;valor_aceptado_cop;comision_estimada_cop");
   assert.equal(filas.length, 3);
   assert.match(filas[1], /^2031-01;/);
+});
+
+test("al aprobar o rechazar un negocio, su dueño recibe también un correo con el resultado", async () => {
+  const a = await admin();
+  const { prest: aprobada, p: pA } = await negocio("pendiente");
+  const { prest: rechazada, p: pR } = await negocio("pendiente");
+
+  const enviados = [];
+  const original = nodemailer.createTransport;
+  nodemailer.createTransport = () => ({ sendMail: async (m) => { enviados.push(m); } });
+  const prev = { u: process.env.EMAIL_USER, p: process.env.EMAIL_PASS };
+  process.env.EMAIL_USER = "prueba@test.com";
+  process.env.EMAIL_PASS = "clave";
+  try {
+    await api("patch", `/prestadores/${pA.id}/verificar`).set(auth(a.token)).send({ estado_verificacion: "aprobado" });
+    await api("patch", `/prestadores/${pR.id}/verificar`).set(auth(a.token)).send({ estado_verificacion: "rechazado", motivo: "Falta el RNT" });
+    await new Promise((r) => setTimeout(r, 300)); // el correo se envía sin bloquear la respuesta
+  } finally {
+    nodemailer.createTransport = original;
+    process.env.EMAIL_USER = prev.u ?? "";
+    process.env.EMAIL_PASS = prev.p ?? "";
+  }
+
+  const aDueno = enviados.find((m) => m.to === aprobada.usuario.correo);
+  assert.ok(aDueno, "el negocio aprobado debe recibir un correo");
+  assert.match(aDueno.subject, /aprobado/i);
+  assert.ok(aDueno.html.includes(pA.nombre_negocio));
+  assert.ok(aDueno.html.includes("/mi-negocio"));
+
+  const rDueno = enviados.find((m) => m.to === rechazada.usuario.correo);
+  assert.ok(rDueno, "el negocio rechazado debe recibir un correo");
+  assert.ok(rDueno.html.includes("Falta el RNT"), "el correo explica el motivo");
+  assert.ok(!rDueno.subject.toLowerCase().includes("¡tu negocio fue aprobado"));
+  assert.equal(enviados.filter((m) => m.to === aprobada.usuario.correo).length, 1, "un solo correo por decisión");
 });

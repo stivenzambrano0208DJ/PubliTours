@@ -130,7 +130,7 @@ test("3. el prestador aprobado publica un servicio con cupos", async () => {
 
   await page.getByRole("button", { name: /Agregar servicio/ }).click();
   await page.getByPlaceholder("Nombre", { exact: true }).fill(SERVICIO);
-  await page.getByPlaceholder("Categoría").fill("Naturaleza");
+  await page.getByLabel("Categoría").selectOption("Naturaleza");
   await page.getByPlaceholder("Precio (COP)").fill("50000");
   await page.getByPlaceholder("Horario (ej. 8am-5pm)").fill("8am-5pm");
   await page.getByPlaceholder("Descripción").fill("Cascada de prueba para el recorrido E2E.");
@@ -294,7 +294,7 @@ test("11. el prestador arma un paquete con dos servicios y un turista lo reserva
   await prestador.goto("/mi-negocio");
   await prestador.getByRole("button", { name: /Agregar servicio/ }).click();
   await prestador.getByPlaceholder("Nombre", { exact: true }).fill(CABALGATA);
-  await prestador.getByPlaceholder("Categoría").fill("Aventura");
+  await prestador.getByLabel("Categoría").selectOption("Aventura");
   await prestador.getByPlaceholder("Precio (COP)").fill("40000");
   await prestador.getByRole("button", { name: "Crear servicio" }).click();
   await expect(prestador.getByRole("row", { name: new RegExp(CABALGATA) })).toBeVisible();

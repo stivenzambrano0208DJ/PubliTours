@@ -4,13 +4,13 @@ const INPUT = "w-full px-4 py-2.5 bg-surface-container-low border border-surface
 
 // Datos BÁSICOS del negocio, los únicos que se piden al registrarse. El resto (descripción, WhatsApp, dirección…)
 // se completa después en el portal, antes de enviar el negocio a revisión.
-export default function CamposNegocio({ valor, onChange }) {
+export default function CamposNegocio({ valor, onChange, sinMarco = false }) {
   const cambiar = (campo, v) => onChange({ ...valor, [campo]: v });
 
   return (
-    <fieldset className="space-y-3.5 p-4 rounded-2xl bg-secondary-container/15 border border-secondary-container/60">
+    <fieldset className={sinMarco ? "space-y-3.5" : "space-y-3.5 p-4 rounded-2xl bg-secondary-container/15 border border-secondary-container/60"}>
       <legend className="sr-only">Datos de tu negocio</legend>
-      <div className="flex items-start gap-2">
+      {!sinMarco && <div className="flex items-start gap-2">
         <span className="material-symbols-outlined text-secondary text-[20px] mt-0.5">storefront</span>
         <div>
           <p className="font-title-sm text-title-sm text-on-surface font-semibold">Datos de tu negocio</p>
@@ -18,7 +18,7 @@ export default function CamposNegocio({ valor, onChange }) {
             Solo lo básico por ahora. Al entrar completarás el resto (descripción, WhatsApp, dirección) y recién entonces lo enviarás a revisión.
           </p>
         </div>
-      </div>
+      </div>}
 
       <div>
         <label className="block font-label-md text-label-md text-on-surface mb-1.5" htmlFor="nombre_negocio">Nombre del negocio</label>
@@ -45,10 +45,11 @@ export default function CamposNegocio({ valor, onChange }) {
             >
               <input type="radio" name="categoria_negocio" className="sr-only" required checked={valor.categoria === c.value} onChange={() => cambiar("categoria", c.value)} />
               <span className="material-symbols-outlined text-[18px] text-secondary shrink-0">{c.icono}</span>
-              <span className="flex flex-col min-w-0">
+              <span className="flex flex-col min-w-0 flex-1">
                 <span className="font-label-md text-label-md text-on-surface font-semibold">{c.label}</span>
                 <span className="font-label-xs text-label-xs text-on-surface-variant">{c.detalle}</span>
               </span>
+              {valor.categoria === c.value && <span className="material-symbols-outlined text-secondary text-[18px] shrink-0" aria-hidden="true">check_circle</span>}
             </label>
           ))}
         </div>
