@@ -71,6 +71,10 @@ describe("Registro", () => {
     const clases = raiz.className.split(" ");
     expect(clases).toContain("overflow-hidden");
     expect(clases).toContain("relative");
+    // El panel del formulario (el que hace scroll) también debe ser contenedor: si no, al elegir una categoría el navegador
+    // desplaza la caja entera para mostrar el botón de opción oculto y el formulario "salta" hacia abajo.
+    const panel = raiz.querySelector("section.overflow-y-auto");
+    expect(panel.className.split(" ")).toContain("relative");
   });
 
   it("entrando con ?rol=prestador ya muestra los datos del negocio", () => {

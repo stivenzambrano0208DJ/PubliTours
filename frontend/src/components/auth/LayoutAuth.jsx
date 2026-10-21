@@ -41,7 +41,7 @@ export default function LayoutAuth({ hero, children }) {
         </p>
       </section>
 
-      <section className="flex-1 flex p-6 sm:p-10 bg-surface-container-lowest overflow-y-auto">
+      <section className="relative flex-1 flex p-6 sm:p-10 bg-surface-container-lowest overflow-y-auto">
         <div className="w-full max-w-md mx-auto my-auto">
           <Link to="/" className="lg:hidden inline-flex items-center gap-1.5 mb-4 text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md">
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
