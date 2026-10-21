@@ -10,11 +10,12 @@ export default defineConfig({
   testDir: "./e2e",
   fullyParallel: false,
   workers: 1,
-  // El ejecutor del CI es más lento que un PC: más margen, un reintento por si una espera justa falla, y el reportero "github"
-  // deja el nombre de la prueba y el error como anotaciones del job (legibles sin iniciar sesión en GitHub).
+  // El ejecutor del CI es más lento que un PC: más margen de tiempo, y el reportero "github" deja el nombre de la prueba y el error
+  // como anotaciones del job (legibles sin iniciar sesión en GitHub). SIN reintentos: la suite es una secuencia en serie que acumula
+  // datos, y repetirla entera sobre una base ya usada falla por otras razones y esconde el fallo original.
   timeout: process.env.CI ? 150_000 : 90_000,
   expect: { timeout: process.env.CI ? 40_000 : 20_000 },
-  retries: process.env.CI ? 1 : 0,
+  retries: 0,
   reporter: process.env.CI ? [["list"], ["github"], ["html", { open: "never" }]] : [["list"], ["html", { open: "never" }]],
   use: {
     baseURL: `http://localhost:${FRONTEND_PORT}`,
@@ -22,7 +23,7 @@ export default defineConfig({
     channel: "chrome", // usa el Google Chrome instalado; no hay que descargar navegadores
     permissions: ["camera"],
     launchOptions: { args: ["--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream", `--use-file-for-fake-video-capture=${VIDEO_CAMARA}`] },
-    trace: process.env.CI ? "on-first-retry" : "retain-on-failure",
+    trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
   webServer: [

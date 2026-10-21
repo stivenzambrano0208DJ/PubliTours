@@ -891,6 +891,8 @@ test("26. una turista le pregunta al negocio con una foto sin tener reserva; el 
 
   // 1. Pregunta desde la página del servicio, sin reserva, con una foto
   const page = await abrirSesion(browser);
+  const estadosFoto = [];
+  page.on("response", (r) => { if (r.url().includes("/conversaciones/imagenes/")) estadosFoto.push(r.status()); });
   await registrar(page, turista, "turista");
   await page.goto(urlServicio);
   await page.getByRole("button", { name: "Preguntar al negocio" }).click();
@@ -904,7 +906,11 @@ test("26. una turista le pregunta al negocio con una foto sin tener reserva; el 
 
   // La foto se entrega por la ruta privada, con la sesión: si el navegador la pudo mostrar, la cookie viajó
   const foto = hilo(page).getByAltText("Foto enviada en la conversación");
-  await expect.poll(() => foto.evaluate((i) => i.naturalWidth)).toBeGreaterThan(0);
+  try {
+    await expect.poll(() => foto.evaluate((i) => i.naturalWidth)).toBeGreaterThan(0);
+  } catch (e) { // si falla en el CI, que diga qué respondió el servidor en vez de solo "tiempo agotado"
+    throw new Error(`La foto de la conversación no cargó. Respuestas del servidor a /conversaciones/imagenes: ${estadosFoto.join(", ") || "ninguna (el navegador ni la pidió)"}. ${e.message}`);
+  }
   const urlFoto = await foto.getAttribute("src");
   expect(urlFoto).toMatch(/\/conversaciones\/imagenes\/\d+$/);
   expect(urlFoto).not.toContain("/uploads/");
