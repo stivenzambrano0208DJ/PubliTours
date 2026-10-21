@@ -1,6 +1,6 @@
 import { CATEGORIAS_NEGOCIO, MUNICIPIOS_CAQUETA } from "../constants";
+import { CAMPO_AUTH } from "../estilos";
 
-const INPUT = "w-full px-4 py-2.5 bg-surface-container-low border border-surface-container-high rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:bg-surface-container-lowest focus:border-secondary transition-all outline-none";
 
 // Datos BÁSICOS del negocio, los únicos que se piden al registrarse. El resto (descripción, WhatsApp, dirección…)
 // se completa después en el portal, antes de enviar el negocio a revisión.
@@ -24,7 +24,7 @@ export default function CamposNegocio({ valor, onChange, sinMarco = false }) {
         <label className="block font-label-md text-label-md text-on-surface mb-1.5" htmlFor="nombre_negocio">Nombre del negocio</label>
         <input
           id="nombre_negocio"
-          className={INPUT}
+          className={CAMPO_AUTH}
           placeholder="Ej. Finca Agroturística El Paraíso"
           required
           maxLength={150}
@@ -57,7 +57,7 @@ export default function CamposNegocio({ valor, onChange, sinMarco = false }) {
 
       <div>
         <label className="block font-label-md text-label-md text-on-surface mb-1.5" htmlFor="municipio_negocio">Municipio de operación</label>
-        <select id="municipio_negocio" required className={INPUT} value={valor.municipio} onChange={(e) => cambiar("municipio", e.target.value)}>
+        <select id="municipio_negocio" required className={CAMPO_AUTH} value={valor.municipio} onChange={(e) => cambiar("municipio", e.target.value)}>
           <option value="" disabled>Selecciona tu municipio...</option>
           {MUNICIPIOS_CAQUETA.map((m) => <option key={m} value={m}>{m}</option>)}
         </select>

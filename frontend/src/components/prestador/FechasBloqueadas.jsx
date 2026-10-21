@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api/client";
 import { fechaMinima } from "../../constants";
+import { CAMPO_COMPACTO } from "../../estilos";
 
-const INPUT = "px-3 py-2 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary";
 
 // El prestador marca los días en que no atiende un servicio; los turistas no podrán reservarlos.
 export default function FechasBloqueadas({ sitioId }) {
@@ -37,8 +37,8 @@ export default function FechasBloqueadas({ sitioId }) {
     <div className="flex flex-col gap-1.5">
       <span className="font-label-md text-label-md text-on-surface font-semibold">Días que no atiendes</span>
       <div className="flex flex-wrap gap-2">
-        <input type="date" min={fechaMinima()} className={INPUT} value={fecha} onChange={(e) => setFecha(e.target.value)} />
-        <input className={`${INPUT} flex-1 min-w-[120px]`} placeholder="Motivo (opcional; lo ven los turistas)" maxLength={150} value={motivo} onChange={(e) => setMotivo(e.target.value)} />
+        <input type="date" min={fechaMinima()} className={CAMPO_COMPACTO} value={fecha} onChange={(e) => setFecha(e.target.value)} />
+        <input className={`${CAMPO_COMPACTO} flex-1 min-w-[120px]`} placeholder="Motivo (opcional; lo ven los turistas)" maxLength={150} value={motivo} onChange={(e) => setMotivo(e.target.value)} />
         <button type="button" onClick={agregar} disabled={!fecha} className="px-3 py-2 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high disabled:opacity-50 transition-colors">
           Bloquear
         </button>

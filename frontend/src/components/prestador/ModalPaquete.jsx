@@ -4,8 +4,8 @@ import { api, urlImagen } from "../../api/client";
 import { advertirSiBajaResolucion, prepararFoto, prepararFotos } from "../../utils/imagenes";
 import { pesos } from "../../utils/moneda";
 import { useAvisos } from "../../context/avisos";
+import { CAMPO } from "../../estilos";
 
-const INPUT = "px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary";
 
 // Crear o editar un paquete: se eligen servicios propios activos (con el día en que se hacen) y se fija un precio por persona.
 export default function ModalPaquete({ paquete, sitios, onCerrar, onGuardado }) {
@@ -159,8 +159,8 @@ export default function ModalPaquete({ paquete, sitios, onCerrar, onGuardado }) 
           </p>
         </div>
 
-        <input className={INPUT} placeholder="Nombre del paquete" required minLength={3} value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} />
-        <textarea className={`${INPUT} resize-none`} rows={3} placeholder="Descripción: qué vive el turista en este paquete" value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} />
+        <input className={CAMPO} placeholder="Nombre del paquete" required minLength={3} value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} />
+        <textarea className={`${CAMPO} resize-none`} rows={3} placeholder="Descripción: qué vive el turista en este paquete" value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} />
 
         <div className="flex flex-col gap-1.5">
           <span className="font-label-md text-label-md text-on-surface font-semibold">Servicios incluidos ({ids.length})</span>
@@ -197,11 +197,11 @@ export default function ModalPaquete({ paquete, sitios, onCerrar, onGuardado }) 
         <div className="grid grid-cols-2 gap-3">
           <label className="flex flex-col gap-1.5">
             <span className="font-label-md text-label-md text-on-surface font-semibold">Precio por persona (COP)</span>
-            <input type="number" min="0" required className={INPUT} placeholder="Ej. 150000" value={form.precio} onChange={(e) => setForm({ ...form, precio: e.target.value })} />
+            <input type="number" min="0" required className={CAMPO} placeholder="Ej. 150000" value={form.precio} onChange={(e) => setForm({ ...form, precio: e.target.value })} />
           </label>
           <label className="flex flex-col gap-1.5">
             <span className="font-label-md text-label-md text-on-surface font-semibold">Cupos por día</span>
-            <input type="number" min="1" className={INPUT} placeholder="Opcional" value={form.capacidad} onChange={(e) => setForm({ ...form, capacidad: e.target.value })} />
+            <input type="number" min="1" className={CAMPO} placeholder="Opcional" value={form.capacidad} onChange={(e) => setForm({ ...form, capacidad: e.target.value })} />
           </label>
         </div>
 

@@ -4,8 +4,9 @@ import { tieneTarifaAvanzada } from "../utils/catalogo";
 import { fechaMinima } from "../constants";
 import CalendarioDisponibilidad from "./CalendarioDisponibilidad";
 import { pesos } from "../utils/moneda";
+import { CAMPO_ANCHO } from "../estilos";
 
-const INPUT = "mt-1.5 w-full px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary";
+const CAMPO_RESERVA = `mt-1.5 ${CAMPO_ANCHO}`;
 
 // Campos comunes del formulario de reserva: fecha (con calendario de disponibilidad y aviso de días sin atención),
 // personas (y niños si el servicio tiene tarifa de niños), total estimado y una nota para el prestador.
@@ -55,7 +56,7 @@ export default function CamposReserva({
             min={fechaMinima()}
             value={valores.fecha}
             onChange={(e) => onCambio({ ...valores, fecha: e.target.value })}
-            className={INPUT}
+            className={CAMPO_RESERVA}
           />
         </label>
         <button type="button" onClick={() => setVerCalendario((v) => !v)} aria-expanded={verCalendario} className="mt-1.5 inline-flex items-center gap-1 font-label-xs text-label-xs text-secondary font-semibold hover:underline">
@@ -87,7 +88,7 @@ export default function CamposReserva({
             max={sitio.capacidad || 500}
             value={valores.personas}
             onChange={(e) => onCambio({ ...valores, personas: e.target.value })}
-            className={INPUT}
+            className={CAMPO_RESERVA}
           />
           {sitio.capacidad && <span className="font-label-xs text-label-xs text-on-surface-variant">Cupo máximo: {sitio.capacidad} personas por día.</span>}
         </label>
@@ -100,7 +101,7 @@ export default function CamposReserva({
               max={Math.max(0, personas - 1)}
               value={valores.ninos ?? 0}
               onChange={(e) => onCambio({ ...valores, ninos: e.target.value })}
-              className={INPUT}
+              className={CAMPO_RESERVA}
             />
             <span className="font-label-xs text-label-xs text-on-surface-variant">Con tarifa de niño.</span>
           </label>
@@ -115,7 +116,7 @@ export default function CamposReserva({
           placeholder="Ej. Viajamos con un niño, necesitamos guía en español…"
           value={valores.nota}
           onChange={(e) => onCambio({ ...valores, nota: e.target.value })}
-          className={`${INPUT} resize-none`}
+          className={`${CAMPO_RESERVA} resize-none`}
         />
       </label>
 

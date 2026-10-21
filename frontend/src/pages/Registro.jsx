@@ -6,6 +6,7 @@ import CamposNegocio from "../components/CamposNegocio";
 import LayoutAuth from "../components/auth/LayoutAuth";
 import MarcaAuth from "../components/auth/MarcaAuth";
 import BotonAuth from "../components/auth/BotonAuth";
+import { CAMPO_AUTH_ICONO } from "../estilos";
 
 const NEGOCIO_VACIO = { nombre_negocio: "", categoria: "", municipio: "" };
 
@@ -14,7 +15,6 @@ const ROLES = [
   { valor: "prestador", icono: "storefront", titulo: "Prestador", detalle: "Publica tu negocio" },
 ];
 
-const INPUT_ICONO = "w-full pl-11 pr-4 py-2.5 bg-surface-container-low border border-surface-container-high rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:bg-surface-container-lowest focus:border-secondary transition-all outline-none";
 
 function Seccion({ icono, titulo, separada = false, children }) {
   return (
@@ -131,7 +131,7 @@ export default function Registro() {
               <input
                 id="nombre"
                 autoComplete="name"
-                className={INPUT_ICONO}
+                className={CAMPO_AUTH_ICONO}
                 placeholder="Tu nombre completo"
                 type="text"
                 required
@@ -144,7 +144,7 @@ export default function Registro() {
               <input
                 id="email"
                 autoComplete="email"
-                className={INPUT_ICONO}
+                className={CAMPO_AUTH_ICONO}
                 placeholder="correo@dominio.com"
                 type="email"
                 required
@@ -157,7 +157,7 @@ export default function Registro() {
               <input
                 id="password"
                 autoComplete="new-password"
-                className={`${INPUT_ICONO} pr-11`}
+                className={`${CAMPO_AUTH_ICONO} pr-11`}
                 placeholder="Mínimo 8 caracteres"
                 type={mostrarPassword ? "text" : "password"}
                 required

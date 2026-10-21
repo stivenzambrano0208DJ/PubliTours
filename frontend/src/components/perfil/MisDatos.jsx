@@ -2,8 +2,8 @@ import { useState } from "react";
 import { api } from "../../api/client";
 import { useAuth } from "../../context/auth";
 import ZonaPrivacidad from "./ZonaPrivacidad";
+import { CAMPO_ANCHO } from "../../estilos";
 
-const INPUT = "w-full px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary";
 
 function Mensaje({ estado }) {
   if (!estado) return null;
@@ -56,11 +56,11 @@ export default function MisDatos() {
         <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">Mis datos</h2>
         <label className="flex flex-col gap-1.5">
           <span className="font-label-md text-label-md text-on-surface font-semibold">Nombre</span>
-          <input className={INPUT} required minLength={2} value={datos.nombre} onChange={(e) => setDatos({ ...datos, nombre: e.target.value })} />
+          <input className={CAMPO_ANCHO} required minLength={2} value={datos.nombre} onChange={(e) => setDatos({ ...datos, nombre: e.target.value })} />
         </label>
         <label className="flex flex-col gap-1.5">
           <span className="font-label-md text-label-md text-on-surface font-semibold">Correo electrónico</span>
-          <input type="email" className={INPUT} required value={datos.correo} onChange={(e) => setDatos({ ...datos, correo: e.target.value })} />
+          <input type="email" className={CAMPO_ANCHO} required value={datos.correo} onChange={(e) => setDatos({ ...datos, correo: e.target.value })} />
         </label>
         <Mensaje estado={estadoDatos} />
         <button type="submit" disabled={guardandoDatos} className="self-start px-5 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors disabled:opacity-60">
@@ -72,15 +72,15 @@ export default function MisDatos() {
         <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">Cambiar contraseña</h2>
         <label className="flex flex-col gap-1.5">
           <span className="font-label-md text-label-md text-on-surface font-semibold">Contraseña actual</span>
-          <input type="password" className={INPUT} required autoComplete="current-password" value={clave.actual} onChange={(e) => setClave({ ...clave, actual: e.target.value })} />
+          <input type="password" className={CAMPO_ANCHO} required autoComplete="current-password" value={clave.actual} onChange={(e) => setClave({ ...clave, actual: e.target.value })} />
         </label>
         <label className="flex flex-col gap-1.5">
           <span className="font-label-md text-label-md text-on-surface font-semibold">Nueva contraseña</span>
-          <input type="password" className={INPUT} required minLength={8} autoComplete="new-password" placeholder="Mínimo 8 caracteres" value={clave.nueva} onChange={(e) => setClave({ ...clave, nueva: e.target.value })} />
+          <input type="password" className={CAMPO_ANCHO} required minLength={8} autoComplete="new-password" placeholder="Mínimo 8 caracteres" value={clave.nueva} onChange={(e) => setClave({ ...clave, nueva: e.target.value })} />
         </label>
         <label className="flex flex-col gap-1.5">
           <span className="font-label-md text-label-md text-on-surface font-semibold">Repite la nueva contraseña</span>
-          <input type="password" className={INPUT} required minLength={8} autoComplete="new-password" value={clave.repetir} onChange={(e) => setClave({ ...clave, repetir: e.target.value })} />
+          <input type="password" className={CAMPO_ANCHO} required minLength={8} autoComplete="new-password" value={clave.repetir} onChange={(e) => setClave({ ...clave, repetir: e.target.value })} />
         </label>
         <Mensaje estado={estadoClave} />
         <button type="submit" disabled={guardandoClave} className="self-start px-5 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors disabled:opacity-60">

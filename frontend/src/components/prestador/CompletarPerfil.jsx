@@ -2,8 +2,8 @@ import { useState } from "react";
 import { api } from "../../api/client";
 import { CATEGORIAS_NEGOCIO, MUNICIPIOS_CAQUETA } from "../../constants";
 import { requisitos } from "./requisitos";
+import { CAMPO_ANCHO } from "../../estilos";
 
-const INPUT = "w-full px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary";
 
 const desde = (p) => ({
   nombre_negocio: p.nombre_negocio || "", categoria: p.categoria || "", municipio: p.municipio || "",
@@ -82,20 +82,20 @@ export default function CompletarPerfil({ perfil, onActualizado }) {
 
           <label className="flex flex-col gap-1.5">
             <span className="font-label-md text-label-md text-on-surface font-semibold">Nombre del negocio</span>
-            <input className={INPUT} required maxLength={150} value={form.nombre_negocio} onChange={(e) => cambiar("nombre_negocio", e.target.value)} />
+            <input className={CAMPO_ANCHO} required maxLength={150} value={form.nombre_negocio} onChange={(e) => cambiar("nombre_negocio", e.target.value)} />
           </label>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <label className="flex flex-col gap-1.5">
               <span className="font-label-md text-label-md text-on-surface font-semibold">Categoría principal</span>
-              <select className={INPUT} required value={form.categoria} onChange={(e) => cambiar("categoria", e.target.value)}>
+              <select className={CAMPO_ANCHO} required value={form.categoria} onChange={(e) => cambiar("categoria", e.target.value)}>
                 <option value="" disabled>Selecciona...</option>
                 {CATEGORIAS_NEGOCIO.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
               </select>
             </label>
             <label className="flex flex-col gap-1.5">
               <span className="font-label-md text-label-md text-on-surface font-semibold">Municipio de operación</span>
-              <select className={INPUT} required value={form.municipio} onChange={(e) => cambiar("municipio", e.target.value)}>
+              <select className={CAMPO_ANCHO} required value={form.municipio} onChange={(e) => cambiar("municipio", e.target.value)}>
                 <option value="" disabled>Selecciona...</option>
                 {MUNICIPIOS_CAQUETA.map((m) => <option key={m} value={m}>{m}</option>)}
               </select>
@@ -107,7 +107,7 @@ export default function CompletarPerfil({ perfil, onActualizado }) {
             <textarea
               rows={4}
               maxLength={2000}
-              className={`${INPUT} resize-none`}
+              className={`${CAMPO_ANCHO} resize-none`}
               placeholder="Cuéntale al turista sobre tus senderos, tu gastronomía, tu hospedaje..."
               value={form.descripcion}
               onChange={(e) => cambiar("descripcion", e.target.value)}
@@ -121,7 +121,7 @@ export default function CompletarPerfil({ perfil, onActualizado }) {
               <input
                 type="tel"
                 inputMode="numeric"
-                className={INPUT}
+                className={CAMPO_ANCHO}
                 placeholder="Ej. 3001234567"
                 value={form.telefono}
                 onChange={(e) => cambiar("telefono", e.target.value.replace(/\D/g, ""))}
@@ -129,13 +129,13 @@ export default function CompletarPerfil({ perfil, onActualizado }) {
             </label>
             <label className="flex flex-col gap-1.5">
               <span className="font-label-md text-label-md text-on-surface font-semibold">Redes o sitio web <span className="font-normal text-on-surface-variant">(opcional)</span></span>
-              <input className={INPUT} maxLength={200} placeholder="Ej. instagram.com/mifinca" value={form.redes} onChange={(e) => cambiar("redes", e.target.value)} />
+              <input className={CAMPO_ANCHO} maxLength={200} placeholder="Ej. instagram.com/mifinca" value={form.redes} onChange={(e) => cambiar("redes", e.target.value)} />
             </label>
           </div>
 
           <label className="flex flex-col gap-1.5">
             <span className="font-label-md text-label-md text-on-surface font-semibold">Dirección o cómo llegar</span>
-            <input className={INPUT} maxLength={200} placeholder="Ej. Vereda El Caraño, km 4 vía a Morelia" value={form.direccion} onChange={(e) => cambiar("direccion", e.target.value)} />
+            <input className={CAMPO_ANCHO} maxLength={200} placeholder="Ej. Vereda El Caraño, km 4 vía a Morelia" value={form.direccion} onChange={(e) => cambiar("direccion", e.target.value)} />
           </label>
 
           {mensaje && <p className={`font-body-sm text-body-sm ${mensaje.ok ? "text-secondary" : "text-error"}`}>{mensaje.texto}</p>}

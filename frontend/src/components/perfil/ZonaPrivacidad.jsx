@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../../api/client";
 import { useAuth } from "../../context/auth";
 import { descargarArchivo } from "../../utils/descarga";
+import { CAMPO_ANCHO } from "../../estilos";
 
-const INPUT = "w-full px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary";
 
 // Datos personales: descargar una copia y eliminar la cuenta (con la contraseña como confirmación).
 export default function ZonaPrivacidad() {
@@ -74,7 +74,7 @@ export default function ZonaPrivacidad() {
         <form onSubmit={eliminar} className="flex flex-col gap-3 max-w-md">
           <label className="flex flex-col gap-1.5">
             <span className="font-label-md text-label-md text-on-surface font-semibold">Escribe tu contraseña para confirmar</span>
-            <input type="password" className={INPUT} required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <input type="password" className={CAMPO_ANCHO} required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </label>
           {errorEliminar && <p role="alert" className="font-body-sm text-body-sm text-error">{errorEliminar}</p>}
           <div className="flex gap-2">

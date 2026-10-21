@@ -7,10 +7,10 @@ import FechasBloqueadas from "./FechasBloqueadas";
 import PreciosAvanzados from "./PreciosAvanzados";
 import SelectorPolitica from "./SelectorPolitica";
 import { useAvisos } from "../../context/avisos";
+import { CAMPO } from "../../estilos";
 
 const SITIO_VACIO = { nombre: "", categoria: "", municipio: "", precio: "", horario: "", descripcion: "", tipo_viaje: "", capacidad: "", politica_cancelacion: "flexible", latitud: "", longitud: "",
   precio_nino: "", grupo_min_personas: "", grupo_descuento_pct: "", temporadas: [] };
-const INPUT = "px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary";
 const TIPOS_IMAGEN = "image/jpeg,image/png,image/webp,image/gif";
 
 // Categorías predeterminadas (las mismas del registro del negocio y de los filtros de búsqueda). Un servicio nuevo parte de la
@@ -156,23 +156,23 @@ export default function ModalServicio({ perfil, sitio, ubicacionPrevia, onCerrar
           </div>
         )}
 
-        <input className={INPUT} placeholder="Nombre" required {...campo("nombre")} />
+        <input className={CAMPO} placeholder="Nombre" required {...campo("nombre")} />
         <div className="grid grid-cols-2 gap-3">
-          <select className={INPUT} aria-label="Categoría" required {...campo("categoria")}>
+          <select className={CAMPO} aria-label="Categoría" required {...campo("categoria")}>
             <option value="" disabled>Selecciona una categoría...</option>
             {opcionesCategoria(form.categoria).map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
           </select>
-          <input className={INPUT} placeholder="Municipio" required {...campo("municipio")} />
+          <input className={CAMPO} placeholder="Municipio" required {...campo("municipio")} />
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <input type="number" min="0" className={INPUT} placeholder="Precio (COP)" {...campo("precio")} />
-          <input className={INPUT} placeholder="Horario (ej. 8am-5pm)" {...campo("horario")} />
+          <input type="number" min="0" className={CAMPO} placeholder="Precio (COP)" {...campo("precio")} />
+          <input className={CAMPO} placeholder="Horario (ej. 8am-5pm)" {...campo("horario")} />
         </div>
-        <input className={INPUT} placeholder="Etiquetas (ej. pareja,naturaleza)" {...campo("tipo_viaje")} />
-        <textarea className={`${INPUT} resize-none`} rows={3} placeholder="Descripción" {...campo("descripcion")} />
+        <input className={CAMPO} placeholder="Etiquetas (ej. pareja,naturaleza)" {...campo("tipo_viaje")} />
+        <textarea className={`${CAMPO} resize-none`} rows={3} placeholder="Descripción" {...campo("descripcion")} />
         <label className="flex flex-col gap-1.5">
           <span className="font-label-md text-label-md text-on-surface font-semibold">Cupos por día (personas)</span>
-          <input type="number" min="1" className={INPUT} placeholder="Ej. 20" {...campo("capacidad")} />
+          <input type="number" min="1" className={CAMPO} placeholder="Ej. 20" {...campo("capacidad")} />
           <span className="font-label-xs text-label-xs text-on-surface-variant">
             Máximo de personas que atiendes cada día. Si lo dejas vacío, se confirma una sola reserva por fecha.
           </span>
