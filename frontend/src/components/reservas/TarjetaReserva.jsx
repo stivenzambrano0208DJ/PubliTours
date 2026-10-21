@@ -59,7 +59,7 @@ export default function TarjetaReserva({ reserva: r, diasGracia, cancelando, onE
       <div className="grid grid-cols-1 sm:grid-cols-12 gap-space-md items-center pl-space-xs">
         <div className="sm:col-span-3 relative rounded-2xl overflow-hidden aspect-[4/3] bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center">
           {r.sitio?.imagen_url ? (
-            <img src={urlImagen(r.sitio.imagen_url)} alt="" className="w-full h-full object-cover" />
+            <img loading="lazy" decoding="async" src={urlImagen(r.sitio.imagen_url)} alt="" className="w-full h-full object-cover" />
           ) : (
             <span className="material-symbols-outlined text-on-primary text-[36px] opacity-80">{CATEGORIA_ICONOS[r.sitio?.categoria] || "place"}</span>
           )}

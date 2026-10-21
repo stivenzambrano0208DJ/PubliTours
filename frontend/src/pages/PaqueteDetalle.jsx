@@ -121,7 +121,7 @@ export default function PaqueteDetalle() {
                 {items.map((i) => (
                   <Link key={i.id} to={`/sitios/${i.sitio_id}`} className="group flex items-center gap-4 p-3 rounded-2xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all">
                     {i.sitio?.imagen_url ? (
-                      <img src={urlImagen(i.sitio.imagen_url)} alt="" className="w-20 h-20 rounded-xl object-cover shrink-0" />
+                      <img loading="lazy" decoding="async" src={urlImagen(i.sitio.imagen_url)} alt="" className="w-20 h-20 rounded-xl object-cover shrink-0" />
                     ) : (
                       <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center shrink-0">
                         <span className="material-symbols-outlined text-on-primary text-[28px]">{CATEGORIA_ICONOS[i.sitio?.categoria] || "place"}</span>

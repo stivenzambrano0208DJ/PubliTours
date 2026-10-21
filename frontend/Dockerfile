@@ -8,6 +8,9 @@ COPY . .
 # Vacío = el navegador llama a la misma dirección desde la que cargó la página (la que reenvía nginx).
 ARG VITE_API_ORIGIN=""
 ENV VITE_API_ORIGIN=$VITE_API_ORIGIN
+# Dirección pública del sitio (enlaces para compartir, robots.txt y sitemap.xml). Vacío = la de producción por defecto.
+ARG VITE_SITIO_URL=""
+ENV VITE_SITIO_URL=$VITE_SITIO_URL
 RUN npm run build
 
 FROM nginx:1.27-alpine

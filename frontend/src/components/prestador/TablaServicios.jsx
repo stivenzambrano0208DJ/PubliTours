@@ -42,7 +42,7 @@ export default function TablaServicios({ sitios, resumen = {}, cargando, acciona
                   <td className="py-3 px-5">
                     <div className="flex items-center gap-3">
                       {s.imagen_url ? (
-                        <img src={urlImagen(s.imagen_url)} alt={s.nombre} className="w-10 h-10 rounded-xl object-cover shrink-0" />
+                        <img loading="lazy" decoding="async" src={urlImagen(s.imagen_url)} alt={s.nombre} className="w-10 h-10 rounded-xl object-cover shrink-0" />
                       ) : (
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center shrink-0">
                           <span className="material-symbols-outlined text-on-primary text-[18px]">{CATEGORIA_ICONOS[s.categoria] || "place"}</span>

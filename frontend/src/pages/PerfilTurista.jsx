@@ -241,7 +241,7 @@ export default function PerfilTurista() {
                 {historial.map((r) => (
                   <div key={r.id} className="bg-surface-container-lowest rounded-2xl p-space-md flex items-center gap-space-sm shadow-sm">
                     <div className="w-11 h-11 rounded-xl overflow-hidden bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center shrink-0">
-                      {r.sitio?.imagen_url ? <img src={urlImagen(r.sitio.imagen_url)} alt="" className="w-full h-full object-cover" /> : (
+                      {r.sitio?.imagen_url ? <img loading="lazy" decoding="async" src={urlImagen(r.sitio.imagen_url)} alt="" className="w-full h-full object-cover" /> : (
 <span className="material-symbols-outlined text-on-primary text-[20px]">{CATEGORIA_ICONOS[r.sitio?.categoria] || "place"}</span>
 )}
                     </div>

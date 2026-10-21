@@ -135,7 +135,7 @@ export default function ModalPaquete({ paquete, sitios, onCerrar, onGuardado }) 
           <div className="flex flex-wrap gap-2">
             {[...galeria, ...pendientes].map((foto) => (
               <div key={foto.id || foto.url} className="relative w-16 h-16 rounded-lg overflow-hidden group">
-                <img src={foto.id ? urlImagen(foto.imagen_url) : foto.url} alt="" className="w-full h-full object-cover" />
+                <img loading="lazy" decoding="async" src={foto.id ? urlImagen(foto.imagen_url) : foto.url} alt="" className="w-full h-full object-cover" />
                 <button
                   type="button"
                   aria-label="Quitar foto"

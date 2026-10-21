@@ -61,7 +61,7 @@ export default function PlanCompartido() {
             <article key={id} className="flex flex-col sm:flex-row gap-4 p-space-md rounded-2xl bg-surface-container-lowest shadow-sm">
               <div className="w-full sm:w-36 h-28 rounded-xl overflow-hidden shrink-0 bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center">
                 {sitio.imagen_url
-                  ? <img src={urlImagen(sitio.imagen_url)} alt="" className="w-full h-full object-cover" />
+                  ? <img loading="lazy" decoding="async" src={urlImagen(sitio.imagen_url)} alt="" className="w-full h-full object-cover" />
                   : <span className="material-symbols-outlined text-on-primary text-[34px] opacity-80" aria-hidden="true">{CATEGORIA_ICONOS[sitio.categoria] || "place"}</span>}
               </div>
               <div className="flex flex-col gap-1 flex-1">

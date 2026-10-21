@@ -130,7 +130,7 @@ export default function ModalServicio({ perfil, sitio, ubicacionPrevia, onCerrar
             <div className="flex flex-wrap gap-2">
               {galeria.map((img) => (
                 <div key={img.id} className="relative w-16 h-16 rounded-lg overflow-hidden group">
-                  <img src={urlImagen(img.imagen_url)} alt="" className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={urlImagen(img.imagen_url)} alt="" className="w-full h-full object-cover" />
                   <button
                     type="button"
                     onClick={() => handleEliminarImagenGaleria(img.id)}
