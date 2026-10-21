@@ -34,6 +34,7 @@ export async function advertirSiBajaResolucion(file) {
 // pesan normalmente unos cientos de KB y se ven igual de bien en pantalla.
 export const LADO_MAXIMO_FOTO = 1920;
 const CALIDAD_JPEG = 0.82;
+const UMBRAL_SIN_REDUCIR = 500 * 1024; // por debajo de esto no se toca: no se pierde calidad sin ganar nada
 
 export function ladoEscalado(ancho, alto, max = LADO_MAXIMO_FOTO) {
   const mayor = Math.max(ancho, alto);
@@ -58,7 +59,7 @@ async function cargarImagen(file) {
 
 // Devuelve la foto reducida (File JPEG) o, si no hace falta o algo falla, la original: nunca impide subir una foto.
 export async function prepararFoto(file, { ladoMax = LADO_MAXIMO_FOTO, calidad = CALIDAD_JPEG } = {}) {
-  if (!file || file.type === "image/gif") return file; // un GIF puede estar animado: no se toca
+  if (!file || file.type === "image/gif" || file.size <= UMBRAL_SIN_REDUCIR) return file; // un GIF puede estar animado: no se toca
   try {
     const imagen = await cargarImagen(file);
     const origen = { ancho: imagen.width, alto: imagen.height };

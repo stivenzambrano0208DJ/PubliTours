@@ -70,6 +70,7 @@ describe("BotonPreguntar", () => {
     const foto = new File(["x"], "camino.png", { type: "image/png" });
     await waitFor(() => expect(screen.getByRole("button", { name: "Adjuntar foto" })).toBeEnabled());
     fireEvent.change(screen.getByTestId("selector-fotos"), { target: { files: [foto] } });
+    await waitFor(() => expect(screen.queryByText("Preparando foto…")).toBeNull()); // la foto se reduce antes de aceptarse
     await userEvent.click(screen.getByRole("button", { name: /Enviar/ }));
     expect(api.iniciarConversacion).toHaveBeenCalledWith({ sitio_id: 7, texto: "" }, [foto]);
   });

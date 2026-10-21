@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useConfiguracion } from "../../hooks/useConfiguracion";
 import { admitirFotos, TIPOS_FOTO } from "../../utils/fotos";
+import { prepararFoto } from "../../utils/imagenes";
 
 // Caja para escribir un mensaje, con fotos opcionales. Los topes (largo, cantidad y tamaño de fotos) los manda el servidor en /configuracion:
 // mientras no han llegado no se ofrece adjuntar fotos en vez de inventar números. `onEnviar(texto, fotos)` debe lanzar un error si falla.
@@ -10,24 +11,35 @@ export default function RedactorMensaje({ onEnviar, placeholder = "Escribe tu me
   const [fotos, setFotos] = useState([]);
   const [error, setError] = useState("");
   const [enviando, setEnviando] = useState(false);
+  const [preparando, setPreparando] = useState(false);
   const selector = useRef(null);
 
   // Vistas previas de las fotos elegidas; se liberan al quitarlas o al cerrar.
   const previas = useMemo(() => fotos.map((f) => URL.createObjectURL(f)), [fotos]);
   useEffect(() => () => previas.forEach((u) => URL.revokeObjectURL(u)), [previas]);
 
-  const elegirFotos = (e) => {
-    const { aceptadas, error: aviso } = admitirFotos(fotos, [...e.target.files], { max: config.fotos_max, maxMb: config.foto_max_mb });
-    setFotos((actuales) => [...actuales, ...aceptadas]);
-    setError(aviso);
+  const elegirFotos = async (e) => {
+    const elegidas = [...e.target.files];
     e.target.value = ""; // permite volver a elegir la misma foto
+    // Una cámara de celular da fotos de varios MB: se reducen aquí (antes de revisar el tamaño y de subirlas, que con poca señal tarda minutos).
+    // Lo que no es una foto admitida se deja tal cual para que admitirFotos lo rechace con su mensaje.
+    setPreparando(true);
+    try {
+      const listas = await Promise.all(elegidas.map((f) => (TIPOS_FOTO.includes(f.type) ? prepararFoto(f) : f)));
+      const { aceptadas, error: aviso } = admitirFotos(fotos, listas, { max: config.fotos_max, maxMb: config.foto_max_mb });
+      setFotos((actuales) => [...actuales, ...aceptadas]);
+      setError(aviso);
+    } finally {
+      setPreparando(false);
+    }
   };
   const quitarFoto = (indice) => { setFotos((actuales) => actuales.filter((_, i) => i !== indice)); setError(""); };
 
   const vacio = !texto.trim() && fotos.length === 0;
+  const ocupado = enviando || preparando;
   const enviar = async (e) => {
     e?.preventDefault();
-    if (vacio || enviando || deshabilitado) return;
+    if (vacio || ocupado || deshabilitado) return;
     setEnviando(true);
     setError("");
     try {
@@ -65,7 +77,7 @@ export default function RedactorMensaje({ onEnviar, placeholder = "Escribe tu me
       <div className="flex items-end gap-2">
         <input ref={selector} type="file" accept={TIPOS_FOTO.join(",")} multiple hidden onChange={elegirFotos} data-testid="selector-fotos" />
         <button
-          type="button" onClick={() => selector.current?.click()} disabled={!config || deshabilitado || fotos.length >= (config?.fotos_max ?? 0)}
+          type="button" onClick={() => selector.current?.click()} disabled={!config || deshabilitado || preparando || fotos.length >= (config?.fotos_max ?? 0)}
           aria-label="Adjuntar foto" title="Adjuntar foto"
           className="shrink-0 w-11 h-11 rounded-xl bg-surface-container text-on-surface-variant hover:bg-surface-container-high flex items-center justify-center transition-colors disabled:opacity-50"
         >
@@ -80,11 +92,11 @@ export default function RedactorMensaje({ onEnviar, placeholder = "Escribe tu me
           />
         </div>
         <button
-          type="submit" disabled={vacio || enviando || deshabilitado}
+          type="submit" disabled={vacio || ocupado || deshabilitado}
           className="shrink-0 h-11 px-4 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary-container transition-colors disabled:opacity-50 inline-flex items-center gap-1.5"
         >
-          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">{enviando ? "hourglass_top" : "send"}</span>
-          {enviando ? "Enviando…" : textoBoton}
+          <span className="material-symbols-outlined text-[18px]" aria-hidden="true">{ocupado ? "hourglass_top" : "send"}</span>
+          {enviando ? "Enviando…" : preparando ? "Preparando foto…" : textoBoton}
         </button>
       </div>
 

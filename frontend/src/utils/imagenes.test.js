@@ -20,13 +20,17 @@ describe("prepararFoto", () => {
   it("si la foto no se puede leer o procesar, devuelve la original y nunca impide subirla", async () => {
     vi.useFakeTimers(); // en este entorno el navegador simulado nunca dispara "cargó" ni "error": solo el tiempo límite rescata
     try {
-      const rota = new File(["no soy una imagen"], "rota.jpg", { type: "image/jpeg" });
+      const rota = new File([new Uint8Array(600 * 1024)], "rota.jpg", { type: "image/jpeg" });
       const espera = prepararFoto(rota);
       await vi.advanceTimersByTimeAsync(9000);
       expect(await espera).toBe(rota);
     } finally {
       vi.useRealTimers();
     }
+  });
+  it("una foto pequeña se manda tal cual, sin recomprimirla ni esperar", async () => {
+    const chica = new File([new Uint8Array(100 * 1024)], "chica.jpg", { type: "image/jpeg" });
+    expect(await prepararFoto(chica)).toBe(chica);
   });
   it("tolera que no haya archivo", async () => {
     expect(await prepararFoto(undefined)).toBeUndefined();

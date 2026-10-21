@@ -2,10 +2,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import RedactorMensaje from "./RedactorMensaje";
+import { prepararFoto } from "../../utils/imagenes";
 
 const mockConfig = { mensajeria: { texto_max: 100, fotos_max: 2, foto_max_mb: 1, motivos_reporte: [] } };
 let config = mockConfig;
 vi.mock("../../hooks/useConfiguracion", () => ({ useConfiguracion: () => config }));
+vi.mock("../../utils/imagenes", () => ({ prepararFoto: vi.fn((f) => Promise.resolve(f)) })); // aquí no se prueba el lienzo del navegador
 
 const png = (nombre = "a.png", mb = 0.01) => new File([new Uint8Array(Math.round(mb * 1024 * 1024))], nombre, { type: "image/png" });
 const escribir = (texto) => userEvent.type(screen.getByLabelText("Escribe tu mensaje"), texto);
@@ -17,6 +19,7 @@ const montar = (props = {}) => {
 
 describe("RedactorMensaje", () => {
   beforeEach(() => {
+    prepararFoto.mockClear();
     config = mockConfig;
     let n = 0;
     URL.createObjectURL = vi.fn(() => `blob:prueba-${n++}`);
@@ -45,6 +48,7 @@ describe("RedactorMensaje", () => {
     const onEnviar = montar({ onEnviar: vi.fn().mockRejectedValue(new Error("Verifica tu correo para continuar.")) });
     await escribir("Mi pregunta");
     fireEvent.change(screen.getByTestId("selector-fotos"), { target: { files: [png()] } });
+    await waitFor(() => expect(screen.queryByText("Preparando foto…")).toBeNull()); // la foto se reduce antes de aceptarse
     await userEvent.click(screen.getByRole("button", { name: /Enviar/ }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Verifica tu correo para continuar.");
     expect(screen.getByLabelText("Escribe tu mensaje")).toHaveValue("Mi pregunta");
@@ -65,6 +69,7 @@ describe("RedactorMensaje", () => {
     const onEnviar = montar();
     const [a, b] = [png("a.png"), png("b.png")];
     fireEvent.change(screen.getByTestId("selector-fotos"), { target: { files: [a, b] } });
+    await waitFor(() => expect(screen.queryByText("Preparando foto…")).toBeNull()); // la foto se reduce antes de aceptarse
     expect(screen.getByAltText("Foto 1 para enviar")).toBeInTheDocument();
     expect(screen.getByAltText("Foto 2 para enviar")).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Quitar foto 1" }));
@@ -77,11 +82,14 @@ describe("RedactorMensaje", () => {
     montar();
     const selector = screen.getByTestId("selector-fotos");
     fireEvent.change(selector, { target: { files: [new File(["x"], "doc.pdf", { type: "application/pdf" })] } });
+    await waitFor(() => expect(screen.queryByText("Preparando foto…")).toBeNull()); // la foto se reduce antes de aceptarse
     expect(screen.getByRole("alert")).toHaveTextContent("Solo se aceptan fotos JPG, PNG, WEBP o GIF.");
     fireEvent.change(selector, { target: { files: [png("grande.png", 1.5)] } });
+    await waitFor(() => expect(screen.queryByText("Preparando foto…")).toBeNull()); // la foto se reduce antes de aceptarse
     expect(screen.getByRole("alert")).toHaveTextContent("Cada foto puede pesar hasta 1 MB.");
     expect(screen.queryByAltText(/para enviar/)).toBeNull();
     fireEvent.change(selector, { target: { files: [png("1.png"), png("2.png"), png("3.png")] } });
+    await waitFor(() => expect(screen.queryByText("Preparando foto…")).toBeNull()); // la foto se reduce antes de aceptarse
     expect(screen.getByRole("alert")).toHaveTextContent("Puedes adjuntar hasta 2 fotos por mensaje.");
     expect(screen.getAllByAltText(/para enviar/)).toHaveLength(2);
     expect(screen.getByRole("button", { name: "Adjuntar foto" })).toBeDisabled(); // ya no caben más
@@ -114,7 +122,33 @@ describe("RedactorMensaje", () => {
   it("libera las vistas previas al quitar las fotos", async () => {
     montar();
     fireEvent.change(screen.getByTestId("selector-fotos"), { target: { files: [png()] } });
+    await waitFor(() => expect(screen.queryByText("Preparando foto…")).toBeNull()); // la foto se reduce antes de aceptarse
     await userEvent.click(screen.getByRole("button", { name: "Quitar foto 1" }));
     expect(URL.revokeObjectURL).toHaveBeenCalled();
+  });
+
+  it("una foto de cámara más grande que el tope se reduce antes de revisar el tamaño y se acepta", async () => {
+    const grande = png("camara.png", 3); // 3 MB: el tope del servidor es 1 MB en esta prueba
+    prepararFoto.mockResolvedValueOnce(png("camara.jpg", 0.2));
+    montar();
+    fireEvent.change(screen.getByTestId("selector-fotos"), { target: { files: [grande] } });
+    expect(await screen.findByAltText("Foto 1 para enviar")).toBeInTheDocument();
+    expect(prepararFoto).toHaveBeenCalledWith(grande);
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
+  it("si no se logra reducir y sigue pasando el tope, se rechaza con el mensaje de siempre", async () => {
+    prepararFoto.mockResolvedValueOnce(png("grande.png", 3));
+    montar();
+    fireEvent.change(screen.getByTestId("selector-fotos"), { target: { files: [png("grande.png", 3)] } });
+    expect(await screen.findByRole("alert")).toHaveTextContent("Cada foto puede pesar hasta 1 MB.");
+    expect(screen.queryByAltText("Foto 1 para enviar")).toBeNull();
+  });
+
+  it("no intenta reducir algo que no es una foto admitida: lo rechaza con su mensaje", async () => {
+    montar();
+    fireEvent.change(screen.getByTestId("selector-fotos"), { target: { files: [new File(["x"], "doc.pdf", { type: "application/pdf" })] } });
+    expect(await screen.findByRole("alert")).toHaveTextContent("Solo se aceptan fotos JPG, PNG, WEBP o GIF.");
+    expect(prepararFoto).not.toHaveBeenCalled();
   });
 });
