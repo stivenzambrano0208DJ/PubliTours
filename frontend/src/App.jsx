@@ -26,10 +26,12 @@ import Ayuda from "./pages/Ayuda";
 import PlanCompartido from "./pages/PlanCompartido";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./context/AuthContext";
+import { AvisosProvider } from "./context/AvisosContext";
 import { FavoritosProvider } from "./context/FavoritosContext";
 
 export default function App() {
   return (
+    <AvisosProvider>
     <AuthProvider>
       <FavoritosProvider>
       <Suspense fallback={<p role="status" className="p-8 text-center text-on-surface-variant">Cargando…</p>}>
@@ -81,5 +83,6 @@ export default function App() {
       </Suspense>
       </FavoritosProvider>
     </AuthProvider>
+    </AvisosProvider>
   );
 }

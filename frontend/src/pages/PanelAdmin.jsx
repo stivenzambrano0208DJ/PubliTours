@@ -11,6 +11,7 @@ import TendenciasAdmin from "../components/admin/TendenciasAdmin";
 import AuditoriaAdmin from "../components/admin/AuditoriaAdmin";
 import AnunciosAdmin from "../components/admin/AnunciosAdmin";
 import ReportesMensajesAdmin from "../components/admin/ReportesMensajesAdmin";
+import { useAvisos } from "../context/avisos";
 
 const TABS = [
   { id: "resumen", label: "Resumen y prestadores", icono: "dashboard" },
@@ -34,6 +35,7 @@ const COLOR_ESTADO_RESERVA = {
 };
 
 export default function PanelAdmin() {
+  const { avisar } = useAvisos();
   const { usuario } = useAuth();
   const [pendientes, setPendientes] = useState([]);
   const [stats, setStats] = useState(null);
@@ -59,7 +61,7 @@ export default function PanelAdmin() {
       await api.verificarPrestador(id, estado_verificacion, motivo);
       cargarTodo();
     } catch (err) {
-      alert(err.message);
+      avisar(err.message);
     } finally {
       setAccionando(null);
     }

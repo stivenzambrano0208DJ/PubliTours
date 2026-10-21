@@ -3,9 +3,11 @@ import { Link } from "react-router-dom";
 import { api, urlImagen } from "../../api/client";
 import { CATEGORIA_ICONOS } from "../../constants";
 import ModalMotivo from "../ModalMotivo";
+import { useAvisos } from "../../context/avisos";
 
 // Moderación de servicios: el administrador no los crea ni edita, solo oculta o vuelve a publicar.
 export default function ServiciosAdmin() {
+  const { avisar } = useAvisos();
   const [sitios, setSitios] = useState([]);
   const [texto, setTexto] = useState("");
   const [cargando, setCargando] = useState(true);
@@ -24,7 +26,7 @@ export default function ServiciosAdmin() {
       setSitios((prev) => prev.map((s) => (s.id === sitio.id ? { ...s, estado, motivo_moderacion: estado === "oculto" ? motivo : null } : s)));
       setOcultando(null);
     } catch (err) {
-      alert(err.message);
+      avisar(err.message);
     }
   };
 

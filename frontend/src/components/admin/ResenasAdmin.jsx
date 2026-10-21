@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api/client";
 import { Estrellas } from "../Estrellas";
+import { useAvisos } from "../../context/avisos";
 
 export default function ResenasAdmin() {
+  const { avisar, confirmar } = useAvisos();
   const [resenas, setResenas] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [eliminando, setEliminando] = useState(null);
@@ -12,13 +14,13 @@ export default function ResenasAdmin() {
   }, []);
 
   const eliminar = async (r) => {
-    if (!window.confirm("¿Retirar esta reseña? Su autor recibirá un aviso y no se puede deshacer.")) return;
+    if (!(await confirmar("¿Retirar esta reseña? Su autor recibirá un aviso y no se puede deshacer.", { titulo: "Retirar reseña", confirmar: "Retirar", peligro: true }))) return;
     setEliminando(r.id);
     try {
       await api.eliminarResenaAdmin(r.id);
       setResenas((prev) => prev.filter((x) => x.id !== r.id));
     } catch (err) {
-      alert(err.message);
+      avisar(err.message);
     } finally {
       setEliminando(null);
     }

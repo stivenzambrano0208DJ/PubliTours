@@ -3,6 +3,7 @@ import { MapContainer, Marker, useMapEvents } from "react-leaflet";
 import { CENTRO_CAQUETA } from "../constants";
 import "./mapa/configurarLeaflet";
 import CapasBase from "./mapa/CapasBase";
+import { useAvisos } from "../context/avisos";
 
 
 function ClicMapa({ onSeleccionar }) {
@@ -15,12 +16,13 @@ function ClicMapa({ onSeleccionar }) {
 }
 
 export default function MapaSeleccionar({ lat, lng, onCambiar }) {
+  const { avisar } = useAvisos();
   const [detectando, setDetectando] = useState(false);
   const posicion = lat && lng ? [Number(lat), Number(lng)] : null;
 
   const detectarUbicacion = () => {
     if (!navigator.geolocation) {
-      alert("Tu navegador no soporta geolocalización.");
+      avisar("Tu navegador no soporta geolocalización.");
       return;
     }
     setDetectando(true);
@@ -30,7 +32,7 @@ export default function MapaSeleccionar({ lat, lng, onCambiar }) {
         setDetectando(false);
       },
       () => {
-        alert("No se pudo obtener tu ubicación. Puedes marcarla manualmente en el mapa.");
+        avisar("No se pudo obtener tu ubicación. Puedes marcarla manualmente en el mapa.");
         setDetectando(false);
       },
       { enableHighAccuracy: true, timeout: 10000 }

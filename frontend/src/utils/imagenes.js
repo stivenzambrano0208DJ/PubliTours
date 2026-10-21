@@ -16,15 +16,15 @@ function obtenerDimensiones(file) {
 }
 
 // Devuelve true si la foto puede subirse (resolución suficiente o el usuario aceptó la advertencia).
-export async function advertirSiBajaResolucion(file) {
+export async function advertirSiBajaResolucion(file, confirmar = (mensaje) => Promise.resolve(window.confirm(mensaje))) {
   const dim = await obtenerDimensiones(file);
   if (!dim) return true;
   const ladoCorto = Math.min(dim.width, dim.height);
   if (ladoCorto < RESOLUCION_MINIMA_RECOMENDADA) {
-    return window.confirm(
+    return confirmar(
       `Esta foto es de ${dim.width}×${dim.height} píxeles, una resolución baja para mostrarse en pantalla grande — es probable que se vea borrosa. ` +
       `Se recomienda al menos ${RESOLUCION_MINIMA_RECOMENDADA}px en el lado más corto. ¿Quieres subirla de todas formas?`
-    );
+    , { titulo: "Foto de baja resolución", confirmar: "Subirla de todas formas", cancelar: "Elegir otra" });
   }
   return true;
 }

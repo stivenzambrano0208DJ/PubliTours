@@ -25,10 +25,13 @@ const diaDentroDe = (dias) => {
 let urlServicio;
 const paginas = {};
 
+// Las confirmaciones («¿Cancelar tu reserva?», «¿Retirar este mensaje?»…) son una ventana propia de la aplicación, no el diálogo del navegador.
+const confirmar = (page, boton) => page.getByRole("alertdialog").getByRole("button", { name: boton }).click();
+
 async function abrirSesion(browser) {
   const contexto = await browser.newContext();
   const page = await contexto.newPage();
-  page.on("dialog", (d) => d.accept()); // confirmaciones de "¿Seguro?" y avisos
+  page.on("dialog", (d) => d.accept()); // por si algún aviso del navegador (p. ej. foto de baja resolución con respaldo) aparece
   return page;
 }
 
@@ -202,6 +205,7 @@ test("6. el turista ve su reserva confirmada y puede cancelar una segunda", asyn
   await page.goto("/mis-reservas");
   const pendiente = page.getByRole("article").filter({ hasText: "PENDIENTE" });
   await pendiente.getByRole("button", { name: "Cancelar reserva" }).click();
+  await confirmar(page, "Sí, cancelar");
   await expect(page.getByRole("article").filter({ hasText: "CANCELADA" })).toBeVisible();
 });
 
@@ -243,6 +247,7 @@ test("9. el administrador suspende al turista y este ya no puede entrar", async 
   const fila = page.getByRole("row", { name: new RegExp(TURISTA.correo) });
   await expect(fila).toBeVisible();
   await fila.getByRole("button", { name: "Suspender" }).click();
+  await confirmar(page, "Suspender");
   await expect(fila).toContainText("Suspendida");
 
   const otra = await abrirSesion(browser);
@@ -306,12 +311,15 @@ test("11. el prestador arma un paquete con dos servicios y un turista lo reserva
   await prestador.getByPlaceholder("Ej. 150000").fill("60000");
   const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
   await prestador.locator('input[type="file"]:not([data-galeria])').setInputFiles({ name: "portada.png", mimeType: "image/png", buffer: PNG }); // foto de portada propia
+  await confirmar(prestador, "Subirla de todas formas"); // la foto de prueba es de 1×1 píxel: se avisa de la resolución baja
   await expect(prestador.getByAltText("Vista previa de la portada")).toBeVisible();
   // galería propia: dos fotos más, que se suben al crear el paquete
   await prestador.locator('input[data-galeria="true"]').setInputFiles([
     { name: "galeria1.png", mimeType: "image/png", buffer: PNG },
     { name: "galeria2.png", mimeType: "image/png", buffer: PNG },
   ]);
+  await confirmar(prestador, "Subirla de todas formas"); // una pregunta por cada foto
+  await confirmar(prestador, "Subirla de todas formas");
   await expect(prestador.getByText("Galería de fotos (2/8)")).toBeVisible();
   await expect(prestador.getByText(/el turista ahorra/)).toContainText("30.000"); // 50.000 + 40.000 sueltos vs 60.000
   await prestador.getByRole("button", { name: "Crear paquete" }).last().click();
@@ -652,8 +660,6 @@ test("20. la política de cancelación se elige, se ve antes de reservar y marca
 
   // El turista la ve antes de reservar
   const page = await abrirSesion(browser);
-  const avisos = [];
-  page.on("dialog", (d) => avisos.push(d.message()));
   await registrar(page, viajero, "turista");
   await page.goto(urlServicio);
   await expect(page.getByText("Cancelación moderada.")).toBeVisible();
@@ -672,8 +678,11 @@ test("20. la política de cancelación se elige, se ve antes de reservar y marca
   await page.goto("/mis-reservas");
   const reserva = page.getByRole("article").filter({ hasText: SERVICIO }).filter({ hasText: "CONFIRMADA" });
   await reserva.getByRole("button", { name: "Cancelar reserva" }).click();
+  const advertencia = page.getByRole("alertdialog");
+  await expect(advertencia).toContainText("se registrará como cancelación tardía");
+  await expect(advertencia).toContainText("3 días");
+  await confirmar(page, "Sí, cancelar");
   await expect(page.getByText(/Se registró como cancelación tardía/)).toBeVisible();
-  expect(avisos.some((m) => m.includes("se registrará como cancelación tardía") && m.includes("3 días"))).toBe(true);
 
   // El prestador lo ve en su lista y en las estadísticas
   await prestador.reload();
@@ -721,7 +730,8 @@ test("21. el prestador registra la asistencia: «no asistió» no permite califi
   await prestador.goto("/mi-negocio");
   const deAyer = filas.filter({ hasText: ayer }).last();
   await expect(deAyer).toContainText("¿Asistió?");
-  await deAyer.getByRole("button", { name: "No asistió" }).click(); // el diálogo de confirmación lo acepta la sesión
+  await deAyer.getByRole("button", { name: "No asistió" }).click();
+  await confirmar(prestador, "Sí, no asistió");
   await expect(deAyer).toContainText("No asistió");
   await expect(deAyer.getByRole("button", { name: "Asistió", exact: true })).toHaveCount(0);
 
@@ -936,7 +946,8 @@ test("26. una turista le pregunta al negocio con una foto sin tener reserva; el 
   await expect(tarjeta).toBeVisible();
   await expect(tarjeta.getByText("Sí, hay espacio para dos carros.")).toHaveCount(0); // el resto de la conversación no se muestra
   await expect.poll(() => tarjeta.getByAltText("Foto reportada").evaluate((i) => i.naturalWidth)).toBeGreaterThan(0);
-  await tarjeta.getByRole("button", { name: "Retirar mensaje" }).click(); // el diálogo de confirmación lo acepta la sesión
+  await tarjeta.getByRole("button", { name: "Retirar mensaje" }).click();
+  await confirmar(admin, "Retirar");
   await expect(admin.getByText("No hay mensajes reportados por revisar.")).toBeVisible();
 
   // 7. Para las dos partes el mensaje queda retirado y su foto ya no se entrega, ni siquiera a su autora

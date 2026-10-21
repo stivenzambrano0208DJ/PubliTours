@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api/client";
 import { Estrellas } from "../Estrellas";
+import { useAvisos } from "../../context/avisos";
 
 function Resena({ resena, onRespondida }) {
   const [editando, setEditando] = useState(false);
+  const { avisar } = useAvisos();
   const [texto, setTexto] = useState(resena.respuesta || "");
   const [guardando, setGuardando] = useState(false);
 
@@ -14,7 +16,7 @@ function Resena({ resena, onRespondida }) {
       onRespondida(await api.responderResena(resena.id, texto));
       setEditando(false);
     } catch (err) {
-      alert(err.message);
+      avisar(err.message);
     } finally {
       setGuardando(false);
     }

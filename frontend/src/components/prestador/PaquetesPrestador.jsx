@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import { api } from "../../api/client";
 import ModalPaquete from "./ModalPaquete";
 import { pesos } from "../../utils/moneda";
+import { useAvisos } from "../../context/avisos";
 
 
 // Sección del Portal del Prestador para armar paquetes con sus propios servicios.
 export default function PaquetesPrestador({ sitios }) {
+  const { avisar, confirmar } = useAvisos();
   const [paquetes, setPaquetes] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [modal, setModal] = useState(undefined); // undefined = cerrado, null = nuevo, objeto = editar
@@ -17,11 +19,11 @@ export default function PaquetesPrestador({ sitios }) {
 
   const ejecutar = async (id, fn) => {
     setAccionando(id);
-    try { await fn(); await cargar(); } catch (err) { alert(err.message); } finally { setAccionando(null); }
+    try { await fn(); await cargar(); } catch (err) { avisar(err.message); } finally { setAccionando(null); }
   };
 
-  const eliminar = (p) => {
-    if (!window.confirm(`¿Eliminar el paquete "${p.nombre}"? Su historial de reservas se conserva.`)) return;
+  const eliminar = async (p) => {
+    if (!(await confirmar(`¿Eliminar el paquete "${p.nombre}"? Su historial de reservas se conserva.`, { titulo: "Eliminar paquete", confirmar: "Eliminar", peligro: true }))) return;
     return ejecutar(p.id, () => api.eliminarPaquete(p.id));
   };
 

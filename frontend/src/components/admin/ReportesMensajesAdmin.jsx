@@ -3,12 +3,14 @@ import { api, urlFotoMensaje } from "../../api/client";
 import { useConsulta } from "../../hooks/useConsulta";
 import { MOTIVOS_REPORTE } from "../../utils/mensajes";
 import VisorFoto from "../mensajes/VisorFoto";
+import { useAvisos } from "../../context/avisos";
 
 const ESTADOS = { pendiente: "Pendientes", descartado: "Descartados", retirado: "Retirados" };
 
 // Moderación de mensajes: la administración ve SOLO los mensajes que alguien reportó (nunca conversaciones enteras) y decide
 // si los descarta (el mensaje queda como estaba) o los retira (nadie lo vuelve a ver y su autor recibe un aviso).
 export default function ReportesMensajesAdmin() {
+  const { confirmar } = useAvisos();
   const [estado, setEstado] = useState("pendiente");
   const [version, setVersion] = useState(0);
   const { datos: reportes, error, cargando } = useConsulta(`${estado}-${version}`, () => api.reportesMensajesAdmin(estado));
@@ -17,7 +19,7 @@ export default function ReportesMensajesAdmin() {
   const [fallo, setFallo] = useState("");
 
   const resolver = useCallback(async (reporte, accion) => {
-    if (accion === "retirar" && !window.confirm("¿Retirar este mensaje? Nadie volverá a verlo y su autor recibirá un aviso. No se puede deshacer.")) return;
+    if (accion === "retirar" && !(await confirmar("¿Retirar este mensaje? Nadie volverá a verlo y su autor recibirá un aviso. No se puede deshacer.", { titulo: "Retirar mensaje", confirmar: "Retirar", peligro: true }))) return;
     setTrabajando(reporte.id);
     setFallo("");
     try {
@@ -28,7 +30,7 @@ export default function ReportesMensajesAdmin() {
     } finally {
       setTrabajando(null);
     }
-  }, []);
+  }, [confirmar]);
 
   return (
     <section className="bg-surface-container-lowest rounded-2xl shadow-sm p-5">

@@ -3,18 +3,20 @@ import CalendarioReservas from "./CalendarioReservas";
 import EscanerAsistencia from "./EscanerAsistencia";
 import { useConfiguracion } from "../../hooks/useConfiguracion";
 import { sumarDias, hoyISO } from "../../utils/fechas";
+import { useAvisos } from "../../context/avisos";
 
 
 
 export default function ReservasRecibidas({ reservas, cargando, accionando, onAccion }) {
+  const { confirmar } = useAvisos();
   const [rechazando, setRechazando] = useState(null);
   const [motivo, setMotivo] = useState("");
   const [vista, setVista] = useState("lista");
   const [escaneando, setEscaneando] = useState(false);
   const gracia = useConfiguracion()?.dias_gracia_asistencia;
 
-  const registrar = (r, accion) => {
-    if (accion === "no_asistio" && !window.confirm(`¿Registrar que ${r.turista?.nombre || "el turista"} NO asistió? Es definitivo: no contará como ingreso ni podrá calificar.`)) return;
+  const registrar = async (r, accion) => {
+    if (accion === "no_asistio" && !(await confirmar(`¿Registrar que ${r.turista?.nombre || "el turista"} NO asistió? Es definitivo: no contará como ingreso ni podrá calificar.`, { titulo: "Registrar inasistencia", confirmar: "Sí, no asistió", peligro: true }))) return;
     onAccion(r.id, accion);
   };
 

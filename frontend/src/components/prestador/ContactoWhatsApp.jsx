@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { api } from "../../api/client";
+import { useAvisos } from "../../context/avisos";
 
 export default function ContactoWhatsApp({ perfil, onActualizado }) {
+  const { avisar } = useAvisos();
   const [editando, setEditando] = useState(false);
   const [telefono, setTelefono] = useState(perfil.telefono || "");
   const [guardando, setGuardando] = useState(false);
@@ -17,7 +19,7 @@ export default function ContactoWhatsApp({ perfil, onActualizado }) {
       onActualizado(actualizado);
       setEditando(false);
     } catch (err) {
-      alert(err.message);
+      avisar(err.message);
     } finally {
       setGuardando(false);
     }

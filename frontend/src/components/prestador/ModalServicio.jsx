@@ -6,6 +6,7 @@ import { advertirSiBajaResolucion, prepararFoto, prepararFotos } from "../../uti
 import FechasBloqueadas from "./FechasBloqueadas";
 import PreciosAvanzados from "./PreciosAvanzados";
 import SelectorPolitica from "./SelectorPolitica";
+import { useAvisos } from "../../context/avisos";
 
 const SITIO_VACIO = { nombre: "", categoria: "", municipio: "", precio: "", horario: "", descripcion: "", tipo_viaje: "", capacidad: "", politica_cancelacion: "flexible", latitud: "", longitud: "",
   precio_nino: "", grupo_min_personas: "", grupo_descuento_pct: "", temporadas: [] };
@@ -20,6 +21,7 @@ const opcionesCategoria = (actual) =>
 
 // Modal de crear/editar servicio. Se monta solo mientras está abierto, así su estado nace limpio cada vez.
 export default function ModalServicio({ perfil, sitio, ubicacionPrevia, onCerrar, onGuardado }) {
+  const { avisar, confirmar } = useAvisos();
   const [form, setForm] = useState(
     sitio
       ? {
@@ -42,7 +44,7 @@ export default function ModalServicio({ perfil, sitio, ubicacionPrevia, onCerrar
   const handleSeleccionarImagen = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!(await advertirSiBajaResolucion(file))) { e.target.value = ""; return; }
+    if (!(await advertirSiBajaResolucion(file, confirmar))) { e.target.value = ""; return; }
     const lista = await prepararFoto(file);
     setImagenFile(lista);
     setImagenPreview(URL.createObjectURL(lista));
@@ -52,14 +54,14 @@ export default function ModalServicio({ perfil, sitio, ubicacionPrevia, onCerrar
     const files = Array.from(e.target.files || []);
     if (files.length === 0 || !sitio) return;
     for (const file of files) {
-      if (!(await advertirSiBajaResolucion(file))) { e.target.value = ""; return; }
+      if (!(await advertirSiBajaResolucion(file, confirmar))) { e.target.value = ""; return; }
     }
     setSubiendoGaleria(true);
     try {
       const nuevas = await api.agregarImagenesSitio(sitio.id, await prepararFotos(files));
       setGaleria((prev) => [...prev, ...nuevas]);
     } catch (err) {
-      alert(err.message);
+      avisar(err.message);
     } finally {
       setSubiendoGaleria(false);
       e.target.value = "";
@@ -73,7 +75,7 @@ export default function ModalServicio({ perfil, sitio, ubicacionPrevia, onCerrar
       await api.eliminarImagenSitio(sitio.id, imagenId);
       setGaleria((prev) => prev.filter((img) => img.id !== imagenId));
     } catch (err) {
-      alert(err.message);
+      avisar(err.message);
     } finally {
       setEliminandoImagen(null);
     }
@@ -88,7 +90,7 @@ export default function ModalServicio({ perfil, sitio, ubicacionPrevia, onCerrar
       else await api.crearSitio({ ...payload, prestador_id: perfil.id }, imagenFile);
       onGuardado();
     } catch (err) {
-      alert(err.message);
+      avisar(err.message);
     } finally {
       setGuardando(false);
     }

@@ -11,10 +11,12 @@ import ReservasRecibidas from "../components/prestador/ReservasRecibidas";
 import ModalServicio from "../components/prestador/ModalServicio";
 import ResenasRecibidas from "../components/prestador/ResenasRecibidas";
 import PaquetesPrestador from "../components/prestador/PaquetesPrestador";
+import { useAvisos } from "../context/avisos";
 
 const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
 export default function PanelPrestador() {
+  const { avisar, confirmar } = useAvisos();
   const [perfil, setPerfil] = useState(null);
   const [cargandoPerfil, setCargandoPerfil] = useState(true);
   const [sitios, setSitios] = useState([]);
@@ -50,7 +52,7 @@ export default function PanelPrestador() {
       await fn();
       cargarDatos();
     } catch (err) {
-      alert(err.message);
+      avisar(err.message);
     } finally {
       setAccionando(null);
     }
@@ -63,8 +65,8 @@ export default function PanelPrestador() {
       return api.rechazarReserva(id, motivo);
     });
 
-  const eliminarServicio = (s) => {
-    if (!window.confirm(`¿Eliminar "${s.nombre}"? Dejará de aparecer en el catálogo. Su historial de reservas y reseñas se conserva.`)) return;
+  const eliminarServicio = async (s) => {
+    if (!(await confirmar(`¿Eliminar "${s.nombre}"? Dejará de aparecer en el catálogo. Su historial de reservas y reseñas se conserva.`, { titulo: "Eliminar servicio", confirmar: "Eliminar", peligro: true }))) return;
     return ejecutar(s.id, () => api.eliminarSitio(s.id));
   };
 

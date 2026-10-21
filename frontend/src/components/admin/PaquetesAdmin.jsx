@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api, urlImagen } from "../../api/client";
 import ModalMotivo from "../ModalMotivo";
+import { useAvisos } from "../../context/avisos";
 
 // Moderación de paquetes: el administrador no los crea ni edita, solo oculta (con motivo) o vuelve a publicar.
 export default function PaquetesAdmin() {
+  const { avisar } = useAvisos();
   const [paquetes, setPaquetes] = useState([]);
   const [texto, setTexto] = useState("");
   const [cargando, setCargando] = useState(true);
@@ -23,7 +25,7 @@ export default function PaquetesAdmin() {
       setPaquetes((prev) => prev.map((p) => (p.id === paquete.id ? { ...p, estado, motivo_moderacion: estado === "oculto" ? motivo : null } : p)));
       setOcultando(null);
     } catch (err) {
-      alert(err.message);
+      avisar(err.message);
     }
   };
 

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import jsQR from "jsqr";
 import { extraerCodigo } from "../../utils/qr";
 import { hoyISO } from "../../utils/fechas";
+import { useAvisos } from "../../context/avisos";
 
 const ANCHO_MAX = 640; // se reduce el cuadro antes de analizarlo: basta para un QR y no pesa en celulares modestos
 
@@ -146,6 +147,7 @@ function Resultado({ reserva, accionando, onAsistio, onNoAsistio }) {
 
 // Ventana para atender a un turista: escanea el QR de su comprobante (o escribe el código) y registra su asistencia.
 export default function EscanerAsistencia({ reservas, accionando, onAccion, onCerrar }) {
+  const { confirmar } = useAvisos();
   const [codigo, setCodigo] = useState(null);
   const [manual, setManual] = useState("");
   const [errorManual, setErrorManual] = useState("");
@@ -164,8 +166,8 @@ export default function EscanerAsistencia({ reservas, accionando, onAccion, onCe
   const otra = () => { setCodigo(null); setManual(""); setErrorManual(""); };
 
   const asistio = () => onAccion(reserva.id, "asistio");
-  const noAsistio = () => {
-    if (window.confirm(`¿Registrar que ${reserva.turista?.nombre || "el turista"} NO asistió? Es definitivo: no contará como ingreso ni podrá calificar.`)) onAccion(reserva.id, "no_asistio");
+  const noAsistio = async () => {
+    if ((await confirmar(`¿Registrar que ${reserva.turista?.nombre || "el turista"} NO asistió? Es definitivo: no contará como ingreso ni podrá calificar.`, { titulo: "Registrar inasistencia", confirmar: "Sí, no asistió", peligro: true }))) onAccion(reserva.id, "no_asistio");
   };
 
   return (

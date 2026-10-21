@@ -4,9 +4,11 @@ import { useConfiguracion } from "./useConfiguracion";
 import { FILTROS_RESERVA } from "../utils/estadosReserva";
 import { hoyISO } from "../utils/fechas";
 import { NOMBRES_POLITICA, seriaTardia, textoDias } from "../utils/politicas";
+import { useAvisos } from "../context/avisos";
 
 // Las reservas del turista: lista, filtros, búsqueda, cifras del encabezado y cancelación.
 export function useMisReservas() {
+  const { avisar, confirmar } = useAvisos();
   const configuracion = useConfiguracion();
   const [reservas, setReservas] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -55,13 +57,13 @@ export function useMisReservas() {
     const aviso = tardia
       ? ` Su política de cancelación (${NOMBRES_POLITICA[r.politica_cancelacion].toLowerCase()}) pide ${textoDias(plazos[r.politica_cancelacion])} de antelación: se registrará como cancelación tardía.`
       : "";
-    if (!window.confirm(`¿Cancelar tu reserva en "${r.paquete?.nombre || r.sitio?.nombre}" del ${r.fecha_servicio}?${aviso} Esta acción no se puede deshacer.`)) return;
+    if (!(await confirmar(`¿Cancelar tu reserva en "${r.paquete?.nombre || r.sitio?.nombre}" del ${r.fecha_servicio}?${aviso} Esta acción no se puede deshacer.`, { titulo: "Cancelar reserva", confirmar: "Sí, cancelar", cancelar: "No, volver", peligro: true }))) return;
     setCancelando(r.id);
     try {
       const { estado, cancelacion_tardia } = await api.cancelarReserva(r.id);
       actualizar(r.id, { estado, cancelacion_tardia });
     } catch (err) {
-      alert(err.message);
+      avisar(err.message);
     } finally {
       setCancelando(null);
     }

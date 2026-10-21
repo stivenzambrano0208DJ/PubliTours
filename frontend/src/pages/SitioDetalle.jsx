@@ -12,6 +12,7 @@ import VisorFotos from "../components/sitio/VisorFotos";
 import FichaTecnica from "../components/sitio/FichaTecnica";
 import TarjetaPrestador from "../components/sitio/TarjetaPrestador";
 import PanelReserva from "../components/sitio/PanelReserva";
+import { useAvisos } from "../context/avisos";
 
 const MENSAJE_CARGANDO = "max-w-[1360px] mx-auto px-gutter py-space-xl font-body-md text-body-md text-on-surface-variant";
 
@@ -28,6 +29,7 @@ function Titulo({ icono, children }) {
 
 // Detalle público de un servicio: portada, información real, ubicación, reseñas, prestador y reserva.
 export default function SitioDetalle() {
+  const { avisar } = useAvisos();
   const { id } = useParams();
   const { usuario } = useAuth();
   const { datos: sitio, error, cargando } = useConsulta(id, () => api.obtenerSitio(id));
@@ -52,7 +54,7 @@ export default function SitioDetalle() {
       try { await navigator.share({ title: sitio.nombre, url }); } catch { /* el usuario canceló */ }
     } else {
       await navigator.clipboard.writeText(url);
-      alert("Enlace copiado al portapapeles.");
+      avisar("Enlace copiado al portapapeles.", "ok");
     }
   };
 

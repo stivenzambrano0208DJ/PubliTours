@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../api/client";
+import { useAvisos } from "../context/avisos";
 
 const FILTROS_INICIALES = {
   texto: "", municipio: "", categoria: "", presupuesto_max: "", calificacion_min: "", fecha: "", tipo_viaje: "",
@@ -9,6 +10,7 @@ const FILTROS_INICIALES = {
 // Búsqueda del catálogo: filtros, resultados paginados, vista de mapa y lo que se deriva del catálogo real
 // (categorías con su cantidad y municipios), sin inventar cifras.
 export function useBusquedaSitios(textoInicial = "") {
+  const { avisar } = useAvisos();
   const [filtros, setFiltros] = useState({ ...FILTROS_INICIALES, texto: textoInicial });
   const [resultado, setResultado] = useState({ resultados: [], total: 0, total_paginas: 1, page: 1 });
   const [cargando, setCargando] = useState(false);
@@ -77,10 +79,10 @@ export function useBusquedaSitios(textoInicial = "") {
   // "Más cercanos a mí" necesita la ubicación del turista: se pide una vez y se conserva para ordenar y para el mapa.
   const cambiarOrden = (valor) => {
     if (valor !== "cercania" || (filtros.lat && filtros.lng)) { aplicar({ orden: valor }); return; }
-    if (!navigator.geolocation) { alert("Tu navegador no soporta geolocalización."); return; }
+    if (!navigator.geolocation) { avisar("Tu navegador no soporta geolocalización."); return; }
     navigator.geolocation.getCurrentPosition(
       (pos) => aplicar({ orden: "cercania", lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => alert("No pudimos obtener tu ubicación. Activa el permiso de ubicación del navegador para ordenar por cercanía.")
+      () => avisar("No pudimos obtener tu ubicación. Activa el permiso de ubicación del navegador para ordenar por cercanía.")
     );
   };
 

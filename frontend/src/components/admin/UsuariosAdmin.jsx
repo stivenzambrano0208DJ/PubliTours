@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api/client";
+import { useAvisos } from "../../context/avisos";
 
 const ROLES = [
   { value: "", label: "Todos" },
@@ -9,6 +10,7 @@ const ROLES = [
 ];
 
 export default function UsuariosAdmin({ usuarioActualId }) {
+  const { avisar, confirmar } = useAvisos();
   const [usuarios, setUsuarios] = useState([]);
   const [texto, setTexto] = useState("");
   const [rol, setRol] = useState("");
@@ -24,13 +26,13 @@ export default function UsuariosAdmin({ usuarioActualId }) {
 
   const cambiarEstado = async (u) => {
     const suspender = u.activo;
-    if (suspender && !window.confirm(`¿Suspender la cuenta de ${u.nombre}? No podrá iniciar sesión ni usar la plataforma hasta que la reactives.`)) return;
+    if (suspender && !(await confirmar(`¿Suspender la cuenta de ${u.nombre}? No podrá iniciar sesión ni usar la plataforma hasta que la reactives.`, { titulo: "Suspender cuenta", confirmar: "Suspender", peligro: true }))) return;
     setAccionando(u.id);
     try {
       await api.estadoUsuario(u.id, !u.activo);
       setUsuarios((prev) => prev.map((x) => (x.id === u.id ? { ...x, activo: !u.activo } : x)));
     } catch (err) {
-      alert(err.message);
+      avisar(err.message);
     } finally {
       setAccionando(null);
     }

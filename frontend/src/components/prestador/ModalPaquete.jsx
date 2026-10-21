@@ -3,11 +3,13 @@ import SelectorPolitica from "./SelectorPolitica";
 import { api, urlImagen } from "../../api/client";
 import { advertirSiBajaResolucion, prepararFoto, prepararFotos } from "../../utils/imagenes";
 import { pesos } from "../../utils/moneda";
+import { useAvisos } from "../../context/avisos";
 
 const INPUT = "px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary";
 
 // Crear o editar un paquete: se eligen servicios propios activos (con el día en que se hacen) y se fija un precio por persona.
 export default function ModalPaquete({ paquete, sitios, onCerrar, onGuardado }) {
+  const { avisar, confirmar } = useAvisos();
   const activos = sitios.filter((s) => s.estado === "activo" || paquete?.items?.some((i) => i.sitio_id === s.id));
   const [form, setForm] = useState({
     nombre: paquete?.nombre || "", descripcion: paquete?.descripcion || "", precio: paquete?.precio ?? "", capacidad: paquete?.capacidad || "",
@@ -32,7 +34,7 @@ export default function ModalPaquete({ paquete, sitios, onCerrar, onGuardado }) 
     e.target.value = "";
     if (files.length === 0) return;
     if (totalFotos + files.length > MAX_GALERIA) { setError(`La galería admite máximo ${MAX_GALERIA} fotos.`); return; }
-    for (const f of files) if (!(await advertirSiBajaResolucion(f))) return;
+    for (const f of files) if (!(await advertirSiBajaResolucion(f, confirmar))) return;
     setError("");
     setSubiendoGaleria(true);
     try {
@@ -66,7 +68,7 @@ export default function ModalPaquete({ paquete, sitios, onCerrar, onGuardado }) 
   const elegirImagen = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!(await advertirSiBajaResolucion(file))) { e.target.value = ""; return; }
+    if (!(await advertirSiBajaResolucion(file, confirmar))) { e.target.value = ""; return; }
     const lista = await prepararFoto(file);
     setImagenFile(lista);
     setImagenPreview(URL.createObjectURL(lista));
@@ -97,7 +99,7 @@ export default function ModalPaquete({ paquete, sitios, onCerrar, onGuardado }) 
           try {
             await api.agregarImagenesPaquete(creado.id, pendientes.map((p) => p.file));
           } catch (err) {
-            alert(`El paquete se creó, pero no se pudieron subir las fotos de la galería: ${err.message}. Puedes agregarlas editando el paquete.`);
+            avisar(`El paquete se creó, pero no se pudieron subir las fotos de la galería: ${err.message}. Puedes agregarlas editando el paquete.`);
           }
         }
       }
