@@ -7,9 +7,8 @@
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const { Usuario } = require("../models");
+const { clavePermitida } = require("../utils/claves");
 
-// Mínimo exigido a las cuentas con permisos: largo, y no solo letras ni solo números.
-const clavePermitida = (c) => typeof c === "string" && c.length >= 12 && /[A-Za-z]/.test(c) && /\d/.test(c);
 
 async function cambiar() {
   const correo = process.argv[2];

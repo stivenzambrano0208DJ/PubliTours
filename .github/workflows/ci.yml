@@ -127,10 +127,20 @@ jobs:
       - name: Construye el backend
         run: docker build ./backend
       - name: Construye el frontend
-        run: docker build ./frontend
+        run: docker build -t publitours-frontend ./frontend
+      # La configuración de nginx se comprueba dentro de la propia imagen (sintaxis y archivos incluidos).
+      - name: Valida la configuración de nginx
+        run: docker run --rm publitours-frontend nginx -t
       - name: Valida docker-compose.yml
         run: docker compose config --quiet
         env:
           DB_PASSWORD: valor-solo-para-validar
           JWT_SECRET: valor-solo-para-validar
           CORS_ORIGIN: http://localhost:8080
+      - name: Valida docker-compose.dokploy.yml
+        run: docker compose -f docker-compose.dokploy.yml config --quiet
+        env:
+          DB_HOST: valor-solo-para-validar
+          DB_PASSWORD: valor-solo-para-validar
+          JWT_SECRET: valor-solo-para-validar
+          CORS_ORIGIN: https://ejemplo.com

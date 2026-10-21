@@ -163,3 +163,38 @@ test("configurar-correo avisa si todavía no existe el .env de la raíz", () => 
     assert.match(res.stderr, /crear-env/);
   } finally { fs.rmSync(raiz, { recursive: true, force: true }); }
 });
+
+// ---- seedAdmin: crea el administrador inicial con la misma regla de claves que cambiar:clave ----
+test("seed:admin crea el administrador con una clave que cumple la regla, y esa clave sirve para entrar", async () => {
+  const correo = `admin-seed-${Date.now()}@test.com`;
+  const res = ejecutar("src/scripts/seedAdmin.js", [correo, "Admin Seed"], { CLAVE_ADMIN: "clave-admin-larga-2031" });
+  assert.equal(res.status, 0, res.stderr);
+  assert.match(res.stdout, /creado correctamente/);
+  assert.ok(!res.stdout.includes("clave-admin-larga-2031") && !res.stderr.includes("clave-admin-larga-2031"), "no debe imprimir la clave");
+
+  const usuario = await Usuario.findOne({ where: { correo } });
+  assert.equal(usuario.rol, "administrador");
+  assert.equal(usuario.correo_verificado, true);
+  assert.equal((await request(app).post("/api/v1/auth/login").send({ correo, password: "clave-admin-larga-2031" })).status, 200);
+});
+
+test("seed:admin rechaza claves débiles o ausentes y no crea la cuenta", async () => {
+  for (const clave of ["admin2026", "soloLetrasPeroLarga", "123456789012345", ""]) {
+    const correo = `admin-debil-${Date.now()}-${clave.length}@test.com`;
+    const res = ejecutar("src/scripts/seedAdmin.js", [correo, "Admin Debil"], { CLAVE_ADMIN: clave });
+    assert.equal(res.status, 1, `aceptó la clave "${clave}"`);
+    assert.equal(await Usuario.count({ where: { correo } }), 0, "no debe crear la cuenta");
+  }
+});
+
+test("seed:admin acepta la clave por argumento (compatibilidad) pero con la misma regla, y promueve una cuenta existente sin pedir clave", async () => {
+  const debil = `admin-arg-${Date.now()}@test.com`;
+  assert.equal(ejecutar("src/scripts/seedAdmin.js", [debil, "Admin Arg", "admin2026"], { CLAVE_ADMIN: "" }).status, 1);
+  assert.equal(await Usuario.count({ where: { correo: debil } }), 0);
+
+  const cuenta = await registrar("turista");
+  const res = ejecutar("src/scripts/seedAdmin.js", [cuenta.correo, "Quien sea"], { CLAVE_ADMIN: "" });
+  assert.equal(res.status, 0, res.stderr);
+  assert.match(res.stdout, /promovido a administrador/);
+  assert.equal((await Usuario.findByPk(cuenta.usuario.id)).rol, "administrador");
+});
