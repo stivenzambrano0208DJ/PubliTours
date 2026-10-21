@@ -31,18 +31,34 @@ function sesionExpirada() {
   window.dispatchEvent(new Event(EVENTO_SESION_EXPIRADA));
 }
 
+const TIEMPO_LIMITE_MS = 30_000;
+const TIEMPO_LIMITE_SUBIDA_MS = 120_000;
+
 async function request(path, { method = "GET", body, auth = false } = {}) {
   const esFormData = typeof FormData !== "undefined" && body instanceof FormData;
   const headers = { ...CABECERA_CLIENTE };
   if (!esFormData) headers["Content-Type"] = "application/json";
   const conSesion = auth && haySesion();
 
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers,
-    credentials: "include",
-    body: esFormData ? body : (body ? JSON.stringify(body) : undefined),
-  });
+  // Sin tiempo límite, con poca señal la pantalla se queda "cargando" para siempre. Las subidas de fotos tienen más margen.
+  const control = new AbortController();
+  const limite = setTimeout(() => control.abort(), esFormData ? TIEMPO_LIMITE_SUBIDA_MS : TIEMPO_LIMITE_MS);
+  let res;
+  try {
+    res = await fetch(`${BASE_URL}${path}`, {
+      method,
+      headers,
+      credentials: "include",
+      signal: control.signal,
+      body: esFormData ? body : (body ? JSON.stringify(body) : undefined),
+    });
+  } catch (err) {
+    throw new Error(err?.name === "AbortError"
+      ? "La conexión está tardando demasiado. Revisa tu señal e inténtalo de nuevo."
+      : "No hay conexión con el servidor. Revisa tu señal e inténtalo de nuevo.");
+  } finally {
+    clearTimeout(limite);
+  }
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { api, urlImagen } from "../../api/client";
 import { CATEGORIAS_NEGOCIO } from "../../constants";
 import MapaSeleccionar from "../MapaSeleccionar";
-import { advertirSiBajaResolucion } from "../../utils/imagenes";
+import { advertirSiBajaResolucion, prepararFoto, prepararFotos } from "../../utils/imagenes";
 import FechasBloqueadas from "./FechasBloqueadas";
 import PreciosAvanzados from "./PreciosAvanzados";
 import SelectorPolitica from "./SelectorPolitica";
@@ -43,19 +43,20 @@ export default function ModalServicio({ perfil, sitio, ubicacionPrevia, onCerrar
     const file = e.target.files?.[0];
     if (!file) return;
     if (!(await advertirSiBajaResolucion(file))) { e.target.value = ""; return; }
-    setImagenFile(file);
-    setImagenPreview(URL.createObjectURL(file));
+    const lista = await prepararFoto(file);
+    setImagenFile(lista);
+    setImagenPreview(URL.createObjectURL(lista));
   };
 
   const handleSubirGaleria = async (e) => {
-    const files = e.target.files;
-    if (!files || files.length === 0 || !sitio) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0 || !sitio) return;
     for (const file of files) {
       if (!(await advertirSiBajaResolucion(file))) { e.target.value = ""; return; }
     }
     setSubiendoGaleria(true);
     try {
-      const nuevas = await api.agregarImagenesSitio(sitio.id, files);
+      const nuevas = await api.agregarImagenesSitio(sitio.id, await prepararFotos(files));
       setGaleria((prev) => [...prev, ...nuevas]);
     } catch (err) {
       alert(err.message);
@@ -189,7 +190,7 @@ export default function ModalServicio({ perfil, sitio, ubicacionPrevia, onCerrar
             Cancelar
           </button>
           <button type="submit" disabled={guardando} className="flex-1 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors disabled:opacity-60">
-            {guardando ? "Guardando..." : sitio ? "Guardar cambios" : "Crear servicio"}
+            {guardando ? (imagenFile ? "Subiendo foto..." : "Guardando...") : sitio ? "Guardar cambios" : "Crear servicio"}
           </button>
         </div>
       </form>

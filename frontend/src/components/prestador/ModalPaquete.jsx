@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import SelectorPolitica from "./SelectorPolitica";
 import { api, urlImagen } from "../../api/client";
-import { advertirSiBajaResolucion } from "../../utils/imagenes";
+import { advertirSiBajaResolucion, prepararFoto, prepararFotos } from "../../utils/imagenes";
 import { pesos } from "../../utils/moneda";
 
 const INPUT = "px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary";
@@ -34,13 +34,14 @@ export default function ModalPaquete({ paquete, sitios, onCerrar, onGuardado }) 
     if (totalFotos + files.length > MAX_GALERIA) { setError(`La galería admite máximo ${MAX_GALERIA} fotos.`); return; }
     for (const f of files) if (!(await advertirSiBajaResolucion(f))) return;
     setError("");
-    if (!paquete) {
-      setPendientes((prev) => [...prev, ...files.map((file) => ({ file, url: URL.createObjectURL(file) }))]);
-      return;
-    }
     setSubiendoGaleria(true);
     try {
-      const nuevas = await api.agregarImagenesPaquete(paquete.id, files);
+      const listas = await prepararFotos(files);
+      if (!paquete) {
+        setPendientes((prev) => [...prev, ...listas.map((file) => ({ file, url: URL.createObjectURL(file) }))]);
+        return;
+      }
+      const nuevas = await api.agregarImagenesPaquete(paquete.id, listas);
       setGaleria((prev) => [...prev, ...nuevas]);
     } catch (err) {
       setError(err.message);
@@ -66,8 +67,9 @@ export default function ModalPaquete({ paquete, sitios, onCerrar, onGuardado }) 
     const file = e.target.files?.[0];
     if (!file) return;
     if (!(await advertirSiBajaResolucion(file))) { e.target.value = ""; return; }
-    setImagenFile(file);
-    setImagenPreview(URL.createObjectURL(file));
+    const lista = await prepararFoto(file);
+    setImagenFile(lista);
+    setImagenPreview(URL.createObjectURL(lista));
   };
 
   const ids = Object.keys(elegidos).map(Number);

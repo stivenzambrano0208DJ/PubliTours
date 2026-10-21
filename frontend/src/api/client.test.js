@@ -82,4 +82,23 @@ describe("cliente de la API: sesión por cookie", () => {
     vi.stubGlobal("fetch", vi.fn(() => Promise.resolve({ ok: false, status: 502, json: () => Promise.reject(new Error("no json")) })));
     await expect(api.buscarSitios({})).rejects.toThrow("Ocurrió un error inesperado.");
   });
+
+  it("si la señal se corta o tarda demasiado, falla con un mensaje claro en lugar de quedarse cargando para siempre", async () => {
+    vi.useFakeTimers();
+    try {
+      vi.stubGlobal("fetch", vi.fn((_url, opciones) => new Promise((_, rechazar) => {
+        opciones.signal.addEventListener("abort", () => rechazar(Object.assign(new Error("abortado"), { name: "AbortError" })));
+      })));
+      const espera = api.misReservas().catch((e) => e);
+      await vi.advanceTimersByTimeAsync(31_000);
+      expect((await espera).message).toBe("La conexión está tardando demasiado. Revisa tu señal e inténtalo de nuevo.");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("si no hay red, avisa que no hay conexión", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => Promise.reject(new TypeError("Failed to fetch"))));
+    await expect(api.misReservas()).rejects.toThrow("No hay conexión con el servidor. Revisa tu señal e inténtalo de nuevo.");
+  });
 });
