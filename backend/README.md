@@ -69,7 +69,7 @@ Para una regla nueva de permisos: agrega la función a la política que correspo
 |---|---|
 | `npm run dev` / `npm start` | Arranca el servidor (`src/server.js`). |
 | `npm run migrate` / `migrate:undo` | Aplica o revierte migraciones. |
-| `npm run seed:admin -- correo "Nombre" contraseña` | Crea el primer administrador. |
+| `CLAVE_ADMIN=… npm run seed:admin -- correo "Nombre"` | Crea el primer administrador. La clave va en `CLAVE_ADMIN` (no queda en el historial) y debe tener 12+ caracteres con letras y números, igual que `cambiar:clave` (regla compartida en `src/utils/claves.js`). Si el correo ya existe, solo lo promueve. |
 | `npm run probar:correo [-- destino]` | Comprueba de verdad que Gmail acepta las credenciales de `.env` y, si das un destino, envía un correo de prueba (muestra el error real, que la aplicación esconde a propósito). |
 | `NUEVA_CLAVE=… npm run cambiar:clave -- correo` | Cambia la contraseña de una cuenta (p. ej. el administrador de desarrollo) y cierra sus sesiones. La clave va en una variable de entorno, no en un argumento. |
 | `npm test` | Recrea `publitours_test` con las migraciones y ejecuta todas las pruebas (`node:test` + supertest). |
@@ -92,6 +92,7 @@ Para una regla nueva de permisos: agrega la función a la política que correspo
 |---|---|
 | `permisos.test.js` + `matriz-permisos.js` | **Matriz de permisos:** las rutas se leen del código de Express (`inventario-rutas.js`) y se comparan con la tabla documentada. Una ruta nueva, una protección quitada o un rol cambiado hace fallar la prueba hasta que se actualice la tabla *a propósito*. Además ataca cada ruta protegida: sin sesión (401), con token o cookie falsos (401), con el rol equivocado (403), sin correo verificado (403) y subiendo archivos sin sesión (no se guarda nada). Toda ruta pública debe tener su motivo escrito. |
 | `permisos-recursos.test.js` | **Acceso cruzado (IDOR):** una cuenta con el rol correcto no puede ver ni tocar lo de otra (reservas, itinerarios, notificaciones, servicios, paquetes, perfil del negocio, reseñas). Cada ataque exige un 4xx *y* que el dato siga igual en la base. |
+| `integridad-base.test.js` | **Integridad de la base:** toda llave foránea debe tener un índice (falla si una migración futura añade una sin él) y la migración de índices es reversible. |
 | `mensajeria.test.js` | **Mensajería:** quién abre y quién responde (el negocio nunca escribe primero), temas válidos, correo verificado, topes por hora y por día, fotos privadas (solo las partes; ni por `/uploads`; archivos disfrazados, de más de 5 MB o de más de 3 se rechazan sin dejar huérfanos), lo leído y lo no leído, avisos por racha sin copiar el mensaje, reportes y moderación, y el borrado/descarga de datos. |
 | `campos-sensibles.test.js` | **Control de salida:** recorre todas las rutas `GET` con seis tipos de persona y comprueba que nunca salgan hashes, versiones de sesión ni tokens; que quien no es dueño no reciba campos internos ni correos ajenos; y que las respuestas más delicadas tengan *exactamente* los campos previstos (lista blanca). |
 

@@ -37,7 +37,8 @@ Todo el sistema (PostgreSQL + API + frontend con nginx) se levanta con un comand
 ```bash
 cp .env.example .env     # completa DB_PASSWORD, JWT_SECRET, CORS_ORIGIN y EMAIL_*
 docker compose up -d --build
-docker compose exec backend npm run seed:admin -- admin@midominio.com "Administrador" "UnaClaveLarga123"
+# La clave va en la variable CLAVE_ADMIN (12+ caracteres, con letras y números); así no queda en el historial de la terminal
+docker compose exec -e CLAVE_ADMIN="UnaClaveLarga123" backend npm run seed:admin -- admin@midominio.com "Administrador"
 ```
 
 La aplicación queda en `http://localhost:8080` (cambia `PUERTO_WEB` y `CORS_ORIGIN` para otro puerto o dominio). Cómo está armado:

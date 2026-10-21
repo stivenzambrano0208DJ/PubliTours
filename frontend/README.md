@@ -16,6 +16,7 @@ npm run dev            # http://localhost:5173 (necesita el backend en marcha)
 | `npm test` | Pruebas unitarias y de componentes (Vitest + Testing Library). |
 | `npm run test:e2e` | Recorridos completos con Playwright (Chrome instalado; levanta su propio backend y frontend con una base de pruebas). |
 | `npm run lint` | `oxlint`. |
+| `npm run imagen:compartir` | Regenera `public/og.png`, la imagen que aparece al compartir el enlace (necesita Chrome instalado). |
 
 ## Estructura
 
@@ -23,7 +24,8 @@ npm run dev            # http://localhost:5173 (necesita el backend en marcha)
 src/
   api/client.js        # Único punto de contacto con la API: cookie de sesión HttpOnly, cabecera anti-CSRF,
                        #   manejo de 401 (evento "sesión expirada") y descarga de archivos
-  context/             # Estado global: AuthContext (sesión) y FavoritosContext
+  context/             # Estado global: AuthContext (sesión), FavoritosContext y AvisosContext (avisos y confirmaciones propios:
+                       #   useAvisos().avisar(...) y confirmar(...); no se usan alert() ni confirm() del navegador)
   hooks/               # Lógica reutilizable de las pantallas: useConsulta (carga con "cargando" derivado),
                        #   useConfiguracion, useBusquedaSitios, useGeneradorItinerario, useMisReservas, …
                        #   Mensajes: usePolling (repite solo con la pestaña visible), useConsultaViva, useHilo, useMensajesSinLeer
@@ -35,8 +37,12 @@ src/
     prestador/         #   portal del prestador (reservas, calendario, escáner QR, paquetes, estadísticas…)
     admin/             #   portal del administrador (usuarios, moderación, auditoría, tendencias)
   utils/               # Funciones puras: fechas, moneda, calendario (.ics), qr, políticas de cancelación, …
+                       #   imagenes.js reduce las fotos en el dispositivo antes de subirlas (1920 px, JPEG)
   constants.js         # Listas y valores compartidos (municipios, categorías, versión de términos)
+  estilos.js           # Clases de los campos de formulario (una sola fuente de verdad)
 e2e/                   # Pruebas de punta a punta (Playwright)
+vite-plugin-sitio.js   # Dirección pública (VITE_SITIO_URL): etiquetas para compartir en index.html, robots.txt y sitemap.xml
+scripts/               # generar-imagen-compartir.mjs → public/og.png (npm run imagen:compartir)
 ```
 
 Reglas de la carpeta: las **páginas** no llaman a `fetch` (solo a `api.*`), la lógica que se repite entre pantallas vive en **hooks** o **utils**, y el formato de pesos y fechas va en `utils/moneda.js` y `utils/fechas.js` (algunas pantallas antiguas todavía formatean cantidades con `toLocaleString("es-CO")` directamente; al tocarlas conviene pasarlas a `utils`). Las cifras del modelo de negocio (comisión, plazos de cancelación) nunca se escriben a mano: se leen de `GET /configuracion` con `useConfiguracion`.

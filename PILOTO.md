@@ -113,7 +113,7 @@ Lo que **no** se probó es un túnel real.
 - Crea el administrador del piloto en esa base nueva, con **su propia clave**, distinta a la de desarrollo:
 
 ```powershell
-docker compose exec backend node src/scripts/seedAdmin.js admin-piloto@ejemplo.com "Administrador Piloto" "una-clave-larga-2031"
+docker compose exec -e CLAVE_ADMIN="una-clave-larga-2031" backend node src/scripts/seedAdmin.js admin-piloto@ejemplo.com "Administrador Piloto"
 ```
   (Ese comando deja la clave en el historial del terminal; después puedes cambiarla con una variable de entorno:
   `docker compose exec -e NUEVA_CLAVE='…' backend node src/scripts/cambiarClave.js admin-piloto@ejemplo.com`. Ambos se probaron dentro de la imagen.)
@@ -173,5 +173,13 @@ Usa `docker-compose.dokploy.yml` (no publica puertos, declara 2 proxies delante 
 3. **Base de datos:** en el proyecto, *Create Service → Database → PostgreSQL* (imagen `postgres:18`), base `publitours`, usuario `publitours_app` y una clave aleatoria. Copia el *Internal Host* que muestra y úsalo como `DB_HOST`. Los respaldos programados se configuran en la pestaña *Backups* de ese servicio.
 4. **Variables** (pestaña *Environment*; los secretos viven solo ahí): `DB_HOST`, `DB_NAME=publitours`, `DB_USER=publitours_app`, `DB_PASSWORD` (la de la base), `JWT_SECRET` (64 caracteres aleatorios), `CORS_ORIGIN=https://tu-dominio`, `EMAIL_USER`, `EMAIL_PASS` (sin correo configurado el backend **no arranca** en producción), y opcionalmente `ANTHROPIC_API_KEY`, `COMISION_PORCENTAJE`. No pongas `TRUST_PROXY` salvo que cambie la cadena de proxies.
 5. **Dominio:** pestaña *Domains* → servicio `frontend`, puerto `80`, HTTPS activado (Let's Encrypt).
-6. **Administrador:** tras el primer despliegue, desde la terminal del contenedor `backend`: `node src/scripts/seedAdmin.js correo "Nombre" clave`. Escribe la clave tú; no la compartas por chat.
+6. **Administrador:** tras el primer despliegue, desde la terminal del contenedor `backend` (que abre en `/`, así que primero `cd /app`): `CLAVE_ADMIN='tu-clave' node src/scripts/seedAdmin.js correo "Nombre"`. La clave debe tener 12 o más caracteres, con letras y números (si no, el script se niega). Escríbela tú; no la compartas por chat.
 7. **Respaldos:** programa el respaldo del servicio *Database* y del volumen `uploads` hacia un almacenamiento fuera del VPS, y prueba una restauración.
+
+### Cosas que conviene saber de Dokploy (aprendidas en el despliegue real)
+
+- **Las subidas se cortan a los 60 segundos.** El proxy Traefik de Dokploy cierra toda petición que tarde más (se midió: 4 MB a 40 KB/s se cortan a los 60 s; 0,9 MB terminan en 22 s). Por eso el frontend **reduce las fotos en el celular antes de enviarlas**. Subir ese límite afectaría a todos los proyectos del servidor; no se recomienda salvo necesidad.
+- **nginx resuelve el backend en cada petición** (`frontend/nginx.conf`, `resolver 127.0.0.11`). Antes, si el backend se recreaba con otra IP, todo daba 502 hasta reiniciar el frontend.
+- **El servicio tiene autodeploy "On Push":** cada `git push` a `main` redespliega. Las migraciones se aplican solas al arrancar el backend, así que una migración nueva se ejecuta en producción en ese despliegue.
+- **La base es un servicio *Database* aparte**, no parte del compose; sobrevive a los redespliegues. Su puerto externo debe quedar vacío (solo la alcanza el backend por la red interna).
+- **Dirección pública del sitio** para los enlaces al compartir, `robots.txt` y `sitemap.xml`: variable `VITE_SITIO_URL` al compilar el frontend (por defecto `https://djstevenmix.online`).

@@ -18,6 +18,7 @@ Escribe a la persona responsable del proyecto (dato por completar antes del pilo
 | Fotos | Se comprueba el contenido real, no la extensión. Las de conversaciones son privadas: carpeta no pública y entrega solo por una ruta con permisos. |
 | Abuso | Límite general de peticiones y uno más estricto para las rutas de acceso (`middlewares/limites.js`), y topes de mensajes por hora y por día. |
 | Cabeceras | `helmet` en la API. En el nginx del frontend: CSP, `X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy` y HSTS (este último solo cuando el visitante llega por HTTPS). Ver `frontend/nginx-seguridad.conf`. |
+| Cuentas con permisos | La clave del administrador (al crearlo con `seed:admin` o cambiarla con `cambiar:clave`) exige 12 o más caracteres con letras y números, y se pasa por variable de entorno, no como argumento (que quedaría en el historial de la terminal). |
 | Datos personales | Descarga y eliminación de la cuenta desde el perfil; política de privacidad y términos. |
 | Secretos | Solo en `.env` (fuera del repositorio y de las imágenes de Docker). `scripts/crear-env.cjs` genera los secretos; `scripts/configurar-correo.cjs` pide la clave del correo con entrada oculta. |
 
@@ -32,5 +33,7 @@ Las pruebas de seguridad se validaron alterando el código a propósito (mutacio
 - **CSP con `style-src 'unsafe-inline'`:** React y Leaflet usan estilos en línea. Los scripts sí están limitados a los propios.
 - **Dependencias:** `npm audit --omit=dev` (13 oct 2026): frontend sin hallazgos; backend con 1 aviso moderado de `uuid` dentro de Sequelize (afecta a v3/v5/v6 cuando se les pasa un buffer; Sequelize usa v4 sin buffer, así que no es explotable aquí). Su arreglo automático instalaría Sequelize 3 y no se aplica; se revisa al actualizar Sequelize. No hay escaneo automático periódico.
 - **Sin prueba de carga** todavía.
+- **Subidas lentas:** el proxy del servidor corta toda petición que tarde más de 60 s; las fotos se reducen en el dispositivo para caber con poca señal (ver `PILOTO.md`).
+- **Integridad de la base:** una prueba falla si una llave foránea no tiene índice (el rendimiento de los borrados en cascada depende de ello).
 - **Pagos:** la plataforma no procesa pagos, por lo que no maneja datos de tarjetas.
 - **Respaldos:** hay guía en `PILOTO.md`; programarlos y probar la restauración depende de quien opere el servidor.
