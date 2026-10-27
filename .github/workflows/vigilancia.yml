@@ -1,0 +1,65 @@
+name: Vigilancia
+
+# Cada 10 minutos comprueba que PubliTours responde. Si no, abre una incidencia con la etiqueta "caida" (GitHub te avisa por correo) y la
+# cierra sola cuando el sitio se recupera. Es un aviso gratuito y sin cuentas externas, pero no es un servicio de garantía: GitHub puede
+# retrasar o saltarse ejecuciones programadas y las desactiva si el repositorio pasa 60 días sin actividad. Para más seguridad se puede
+# sumar un monitor externo (por ejemplo UptimeRobot) apuntando a https://<dominio>/salud.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: # también se puede lanzar a mano desde la pestaña Actions
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: vigilancia
+  cancel-in-progress: false
+
+jobs:
+  salud:
+    name: ¿Responde el sitio?
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      # Para vigilar otro dominio: variable del repositorio SITIO_URL (Settings → Variables). Por defecto, producción.
+      SITIO_URL: ${{ vars.SITIO_URL || 'https://djstevenmix.online' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Comprueba el sitio
+        id: sitio
+        continue-on-error: true
+        run: bash scripts/vigilar-sitio.sh 2>&1 | tee resultado.txt; exit "${PIPESTATUS[0]}"
+
+      - name: Abre la incidencia si el sitio no responde
+        if: steps.sitio.outcome == 'failure'
+        run: |
+          gh label create caida --color B60205 --description "El sitio no responde" 2>/dev/null || true
+          ABIERTA=$(gh issue list --label caida --state open --json number --jq '.[0].number // empty')
+          if [ -z "$ABIERTA" ]; then
+            {
+              echo "La vigilancia automática no logra comprobar el sitio **$SITIO_URL**."
+              echo
+              sed "s/^/    /" resultado.txt
+              echo
+              echo "Se cierra sola cuando el sitio se recupere. Revisa Dokploy: contenedores, registros del backend y de la base de datos."
+            } > cuerpo.md
+            gh issue create --label caida --title "🔴 PubliTours no responde" --body-file cuerpo.md
+          else
+            echo "Ya hay una incidencia abierta (#$ABIERTA); no se repite el aviso."
+          fi
+
+      - name: Cierra la incidencia si el sitio se recuperó
+        if: steps.sitio.outcome == 'success'
+        run: |
+          for n in $(gh issue list --label caida --state open --json number --jq '.[].number'); do
+            gh issue comment "$n" --body "✅ El sitio volvió a responder ($(date -u '+%Y-%m-%d %H:%M UTC'))."
+            gh issue close "$n"
+          done
+
+      - name: Marca la ejecución como fallida si el sitio no responde
+        if: steps.sitio.outcome == 'failure'
+        run: exit 1
