@@ -1,13 +1,11 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { request, app, sequelize, registrar, auth } = require("./helpers");
+const { sequelize, registrar, auth, api, enDias } = require("./helpers");
 const { Prestador, SitioTuristico, Reserva, Usuario } = require("../src/models");
 const { comisionPorcentaje, calcularComision } = require("../src/config/negocio");
 
 test.after(() => sequelize.close());
 
-const api = (m, url) => request(app)[m](`/api/v1${url}`);
-const enDias = (n) => new Date(Date.now() + n * 864e5).toLocaleDateString("en-CA");
 
 async function servicio(precio = 100000) {
   const prest = await registrar("prestador");

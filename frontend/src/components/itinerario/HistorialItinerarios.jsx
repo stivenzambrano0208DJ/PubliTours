@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { api } from "../api/client";
-import { fechaDelDia, fechaCorta } from "../utils/fechas";
+import { api } from "../../api/client";
+import { fechaDelDia, fechaCorta } from "../../utils/fechas";
 
 // Itinerarios generados anteriormente por el turista (guardados en la base de datos).
 export default function HistorialItinerarios({ recargarKey }) {

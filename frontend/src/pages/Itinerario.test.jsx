@@ -5,7 +5,7 @@ import Itinerario from "./Itinerario";
 import { fechaMinima } from "../constants";
 import { sumarDias, fechaCorta } from "../utils/fechas";
 
-vi.mock("../components/HistorialItinerarios", () => ({ default: () => null }));
+vi.mock("../components/itinerario/HistorialItinerarios", () => ({ default: () => null }));
 vi.mock("../api/client", () => ({
   urlImagen: (x) => x,
   api: { generarItinerario: vi.fn(), solicitarReserva: vi.fn(), interpretarViaje: vi.fn() },

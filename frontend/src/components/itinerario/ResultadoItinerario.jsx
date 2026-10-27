@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useReservasItinerario } from "../../hooks/useReservasItinerario";
 import { resumenItinerario } from "../../utils/itinerario";
-import HistorialItinerarios from "../HistorialItinerarios";
-import ItinerarioImprimible from "../ItinerarioImprimible";
+import HistorialItinerarios from "./HistorialItinerarios";
+import ItinerarioImprimible from "./ItinerarioImprimible";
 import EncabezadoItinerario from "./EncabezadoItinerario";
 import ResumenRapido from "./ResumenRapido";
 import LineaDelTiempo from "./LineaDelTiempo";

@@ -2,12 +2,10 @@
 // administrador, y datos de A que B no debe poder ver ni tocar (reservas, reseña, itinerario compartido, notificaciones, favoritos).
 const fs = require("node:fs");
 const path = require("node:path");
-const { request, app, registrar, auth } = require("./helpers");
+const { registrar, auth, api, enDias } = require("./helpers");
 const { Prestador, SitioTuristico, Reserva, Resena, Itinerario, ItinerarioItem, Notificacion, Usuario, Conversacion, Mensaje, MensajeImagen } = require("../src/models");
 const { DIR_PRIVADO_MENSAJES } = require("../src/utils/archivos");
 
-const api = (m, url) => request(app)[m](`/api/v1${url}`);
-const enDias = (n) => new Date(Date.now() + n * 864e5).toLocaleDateString("en-CA");
 
 // Fotos privadas que crea el mundo; cada archivo de pruebas llama a limpiarMundo() al terminar para no dejarlas en el disco.
 const fotosCreadas = [];

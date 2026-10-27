@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { MapContainer, Marker, useMapEvents } from "react-leaflet";
-import { CENTRO_CAQUETA } from "../constants";
-import "./mapa/configurarLeaflet";
-import CapasBase from "./mapa/CapasBase";
-import { useAvisos } from "../context/avisos";
+import { CENTRO_CAQUETA } from "../../constants";
+import "./configurarLeaflet";
+import CapasBase from "./CapasBase";
+import { useAvisos } from "../../context/avisos";
 
 
 function ClicMapa({ onSeleccionar }) {

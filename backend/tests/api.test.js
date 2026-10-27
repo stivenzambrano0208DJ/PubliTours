@@ -2,10 +2,9 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
-const { request, app, sequelize, registrar, auth } = require("./helpers");
+const { sequelize, registrar, auth, api } = require("./helpers");
 const { Usuario, Prestador, PasswordReset } = require("../src/models");
 
-const api = (m, url) => request(app)[m](`/api/v1${url}`);
 const manana = () => new Date(Date.now() + 864e5).toISOString().slice(0, 10);
 const sha = (t) => crypto.createHash("sha256").update(t).digest("hex");
 

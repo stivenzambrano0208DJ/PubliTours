@@ -9,7 +9,7 @@ let usuario = null;
 vi.mock("react-router-dom", async (original) => ({ ...(await original()), useNavigate: () => navigate }));
 vi.mock("../context/auth", () => ({ useAuth: () => ({ usuario }) }));
 vi.mock("../components/BotonFavorito", () => ({ default: () => null }));
-vi.mock("../components/MapaSitios", () => ({ default: ({ sitios, ubicacionUsuario }) => <div data-testid="mapa" data-n={sitios.length} data-ubicacion={ubicacionUsuario ? "si" : "no"} /> }));
+vi.mock("../components/mapa/MapaSitios", () => ({ default: ({ sitios, ubicacionUsuario }) => <div data-testid="mapa" data-n={sitios.length} data-ubicacion={ubicacionUsuario ? "si" : "no"} /> }));
 vi.mock("../api/client", () => ({
   urlImagen: (x) => x,
   api: {

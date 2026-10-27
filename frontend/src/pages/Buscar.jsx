@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/auth";
 import { useBusquedaSitios } from "../hooks/useBusquedaSitios";
-import MapaSitios from "../components/MapaSitios";
+import MapaSitios from "../components/mapa/MapaSitios";
 import CabeceraBusqueda from "../components/buscar/CabeceraBusqueda";
 import BarraFiltros from "../components/buscar/BarraFiltros";
 import TarjetaSitio from "../components/buscar/TarjetaSitio";

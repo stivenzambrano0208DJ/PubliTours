@@ -3,6 +3,7 @@ import jsQR from "jsqr";
 import { extraerCodigo } from "../../utils/qr";
 import { hoyISO } from "../../utils/fechas";
 import { useAvisos } from "../../context/avisos";
+import Modal from "../Modal";
 
 const ANCHO_MAX = 640; // se reduce el cuadro antes de analizarlo: basta para un QR y no pesa en celulares modestos
 
@@ -171,50 +172,48 @@ export default function EscanerAsistencia({ reservas, accionando, onAccion, onCe
   };
 
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="titulo-escaner" className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/50 p-0 sm:p-4">
-      <div className="w-full sm:max-w-md max-h-[92vh] overflow-y-auto bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl p-space-lg flex flex-col gap-3 shadow-2xl">
-        <div className="flex items-center justify-between">
-          <h2 id="titulo-escaner" className="flex items-center gap-2 font-title-lg text-title-lg text-primary font-semibold">
-            <span className="material-symbols-outlined" aria-hidden="true">qr_code_scanner</span>Atender con QR
-          </h2>
-          <button type="button" onClick={onCerrar} aria-label="Cerrar" className="w-9 h-9 rounded-full hover:bg-surface-container flex items-center justify-center">
-            <span className="material-symbols-outlined" aria-hidden="true">close</span>
-          </button>
-        </div>
-
-        {!codigo && (
-          <>
-            <Camara onCodigo={alLeer} />
-            <form onSubmit={buscarManual} className="flex flex-col gap-2 pt-1">
-              <label htmlFor="codigo-manual" className="font-label-md text-label-md text-on-surface-variant">¿Sin cámara? Escribe el código</label>
-              <div className="flex gap-2">
-                <input
-                  id="codigo-manual" value={manual} onChange={(e) => setManual(e.target.value)} placeholder="PT-AB12CD" autoComplete="off" autoCapitalize="characters" maxLength={40}
-                  className="flex-1 px-3 py-2.5 rounded-xl bg-surface font-mono border border-outline-variant/40 focus:outline-none focus:ring-2 focus:ring-secondary"
-                />
-                <button type="submit" disabled={!manual.trim()} className="px-4 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold disabled:opacity-50">Buscar</button>
-              </div>
-              {errorManual && <p role="alert" className="font-label-xs text-label-xs text-error">{errorManual}</p>}
-            </form>
-          </>
-        )}
-
-        {codigo && !reserva && (
-          <>
-            <p role="alert" className="p-3 rounded-xl bg-error-container text-on-error-container font-body-sm text-body-sm">
-              No encontramos la reserva <strong className="font-mono">{codigo}</strong> en tu negocio. Puede ser de otro prestador o no existir.
-            </p>
-            <button type="button" onClick={otra} className="py-3 rounded-xl bg-surface-container font-label-md text-label-md font-semibold hover:bg-surface-container-high">Escanear otra</button>
-          </>
-        )}
-
-        {codigo && reserva && (
-          <>
-            <Resultado reserva={reserva} accionando={accionando === reserva.id} onAsistio={asistio} onNoAsistio={noAsistio} />
-            <button type="button" onClick={otra} className="py-3 rounded-xl bg-surface-container font-label-md text-label-md font-semibold hover:bg-surface-container-high">Escanear otra</button>
-          </>
-        )}
+    <Modal tituloId="titulo-escaner" onCerrar={onCerrar} cerrarAlPulsarFondo={false} fondo="z-[60] items-end sm:items-center bg-black/50 p-0 sm:p-4" className="w-full sm:max-w-md max-h-[92vh] overflow-y-auto bg-surface-container-lowest rounded-t-3xl sm:rounded-3xl p-space-lg flex flex-col gap-3 shadow-2xl">
+      <div className="flex items-center justify-between">
+        <h2 id="titulo-escaner" className="flex items-center gap-2 font-title-lg text-title-lg text-primary font-semibold">
+          <span className="material-symbols-outlined" aria-hidden="true">qr_code_scanner</span>Atender con QR
+        </h2>
+        <button type="button" onClick={onCerrar} aria-label="Cerrar" className="w-9 h-9 rounded-full hover:bg-surface-container flex items-center justify-center">
+          <span className="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
       </div>
-    </div>
+
+      {!codigo && (
+        <>
+          <Camara onCodigo={alLeer} />
+          <form onSubmit={buscarManual} className="flex flex-col gap-2 pt-1">
+            <label htmlFor="codigo-manual" className="font-label-md text-label-md text-on-surface-variant">¿Sin cámara? Escribe el código</label>
+            <div className="flex gap-2">
+              <input
+                id="codigo-manual" value={manual} onChange={(e) => setManual(e.target.value)} placeholder="PT-AB12CD" autoComplete="off" autoCapitalize="characters" maxLength={40}
+                className="flex-1 px-3 py-2.5 rounded-xl bg-surface font-mono border border-outline-variant/40 focus:outline-none focus:ring-2 focus:ring-secondary"
+              />
+              <button type="submit" disabled={!manual.trim()} className="px-4 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold disabled:opacity-50">Buscar</button>
+            </div>
+            {errorManual && <p role="alert" className="font-label-xs text-label-xs text-error">{errorManual}</p>}
+          </form>
+        </>
+      )}
+
+      {codigo && !reserva && (
+        <>
+          <p role="alert" className="p-3 rounded-xl bg-error-container text-on-error-container font-body-sm text-body-sm">
+            No encontramos la reserva <strong className="font-mono">{codigo}</strong> en tu negocio. Puede ser de otro prestador o no existir.
+          </p>
+          <button type="button" onClick={otra} className="py-3 rounded-xl bg-surface-container font-label-md text-label-md font-semibold hover:bg-surface-container-high">Escanear otra</button>
+        </>
+      )}
+
+      {codigo && reserva && (
+        <>
+          <Resultado reserva={reserva} accionando={accionando === reserva.id} onAsistio={asistio} onNoAsistio={noAsistio} />
+          <button type="button" onClick={otra} className="py-3 rounded-xl bg-surface-container font-label-md text-label-md font-semibold hover:bg-surface-container-high">Escanear otra</button>
+        </>
+      )}
+    </Modal>
   );
 }

@@ -3,16 +3,16 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import PoliticaCancelacion from "./PoliticaCancelacion";
-import SelectorPolitica from "./prestador/SelectorPolitica";
-import MisReservas from "../pages/MisReservas";
-import { diasHasta, seriaTardia, textoDias } from "../utils/politicas";
+import SelectorPolitica from "../prestador/SelectorPolitica";
+import MisReservas from "../../pages/MisReservas";
+import { diasHasta, seriaTardia, textoDias } from "../../utils/politicas";
 
-vi.mock("../context/auth", () => ({ useAuth: () => ({ usuario: { id: 1, nombre: "Ana", rol: "turista" } }) }));
-vi.mock("../api/client", () => ({
+vi.mock("../../context/auth", () => ({ useAuth: () => ({ usuario: { id: 1, nombre: "Ana", rol: "turista" } }) }));
+vi.mock("../../api/client", () => ({
   urlImagen: (x) => x,
   api: { configuracion: vi.fn(), misReservas: vi.fn(), cancelarReserva: vi.fn() },
 }));
-import { api } from "../api/client";
+import { api } from "../../api/client";
 
 const PLAZOS = { flexible: 1, moderada: 3, estricta: 7 };
 const enDias = (n) => new Date(Date.now() + n * 864e5).toLocaleDateString("en-CA");

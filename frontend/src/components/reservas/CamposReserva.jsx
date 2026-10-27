@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { api } from "../api/client";
-import { tieneTarifaAvanzada } from "../utils/catalogo";
-import { fechaMinima } from "../constants";
+import { api } from "../../api/client";
+import { tieneTarifaAvanzada } from "../../utils/catalogo";
+import { fechaMinima } from "../../constants";
 import CalendarioDisponibilidad from "./CalendarioDisponibilidad";
-import { pesos } from "../utils/moneda";
-import { CAMPO_ANCHO } from "../estilos";
+import { pesos } from "../../utils/moneda";
+import { CAMPO_ANCHO } from "../../estilos";
 
 const CAMPO_RESERVA = `mt-1.5 ${CAMPO_ANCHO}`;
 

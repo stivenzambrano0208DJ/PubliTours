@@ -3,12 +3,11 @@ const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const { request, app, sequelize, registrar, auth } = require("./helpers");
+const { sequelize, registrar, auth, api } = require("./helpers");
 const { Usuario, PasswordReset } = require("../src/models");
 
 test.after(() => sequelize.close());
 
-const api = (m, url) => request(app)[m](`/api/v1${url}`);
 const PASSWORD = "clave12345";
 const sha = (texto) => crypto.createHash("sha256").update(texto).digest("hex");
 const yo = (token) => api("get", "/usuarios/me").set(auth(token));

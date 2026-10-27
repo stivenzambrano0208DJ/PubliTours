@@ -2,7 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { request, app, sequelize, registrar, auth } = require("./helpers");
+const { request, app, sequelize, registrar, auth, api, enDias } = require("./helpers");
 const {
   Prestador, SitioTuristico, Reserva, Usuario, Notificacion, Conversacion, Mensaje, MensajeImagen, ReporteMensaje, Auditoria,
 } = require("../src/models");
@@ -18,8 +18,6 @@ test.after(async () => {
   await sequelize.close();
 });
 
-const api = (m, url) => request(app)[m](`/api/v1${url}`);
-const enDias = (n) => new Date(Date.now() + n * 864e5).toLocaleDateString("en-CA");
 // Un PNG válido de 1×1 y otro "disfrazado": texto con extensión y tipo de imagen.
 const PNG = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==", "base64");
 const FALSO = Buffer.from("<script>alert('no soy una imagen')</script>");

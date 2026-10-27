@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { api } from "../api/client";
-import { Estrellas } from "./Estrellas";
+import { api } from "../../api/client";
+import { Estrellas } from "../Estrellas";
 
 // Reseñas reales de turistas que ya vivieron la experiencia (solo con reserva confirmada y cumplida).
 export default function ResenasSitio({ sitioId, paqueteId }) {

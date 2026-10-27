@@ -4,6 +4,7 @@ import { api } from "../../api/client";
 import { useAuth } from "../../context/auth";
 import { avisarCambioMensajes } from "../../hooks/useMensajesSinLeer";
 import RedactorMensaje from "./RedactorMensaje";
+import Modal from "../Modal";
 
 // Ventana para escribirle al negocio sobre un servicio, un paquete o una reserva. Al enviar lleva a la conversación.
 function ModalPreguntar({ tema, titulo, ayuda, onCerrar }) {
@@ -16,18 +17,16 @@ function ModalPreguntar({ tema, titulo, ayuda, onCerrar }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onCerrar}>
-      <div role="dialog" aria-modal="true" aria-labelledby="titulo-preguntar" onClick={(e) => e.stopPropagation()} className="w-full sm:max-w-lg bg-surface-container-lowest rounded-t-3xl sm:rounded-2xl p-6 shadow-xl flex flex-col gap-3">
-        <div className="flex items-start justify-between gap-3">
-          <h3 id="titulo-preguntar" className="font-headline-md text-headline-md text-primary">{titulo}</h3>
-          <button type="button" onClick={onCerrar} aria-label="Cerrar" className="w-9 h-9 rounded-full hover:bg-surface-container flex items-center justify-center shrink-0">
-            <span className="material-symbols-outlined" aria-hidden="true">close</span>
-          </button>
-        </div>
-        <p className="font-body-sm text-body-sm text-on-surface-variant">{ayuda}</p>
-        <RedactorMensaje onEnviar={alEnviar} placeholder="Escribe tu pregunta…" textoBoton="Enviar" autoFocus />
+    <Modal tituloId="titulo-preguntar" onCerrar={onCerrar} fondo="bg-black/40 z-[60] items-end sm:items-center p-0 sm:p-4" className="w-full sm:max-w-lg bg-surface-container-lowest rounded-t-3xl sm:rounded-2xl p-6 shadow-xl flex flex-col gap-3">
+      <div className="flex items-start justify-between gap-3">
+        <h3 id="titulo-preguntar" className="font-headline-md text-headline-md text-primary">{titulo}</h3>
+        <button type="button" onClick={onCerrar} aria-label="Cerrar" className="w-9 h-9 rounded-full hover:bg-surface-container flex items-center justify-center shrink-0">
+          <span className="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
       </div>
-    </div>
+      <p className="font-body-sm text-body-sm text-on-surface-variant">{ayuda}</p>
+      <RedactorMensaje onEnviar={alEnviar} placeholder="Escribe tu pregunta…" textoBoton="Enviar" autoFocus />
+    </Modal>
   );
 }
 

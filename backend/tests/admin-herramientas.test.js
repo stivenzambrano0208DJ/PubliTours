@@ -1,12 +1,11 @@
 const test = require("node:test");
 const nodemailer = require("nodemailer");
 const assert = require("node:assert/strict");
-const { request, app, sequelize, registrar, auth } = require("./helpers");
+const { sequelize, registrar, auth, api } = require("./helpers");
 const { Prestador, SitioTuristico, Reserva, Usuario, Notificacion, Auditoria } = require("../src/models");
 
 test.after(() => sequelize.close());
 
-const api = (m, url) => request(app)[m](`/api/v1${url}`);
 
 async function admin() {
   const a = await registrar("turista");

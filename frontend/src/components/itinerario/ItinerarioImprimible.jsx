@@ -1,6 +1,6 @@
-import { fechaDelDia, fechaCorta } from "../utils/fechas";
-import { itemsPorDia, totalEstimado } from "../utils/itinerario";
-import { pesos } from "../utils/moneda";
+import { fechaDelDia, fechaCorta } from "../../utils/fechas";
+import { itemsPorDia, totalEstimado } from "../../utils/itinerario";
+import { pesos } from "../../utils/moneda";
 
 
 // Versión limpia del itinerario: solo se ve al imprimir o guardar como PDF (el resto de la página se oculta).

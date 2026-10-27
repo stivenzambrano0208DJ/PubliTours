@@ -1,4 +1,4 @@
-import InterpretarViaje from "../InterpretarViaje";
+import InterpretarViaje from "./InterpretarViaje";
 import { fechaMinima } from "../../constants";
 import { pesos } from "../../utils/moneda";
 

@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
 import { api } from "../api/client";
 import { fechaCorta } from "../utils/fechas";
-import PoliticaCancelacion from "../components/PoliticaCancelacion";
+import PoliticaCancelacion from "../components/sitio/PoliticaCancelacion";
 
 const ESTADOS = {
   confirmada: { texto: "Confirmada", clase: "bg-secondary-container text-on-secondary-container" },

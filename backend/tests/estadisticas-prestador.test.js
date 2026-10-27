@@ -1,12 +1,11 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { request, app, sequelize, registrar, auth } = require("./helpers");
+const { sequelize, registrar, auth, api } = require("./helpers");
 const { Prestador, SitioTuristico, Reserva } = require("../src/models");
 const { celda } = require("../src/utils/csv");
 
 test.after(() => sequelize.close());
 
-const api = (m, url) => request(app)[m](`/api/v1${url}`);
 
 // Un negocio con dos servicios y reservas repartidas en enero y febrero de 2031.
 async function escenario() {

@@ -3,10 +3,10 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import CamposReserva from "./CamposReserva";
-import { tieneTarifaAvanzada } from "../utils/catalogo";
+import { tieneTarifaAvanzada } from "../../utils/catalogo";
 
-vi.mock("../api/client", () => ({ api: { fechasBloqueadas: vi.fn(() => Promise.resolve([])), disponibilidadSitio: vi.fn(() => Promise.resolve({ dias: [] })), cotizarSitio: vi.fn() } }));
-import { api } from "../api/client";
+vi.mock("../../api/client", () => ({ api: { fechasBloqueadas: vi.fn(() => Promise.resolve([])), disponibilidadSitio: vi.fn(() => Promise.resolve({ dias: [] })), cotizarSitio: vi.fn() } }));
+import { api } from "../../api/client";
 
 function Contenedor({ sitio, inicial = { fecha: "2030-06-10", personas: 3, ninos: 0, nota: "" }, extra = {} }) {
   const [valores, setValores] = useState(inicial);

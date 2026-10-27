@@ -3,8 +3,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import InterpretarViaje from "./InterpretarViaje";
 
-vi.mock("../api/client", () => ({ api: { interpretarViaje: vi.fn() } }));
-import { api } from "../api/client";
+vi.mock("../../api/client", () => ({ api: { interpretarViaje: vi.fn() } }));
+import { api } from "../../api/client";
 
 const respuesta = (extra = {}) => ({
   presupuesto: 500000, dias: 3, preferencias: ["pareja"], municipio: "Florencia", categoria: null,

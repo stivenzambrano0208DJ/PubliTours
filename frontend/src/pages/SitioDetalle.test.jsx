@@ -8,9 +8,9 @@ const navigate = vi.fn();
 let usuario = null;
 vi.mock("react-router-dom", async (original) => ({ ...(await original()), useNavigate: () => navigate }));
 vi.mock("../context/auth", () => ({ useAuth: () => ({ usuario }) }));
-vi.mock("../components/MapaVisor", () => ({ default: ({ lat, lng }) => <div data-testid="mapa" data-lat={lat} data-lng={lng} /> }));
+vi.mock("../components/mapa/MapaVisor", () => ({ default: ({ lat, lng }) => <div data-testid="mapa" data-lat={lat} data-lng={lng} /> }));
 vi.mock("../components/BotonFavorito", () => ({ default: () => null }));
-vi.mock("../components/ResenasSitio", () => ({ default: ({ sitioId }) => <div data-testid="resenas" data-sitio={sitioId} /> }));
+vi.mock("../components/sitio/ResenasSitio", () => ({ default: ({ sitioId }) => <div data-testid="resenas" data-sitio={sitioId} /> }));
 vi.mock("../api/client", () => ({
   urlImagen: (x) => x,
   api: {

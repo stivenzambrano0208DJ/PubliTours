@@ -1,11 +1,10 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { request, app, sequelize, registrar, auth } = require("./helpers");
+const { request, app, sequelize, registrar, auth, api } = require("./helpers");
 const { Prestador, Reserva } = require("../src/models");
 
 test.after(() => sequelize.close());
 
-const api = (m, url) => request(app)[m](`/api/v1${url}`);
 const manana = () => new Date(Date.now() + 864e5).toISOString().slice(0, 10);
 const enDias = (n) => new Date(Date.now() + n * 864e5).toISOString().slice(0, 10);
 

@@ -4,8 +4,8 @@ import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import CamposReserva from "./CamposReserva";
 
-vi.mock("../api/client", () => ({ api: { fechasBloqueadas: vi.fn() } }));
-import { api } from "../api/client";
+vi.mock("../../api/client", () => ({ api: { fechasBloqueadas: vi.fn() } }));
+import { api } from "../../api/client";
 
 const sitio = { id: 7, precio: "50000", capacidad: 10 };
 

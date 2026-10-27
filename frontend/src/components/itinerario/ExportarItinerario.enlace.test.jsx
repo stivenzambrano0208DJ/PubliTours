@@ -3,8 +3,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ExportarItinerario from "./ExportarItinerario";
 
-vi.mock("../api/client", () => ({ api: { compartirItinerario: vi.fn(), dejarDeCompartirItinerario: vi.fn() } }));
-import { api } from "../api/client";
+vi.mock("../../api/client", () => ({ api: { compartirItinerario: vi.fn(), dejarDeCompartirItinerario: vi.fn() } }));
+import { api } from "../../api/client";
 
 const itinerario = (extra = {}) => ({ id: 9, dias: 1, items: [], ...extra });
 const montar = (extra) => render(<ExportarItinerario itinerario={itinerario(extra)} fechaInicio="2031-03-12" personas={2} />);

@@ -1,12 +1,11 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { request, app, sequelize, registrar, auth } = require("./helpers");
+const { sequelize, registrar, auth, api } = require("./helpers");
 const { Prestador, SitioTuristico, Usuario } = require("../src/models");
 const politicas = require("../src/politicas");
 
 test.after(() => sequelize.close());
 
-const api = (m, url) => request(app)[m](`/api/v1${url}`);
 const SITIO = (extra = {}) => ({ nombre: "Servicio de política", categoria: "Naturaleza", municipio: "Florencia", precio: 10000, ...extra });
 async function prestadorCon(estado) {
   const cuenta = await registrar("prestador");

@@ -1,12 +1,11 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { request, app, sequelize, registrar, auth } = require("./helpers");
+const { sequelize, registrar, auth, api } = require("./helpers");
 const { Prestador } = require("../src/models");
 const { fechaDelDia } = require("../src/utils/fechas");
 
 test.after(() => sequelize.close());
 
-const api = (m, url) => request(app)[m](`/api/v1${url}`);
 const enDias = (n) => new Date(Date.now() + n * 864e5).toISOString().slice(0, 10);
 
 // Un prestador aprobado en un municipio propio de la prueba, para que el itinerario solo vea sus servicios.

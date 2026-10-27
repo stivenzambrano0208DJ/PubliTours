@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { api } from "../api/client";
-import { textoItinerario } from "../utils/itinerario";
+import { api } from "../../api/client";
+import { textoItinerario } from "../../utils/itinerario";
 
 const BOTON = "inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors disabled:opacity-60";
 

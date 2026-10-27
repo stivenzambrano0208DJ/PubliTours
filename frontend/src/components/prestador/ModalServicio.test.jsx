@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ModalServicio from "./ModalServicio";
 
-vi.mock("../MapaSeleccionar", () => ({ default: () => null }));
+vi.mock("../mapa/MapaSeleccionar", () => ({ default: () => null }));
 vi.mock("../../api/client", () => ({ api: { crearSitio: vi.fn(), actualizarSitio: vi.fn(), fechasBloqueadas: vi.fn().mockResolvedValue([]) }, urlImagen: (u) => u }));
 import { api } from "../../api/client";
 

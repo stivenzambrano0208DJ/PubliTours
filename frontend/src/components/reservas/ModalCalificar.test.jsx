@@ -3,8 +3,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ModalCalificar from "./ModalCalificar";
 
-vi.mock("../api/client", () => ({ api: { calificarReserva: vi.fn() } }));
-import { api } from "../api/client";
+vi.mock("../../api/client", () => ({ api: { calificarReserva: vi.fn() } }));
+import { api } from "../../api/client";
 
 const reserva = { id: 12, fecha_servicio: "2026-01-05", sitio: { nombre: "Cascada La Diabala" } };
 

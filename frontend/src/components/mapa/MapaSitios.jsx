@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { MapContainer, Marker, Popup, CircleMarker, useMap } from "react-leaflet";
 import L from "leaflet";
-import { CENTRO_CAQUETA } from "../constants";
-import "./mapa/configurarLeaflet";
-import CapasBase from "./mapa/CapasBase";
+import { CENTRO_CAQUETA } from "../../constants";
+import "./configurarLeaflet";
+import CapasBase from "./CapasBase";
 
 function AjustarVista({ puntos, usuario }) {
   const map = useMap();

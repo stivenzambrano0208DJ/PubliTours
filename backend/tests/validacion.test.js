@@ -1,13 +1,12 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { request, app, sequelize, registrar, auth } = require("./helpers");
+const { request, app, sequelize, registrar, auth, api } = require("./helpers");
 const { Prestador, SitioTuristico, Usuario } = require("../src/models");
 const { listarRutas } = require("./inventario-rutas");
 const { esFechaReal, mesValidoOActual, fechaRelativa, hoyLocal, fechaDelDia } = require("../src/utils/fechas");
 
 test.after(() => sequelize.close());
 
-const api = (m, url) => request(app)[m](`/api/v1${url}`);
 const IDS_MALOS = ["abc", "1.5", "0", "-1", "99999999999999999999", "1e3", "%20", "1;DROP"];
 
 test("esFechaReal acepta solo fechas que existen en el calendario", () => {

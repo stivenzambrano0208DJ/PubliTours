@@ -1,6 +1,6 @@
 import { MapContainer, Marker } from "react-leaflet";
-import "./mapa/configurarLeaflet";
-import CapasBase from "./mapa/CapasBase";
+import "./configurarLeaflet";
+import CapasBase from "./CapasBase";
 
 export default function MapaVisor({ lat, lng, nombre }) {
   const posicion = [Number(lat), Number(lng)];

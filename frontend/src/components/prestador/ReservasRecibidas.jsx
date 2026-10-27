@@ -4,6 +4,7 @@ import EscanerAsistencia from "./EscanerAsistencia";
 import { useConfiguracion } from "../../hooks/useConfiguracion";
 import { sumarDias, hoyISO } from "../../utils/fechas";
 import { useAvisos } from "../../context/avisos";
+import Modal from "../Modal";
 
 
 
@@ -144,30 +145,28 @@ export default function ReservasRecibidas({ reservas, cargando, accionando, onAc
       </div>
 
       {rechazando && (
-        <div className="fixed inset-0 bg-black/40 z-[60] flex items-center justify-center p-4" onClick={() => setRechazando(null)}>
-          <form onClick={(e) => e.stopPropagation()} onSubmit={confirmarRechazo} className="w-full max-w-md bg-surface-container-lowest rounded-2xl p-6 shadow-xl flex flex-col gap-3">
-            <h3 className="font-headline-md text-headline-md text-primary">Rechazar reserva</h3>
-            <p className="font-body-sm text-body-sm text-on-surface-variant">
-              {rechazando.turista?.nombre} · {rechazando.paquete?.nombre || rechazando.sitio?.nombre} · {rechazando.fecha_servicio}
-            </p>
-            <label className="flex flex-col gap-1.5">
-              <span className="font-label-md text-label-md text-on-surface font-semibold">Motivo (se lo enviamos al turista)</span>
-              <textarea
-                rows={3}
-                maxLength={300}
-                autoFocus
-                value={motivo}
-                onChange={(e) => setMotivo(e.target.value)}
-                placeholder="Ej. Ese día estamos en mantenimiento. Puedes reservar desde el lunes."
-                className="px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary resize-none"
-              />
-            </label>
-            <div className="flex items-center gap-2">
-              <button type="button" onClick={() => setRechazando(null)} className="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">Volver</button>
-              <button type="submit" disabled={accionando === rechazando.id} className="flex-1 py-2.5 rounded-xl bg-error text-on-error font-label-md text-label-md hover:opacity-90 transition-colors disabled:opacity-60">Rechazar reserva</button>
-            </div>
-          </form>
-        </div>
+        <Modal as="form" etiqueta="Rechazar reserva" onCerrar={() => setRechazando(null)} onSubmit={confirmarRechazo} className="w-full max-w-md bg-surface-container-lowest rounded-2xl p-6 shadow-xl flex flex-col gap-3">
+          <h3 className="font-headline-md text-headline-md text-primary">Rechazar reserva</h3>
+          <p className="font-body-sm text-body-sm text-on-surface-variant">
+            {rechazando.turista?.nombre} · {rechazando.paquete?.nombre || rechazando.sitio?.nombre} · {rechazando.fecha_servicio}
+          </p>
+          <label className="flex flex-col gap-1.5">
+            <span className="font-label-md text-label-md text-on-surface font-semibold">Motivo (se lo enviamos al turista)</span>
+            <textarea
+              rows={3}
+              maxLength={300}
+              autoFocus
+              value={motivo}
+              onChange={(e) => setMotivo(e.target.value)}
+              placeholder="Ej. Ese día estamos en mantenimiento. Puedes reservar desde el lunes."
+              className="px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary resize-none"
+            />
+          </label>
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => setRechazando(null)} className="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">Volver</button>
+            <button type="submit" disabled={accionando === rechazando.id} className="flex-1 py-2.5 rounded-xl bg-error text-on-error font-label-md text-label-md hover:opacity-90 transition-colors disabled:opacity-60">Rechazar reserva</button>
+          </div>
+        </Modal>
       )}
     </section>
   );

@@ -1,5 +1,5 @@
-import { useConfiguracion } from "../hooks/useConfiguracion";
-import { NOMBRES_POLITICA, textoDias } from "../utils/politicas";
+import { useConfiguracion } from "../../hooks/useConfiguracion";
+import { NOMBRES_POLITICA, textoDias } from "../../utils/politicas";
 
 // Cómo se puede cancelar un servicio o paquete, para que el turista lo vea antes de reservar y en su comprobante.
 export default function PoliticaCancelacion({ politica = "flexible" }) {

@@ -1,4 +1,4 @@
-import ExportarItinerario from "../ExportarItinerario";
+import ExportarItinerario from "./ExportarItinerario";
 import { pesos } from "../../utils/moneda";
 
 

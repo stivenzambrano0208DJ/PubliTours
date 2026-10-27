@@ -1,10 +1,9 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { request, app, sequelize, registrar } = require("./helpers");
+const { sequelize, registrar, api } = require("./helpers");
 
 test.after(() => sequelize.close());
 
-const api = (m, url) => request(app)[m](`/api/v1${url}`);
 const WEB = { "X-Requested-With": "PubliTours" }; // lo que manda la aplicación web
 const PASSWORD = "clave12345";
 

@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ExportarItinerario from "./ExportarItinerario";
 import ItinerarioImprimible from "./ItinerarioImprimible";
-import { textoItinerario, totalEstimado, itemsPorDia } from "../utils/itinerario";
+import { textoItinerario, totalEstimado, itemsPorDia } from "../../utils/itinerario";
 
 const itinerario = {
   dias: 2,

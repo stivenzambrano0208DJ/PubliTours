@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { api } from "../api/client";
+import { api } from "../../api/client";
 
 const EJEMPLOS = [
   { icono: "favorite", texto: "Escapada romántica de 3 días en Florencia con 500 mil pesos" },

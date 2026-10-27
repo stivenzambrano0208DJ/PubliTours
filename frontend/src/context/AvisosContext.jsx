@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AvisosContext } from "./avisos";
+import Modal from "../components/Modal";
 
 const MAX_AVISOS = 3; // si llegan más, se descartan los más antiguos
 const DURACION_MS = { error: 9000, ok: 5000, info: 6000 };
@@ -26,55 +27,35 @@ function Aviso({ aviso, onCerrar }) {
   );
 }
 
-// Ventana de confirmación: el foco empieza en "Cancelar" (lo más seguro si la acción es irreversible), Escape o tocar fuera cancelan,
-// Tab no sale de la ventana y al cerrarla el foco vuelve a donde estaba.
+// Ventana de confirmación: el foco empieza en "Cancelar" (el primer botón, lo más seguro si la acción es irreversible); Escape o tocar fuera
+// cancelan, y el resto (Tab contenido, foco que vuelve a donde estaba) lo da el componente Modal.
 function Confirmacion({ pregunta, onResponder }) {
   const { mensaje, opciones } = pregunta;
-  const botonCancelar = useRef(null);
-
-  useEffect(() => {
-    const anterior = document.activeElement;
-    botonCancelar.current?.focus();
-    return () => anterior?.focus?.();
-  }, []);
-
-  const alTeclear = (e) => {
-    if (e.key === "Escape") { e.stopPropagation(); onResponder(false); return; }
-    if (e.key !== "Tab") return;
-    const botones = [...e.currentTarget.querySelectorAll("button")];
-    const primero = botones[0];
-    const ultimo = botones[botones.length - 1];
-    if (e.shiftKey && document.activeElement === primero) { e.preventDefault(); ultimo.focus(); }
-    else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primero.focus(); }
-  };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/40 flex items-center justify-center p-4" onClick={() => onResponder(false)}>
-      <div
-        role="alertdialog" aria-modal="true" aria-labelledby="confirmacion-titulo" aria-describedby="confirmacion-texto"
-        onClick={(e) => e.stopPropagation()} onKeyDown={alTeclear}
-        className="w-full max-w-sm bg-surface-container-lowest rounded-2xl p-6 shadow-xl flex flex-col gap-4"
-      >
-        <div className="flex flex-col gap-2">
-          <h2 id="confirmacion-titulo" className="font-title-lg text-title-lg text-on-surface font-semibold">{opciones.titulo || "¿Confirmas?"}</h2>
-          <p id="confirmacion-texto" className="font-body-md text-body-md text-on-surface-variant">{mensaje}</p>
-        </div>
-        <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-          <button
-            ref={botonCancelar} type="button" onClick={() => onResponder(false)}
-            className="px-4 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md font-semibold hover:bg-surface-container-high transition-colors"
-          >
-            {opciones.cancelar || "Cancelar"}
-          </button>
-          <button
-            type="button" onClick={() => onResponder(true)}
-            className={`px-4 py-2.5 rounded-xl font-label-md text-label-md font-semibold transition-colors ${opciones.peligro ? "bg-error text-on-error hover:opacity-90" : "bg-primary text-on-primary hover:bg-primary-container"}`}
-          >
-            {opciones.confirmar || "Confirmar"}
-          </button>
-        </div>
+    <Modal
+      role="alertdialog" tituloId="confirmacion-titulo" aria-describedby="confirmacion-texto" onCerrar={() => onResponder(false)} fondo="z-[100] bg-black/40 items-center p-4"
+      className="w-full max-w-sm bg-surface-container-lowest rounded-2xl p-6 shadow-xl flex flex-col gap-4"
+    >
+      <div className="flex flex-col gap-2">
+        <h2 id="confirmacion-titulo" className="font-title-lg text-title-lg text-on-surface font-semibold">{opciones.titulo || "¿Confirmas?"}</h2>
+        <p id="confirmacion-texto" className="font-body-md text-body-md text-on-surface-variant">{mensaje}</p>
       </div>
-    </div>
+      <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+        <button
+          type="button" onClick={() => onResponder(false)}
+          className="px-4 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md font-semibold hover:bg-surface-container-high transition-colors"
+        >
+          {opciones.cancelar || "Cancelar"}
+        </button>
+        <button
+          type="button" onClick={() => onResponder(true)}
+          className={`px-4 py-2.5 rounded-xl font-label-md text-label-md font-semibold transition-colors ${opciones.peligro ? "bg-error text-on-error hover:opacity-90" : "bg-primary text-on-primary hover:bg-primary-container"}`}
+        >
+          {opciones.confirmar || "Confirmar"}
+        </button>
+      </div>
+    </Modal>
   );
 }
 

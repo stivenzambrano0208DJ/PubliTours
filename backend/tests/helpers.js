@@ -25,4 +25,7 @@ async function registrar(rol = "turista", { verificado = true } = {}) {
 
 const auth = (token) => ({ Authorization: `Bearer ${token}` });
 
-module.exports = { request, app, sequelize, registrar, auth };
+const api = (m, url) => request(app)[m](`/api/v1${url}`);
+const enDias = (n) => new Date(Date.now() + n * 864e5).toLocaleDateString("en-CA");
+
+module.exports = { request, app, sequelize, registrar, auth, api, enDias };

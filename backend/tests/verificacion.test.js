@@ -1,13 +1,12 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const crypto = require("crypto");
-const { request, app, sequelize, registrar, auth } = require("./helpers");
+const { sequelize, registrar, auth, api } = require("./helpers");
 const { Usuario, CodigoVerificacion, Prestador } = require("../src/models");
 const { VERSION_TERMINOS } = require("../src/config/terminos");
 
 test.after(() => sequelize.close());
 
-const api = (m, url) => request(app)[m](`/api/v1${url}`);
 const sha = (t) => crypto.createHash("sha256").update(t).digest("hex");
 const manana = () => new Date(Date.now() + 864e5).toISOString().slice(0, 10);
 
@@ -133,4 +132,11 @@ test("los administradores no necesitan verificar el correo", async () => {
   let paso = false;
   requireCorreoVerificado({ usuario: { rol: "administrador", correo_verificado: false } }, {}, () => { paso = true; });
   assert.equal(paso, true);
+});
+
+test("la versión de los términos del frontend y la del backend son la misma", () => {
+  // Son paquetes separados (cada uno con su compilación), así que no pueden compartir el archivo: esta prueba evita que se desajusten.
+  const constantes = require("node:fs").readFileSync(require("node:path").join(__dirname, "../../frontend/src/constants.js"), "utf8");
+  const enFrontend = constantes.match(/export const VERSION_TERMINOS = "([^"]+)"/)?.[1];
+  assert.equal(enFrontend, VERSION_TERMINOS);
 });

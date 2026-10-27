@@ -7,7 +7,7 @@ import MisReservas from "./MisReservas";
 const navigate = vi.fn();
 vi.mock("react-router-dom", async (original) => ({ ...(await original()), useNavigate: () => navigate }));
 vi.mock("../context/auth", () => ({ useAuth: () => ({ usuario: { id: 1, nombre: "Ana Pérez", rol: "turista" } }) }));
-vi.mock("../components/ModalCalificar", () => ({
+vi.mock("../components/reservas/ModalCalificar", () => ({
   default: ({ reserva, onCerrar, onGuardado }) => (
     <div data-testid="modal-calificar">
       Calificar {reserva.id}
@@ -16,7 +16,7 @@ vi.mock("../components/ModalCalificar", () => ({
     </div>
   ),
 }));
-vi.mock("../components/EditarReserva", () => ({
+vi.mock("../components/reservas/EditarReserva", () => ({
   default: ({ reserva, onCerrar, onGuardada }) => (
     <div data-testid="modal-editar">
       Editar {reserva.id}
