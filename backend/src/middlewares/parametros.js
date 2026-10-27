@@ -14,4 +14,14 @@ function validarIds(router, ...nombres) {
   for (const nombre of nombres) router.param(nombre, idValido);
 }
 
-module.exports = { validarIds };
+// Los filtros de la dirección (?categoria=...&orden=...) deben llegar al servicio como textos simples. Con el lector por defecto de Express,
+// `categoria[$gt]=1` llega como un OBJETO y `categoria=a&categoria=b` como una lista, y ambos terminaban en la consulta a la base de datos
+// como error interno (500). Junto con `app.set("query parser", "simple")` (que no crea objetos anidados), si un filtro se repite se usa el último valor.
+function consultaPlana(req, res, next) {
+  for (const [clave, valor] of Object.entries(req.query)) {
+    if (Array.isArray(valor)) req.query[clave] = valor[valor.length - 1];
+  }
+  next();
+}
+
+module.exports = { validarIds, consultaPlana };

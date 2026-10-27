@@ -129,3 +129,15 @@ test("la galería de un servicio valida cada foto igual que la portada", async (
     assert.match(buena.body[0].imagen_url, /\.jpg$/);
   } finally { buena.body?.forEach?.((i) => fs.rmSync(path.join(__dirname, "..", "public", i.imagen_url), { force: true })); }
 });
+
+test("un nombre de archivo con caracteres de control se rechaza con 400, no con un error interno", async () => {
+  const ctx = await prestador();
+  const sitio = (await request(app).post("/api/v1/sitios").set(auth(ctx.prest.token)).send({ nombre: "Nombres raros", categoria: "Naturaleza", municipio: "Florencia", precio: 1000, prestador_id: ctx.p.id })).body;
+  const antes = archivos();
+  for (const nombre of ["a\u0000b.jpg", "a\u0001b.jpg"]) {
+    const res = await request(app).post(`/api/v1/sitios/${sitio.id}/imagenes`).set(auth(ctx.prest.token)).attach("imagenes", JPG, { filename: nombre, contentType: "image/jpeg" });
+    assert.equal(res.status, 400, JSON.stringify(nombre));
+    assert.equal(res.body.error, "El formulario enviado no es válido.");
+  }
+  assert.deepEqual([...archivos()].filter((f) => !antes.has(f)), []); // y no deja nada en el disco
+});

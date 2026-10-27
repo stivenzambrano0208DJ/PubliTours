@@ -13,7 +13,7 @@ Cliente → app.js (seguridad, registro, errores) → routes → middlewares →
 | Capa | Carpeta | Responsabilidad | No debe |
 |---|---|---|---|
 | **Rutas** | `src/routes/` | Declarar endpoints y encadenar middlewares (`requireAuth`, `requireRole`, `validate`, límites). | Contener lógica. |
-| **Middlewares** | `src/middlewares/` | Preocupaciones transversales: autenticación y permisos (`auth.js`), validación con zod (`validate.js`), ids de ruta (`parametros.js`), subida de archivos (`upload.js`), límites de peticiones (`limites.js`, `limitarIA.js`), identificador y registro de peticiones (`registro.js`). | Conocer reglas de negocio. |
+| **Middlewares** | `src/middlewares/` | Preocupaciones transversales: autenticación y permisos (`auth.js`), validación con zod (`validate.js`), ids de ruta y filtros de la dirección (`parametros.js`), subida de archivos (`upload.js`), límites de peticiones (`limites.js`, `limitarIA.js`), identificador y registro de peticiones (`registro.js`). | Conocer reglas de negocio. |
 | **Controladores** | `src/controllers/` | Capa HTTP: leer `req`, llamar a **un** servicio y dar forma a la respuesta (estado, JSON, cookies, cabeceras). | Acceder a modelos, armar errores a mano ni tener `try/catch` (salvo traducir un fallo externo). |
 | **Políticas** | `src/politicas/` | **Quién puede hacer qué con cada recurso** (la propiedad: "¿es tuyo?"). Funciones puras (`puedeEditarServicio`, `puedeVerReserva`…) y su versión `exigir…`, que lanza el `ErrorHttp` que la API ya usaba. Los servicios cargan los datos y le preguntan a la política: no comparan ids ni roles por su cuenta. | Consultar la base ni conocer `req`/`res`. |
 | **Servicios** | `src/services/` | Reglas de negocio y acceso a datos; los permisos por recurso los consultan a `politicas/`. Lanzan `ErrorHttp(estado, mensaje)` cuando algo no se puede hacer. | Conocer `req`/`res`. |
@@ -62,6 +62,7 @@ Para una regla nueva de permisos: agrega la función a la política que correspo
 4. **Controlador** delgado que llama al servicio.
 5. **Ruta** con `requireAuth`/`requireRole` y `validate(...)`.
 6. **Pruebas** en `tests/` (ver abajo). Si hay ids en la ruta, `validarIds(router, "id")` ya está activo en cada router.
+   Los filtros de la dirección llegan siempre como **textos simples** (`consultaPlana` + `query parser: simple` en `app.js`): sin objetos anidados ni listas. Un filtro con un valor que no existe (por ejemplo `?estado=zzz`) se **ignora**, como ya hace el catálogo; no hay que validarlo a mano en cada servicio salvo para listas cerradas, que se comprueban con los valores del modelo (`Modelo.rawAttributes.campo.values`). Los precios se limitan a lo que cabe en la base (`PRECIO_MAXIMO` en `validators/schemas.js`) y el total de una reserva a `reservas.total` (`exigirTotalAlmacenable`).
 
 ## Scripts
 

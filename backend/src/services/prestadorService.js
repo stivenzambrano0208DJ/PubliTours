@@ -173,7 +173,7 @@ const CON_USUARIO = [{ model: Usuario, attributes: ["nombre", "correo"] }];
 const listarPendientes = () => Prestador.findAll({ where: { estado_verificacion: "pendiente" }, include: CON_USUARIO });
 
 // Todos los prestadores, con filtro opcional por estado de verificación.
-const listarTodos = (estado) => Prestador.findAll({ where: estado ? { estado_verificacion: estado } : {}, include: CON_USUARIO, order: [["id", "DESC"]] });
+const listarTodos = (estado) => Prestador.findAll({ where: Prestador.rawAttributes.estado_verificacion.values.includes(estado) ? { estado_verificacion: estado } : {}, include: CON_USUARIO, order: [["id", "DESC"]] });
 
 // RF-03 / RN-01: aprobar o rechazar un prestador; al rechazar se explica el motivo y se notifica.
 async function verificar(id, { estado_verificacion, motivo }, actor_id) {

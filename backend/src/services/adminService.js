@@ -18,7 +18,7 @@ const buscarTexto = (texto, campos) => ({ [Op.or]: campos.map((campo) => ({ [cam
 // Listado con búsqueda por nombre o correo y filtro por rol.
 function listarUsuarios({ texto, rol }) {
   const where = { eliminado_en: null };
-  if (rol) where.rol = rol;
+  if (Usuario.rawAttributes.rol.values.includes(rol)) where.rol = rol;
   if (texto) Object.assign(where, buscarTexto(texto, ["nombre", "correo"]));
   return Usuario.findAll({
     where,
@@ -46,7 +46,7 @@ async function cambiarEstadoUsuario({ id, activo, actor_id }) {
 
 // Moderación: todos los servicios (incluye ocultos) con su prestador y calificación.
 async function listarSitios({ texto, estado }) {
-  const where = { estado: estado || { [Op.ne]: "archivado" } };
+  const where = { estado: SitioTuristico.rawAttributes.estado.values.includes(estado) ? estado : { [Op.ne]: "archivado" } };
   if (texto) Object.assign(where, buscarTexto(texto, ["nombre", "municipio"]));
   const sitios = await SitioTuristico.unscoped().findAll({ // unscoped: la administración ve el motivo de cada moderación
     where,

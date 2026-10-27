@@ -55,4 +55,10 @@ function validarFechaYPersonas(fecha_servicio, personas, capacidad, nombreCosa) 
   }
 }
 
-module.exports = { hoyLocal, INCLUDE_RESERVA, etiqueta, exigirPrestadorDeReserva, validarFechaNoBloqueada, validarCupo, validarFechaYPersonas };
+// reservas.total es numeric(12,2): no guarda valores de 10.000.000.000 o más. Con precios y grupos enormes el producto puede pasarse.
+const TOTAL_MAXIMO = 9999999999;
+function exigirTotalAlmacenable(total) {
+  if (total > TOTAL_MAXIMO) throw new ErrorHttp(400, "El valor total de la reserva es demasiado alto. Reduce el número de personas.");
+}
+
+module.exports = { hoyLocal, INCLUDE_RESERVA, etiqueta, exigirPrestadorDeReserva, validarFechaNoBloqueada, validarCupo, validarFechaYPersonas, exigirTotalAlmacenable };

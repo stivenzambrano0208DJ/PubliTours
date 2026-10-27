@@ -3,6 +3,9 @@ const { POLITICAS_CANCELACION } = require("../config/negocio");
 const { esFechaReal } = require("../utils/fechas");
 const { TEXTO_MAX, MOTIVOS_REPORTE } = require("../config/mensajeria");
 
+// Un precio mayor no cabe en las columnas numeric(10,2) de la base de datos (daba un error 500 en vez de un mensaje claro).
+const PRECIO_MAXIMO = 99999999;
+
 const politicaCancelacion = z.enum(Object.keys(POLITICAS_CANCELACION), { message: "Elige una política de cancelación válida." }).optional();
 
 // Fecha AAAA-MM-DD que además existe en el calendario (no "2031-02-31").
@@ -68,15 +71,15 @@ const temporada = z.object({
   nombre: texto(80).min(1, "La temporada necesita un nombre."),
   fecha_desde: fechaISO("La fecha de inicio de la temporada no es válida."),
   fecha_hasta: fechaISO("La fecha final de la temporada no es válida."),
-  precio: z.coerce.number().min(0, "El precio de la temporada no puede ser negativo.").max(100000000),
-  precio_nino: z.preprocess(vacioANulo, z.coerce.number().min(0).max(100000000).nullable().optional()),
+  precio: z.coerce.number().min(0, "El precio de la temporada no puede ser negativo.").max(PRECIO_MAXIMO),
+  precio_nino: z.preprocess(vacioANulo, z.coerce.number().min(0).max(PRECIO_MAXIMO).nullable().optional()),
 }).refine((t) => t.fecha_hasta >= t.fecha_desde, { message: "La temporada termina antes de empezar.", path: ["fecha_hasta"] });
 
 const sitio = z.object({
   nombre: texto(150).min(1, "El nombre es obligatorio."),
   categoria: texto(60).min(1, "La categoría es obligatoria."),
   municipio: texto(80).min(1, "El municipio es obligatorio."),
-  precio: z.preprocess((v) => (v === "" || v == null ? 0 : v), z.coerce.number().min(0, "El precio no puede ser negativo.").max(100000000)),
+  precio: z.preprocess((v) => (v === "" || v == null ? 0 : v), z.coerce.number().min(0, "El precio no puede ser negativo.").max(PRECIO_MAXIMO)),
   horario: textoOpcional(100),
   descripcion: textoOpcional(4000),
   tipo_viaje: textoOpcional(150),
@@ -86,7 +89,7 @@ const sitio = z.object({
   prestador_id: z.preprocess(vacioANulo, z.coerce.number().int().positive().nullable().optional()),
   capacidad: z.preprocess(vacioANulo, z.coerce.number().int().min(1, "Los cupos deben ser al menos 1.").max(10000).nullable().optional()),
   politica_cancelacion: politicaCancelacion,
-  precio_nino: numeroOpcional(0, 100000000),
+  precio_nino: numeroOpcional(0, PRECIO_MAXIMO),
   grupo_min_personas: z.preprocess(vacioANulo, z.coerce.number().int().min(2, "El descuento por grupo empieza desde 2 personas.").max(1000).nullable().optional()),
   grupo_descuento_pct: z.preprocess(vacioANulo, z.coerce.number().int().min(1, "El descuento debe ser de 1 % a 90 %.").max(90, "El descuento debe ser de 1 % a 90 %.").nullable().optional()),
   // Con foto el formulario viaja como multipart y la lista de temporadas llega como texto JSON.
@@ -117,7 +120,7 @@ const edicionReserva = z.object({
 const paquete = z.object({
   nombre: texto(150).min(3, "El nombre debe tener al menos 3 caracteres."),
   descripcion: textoOpcional(2000),
-  precio: z.coerce.number().min(0, "El precio no puede ser negativo.").max(100000000),
+  precio: z.coerce.number().min(0, "El precio no puede ser negativo.").max(PRECIO_MAXIMO),
   capacidad: z.preprocess(vacioANulo, z.coerce.number().int().min(1, "Los cupos deben ser al menos 1.").max(10000).nullable().optional()),
   politica_cancelacion: politicaCancelacion,
   estado: z.enum(["activo", "inactivo"]).optional(),

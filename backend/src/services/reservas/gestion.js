@@ -7,7 +7,7 @@ const { ErrorHttp } = require("../../utils/errores");
 const politicas = require("../../politicas");
 const { prestadorOperativo } = require("../visibilidad");
 const {
-  hoyLocal, INCLUDE_RESERVA, etiqueta, exigirPrestadorDeReserva, validarFechaNoBloqueada, validarCupo, validarFechaYPersonas,
+  hoyLocal, INCLUDE_RESERVA, etiqueta, exigirPrestadorDeReserva, validarFechaNoBloqueada, validarCupo, validarFechaYPersonas, exigirTotalAlmacenable,
 } = require("./comun");
 
 // RF-11: el turista solicita una reserva sobre un servicio o un paquete.
@@ -55,6 +55,7 @@ async function solicitarReserva({ turista_id, sitio_id, paquete_id, fecha_servic
 
   // El total sale de las tarifas del servicio (temporada, niños, descuento por grupo); un paquete cobra su precio por persona.
   const total = paquete ? precio * personas : (await cotizar(sitio, { fecha: fecha_servicio, personas, ninos })).total;
+  exigirTotalAlmacenable(total);
 
   // RN-04: toda solicitud nace en estado "pendiente".
   const reserva = await Reserva.create({
@@ -181,6 +182,7 @@ async function editarReserva({ reservaId, turista_id, fecha_servicio, personas, 
   await validarFechaNoBloqueada(esPaquete ? reserva.paquete.items.map((i) => i.sitio_id) : [reserva.sitio_id], fecha_servicio);
 
   const total = esPaquete ? Number(reserva.paquete.precio) * personas : (await cotizar(reserva.sitio, { fecha: fecha_servicio, personas, ninos })).total;
+  exigirTotalAlmacenable(total);
   const estabaConfirmada = reserva.estado === "confirmada";
   // Vuelve a pendiente con otro total: la comisión se recalcula cuando el prestador la confirme de nuevo.
   await reserva.update({ fecha_servicio, personas, ninos: nuevosNinos, nota: nuevaNota, total, estado: "pendiente", comision_pct: null, comision: null });

@@ -2,6 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { request, app, sequelize, registrar, auth } = require("./helpers");
 const { Prestador, SitioTuristico, Usuario } = require("../src/models");
+const { listarRutas } = require("./inventario-rutas");
 const { esFechaReal, mesValidoOActual, fechaRelativa, hoyLocal, fechaDelDia } = require("../src/utils/fechas");
 
 test.after(() => sequelize.close());
@@ -80,7 +81,9 @@ test("los filtros del catálogo que no son válidos se ignoran en lugar de rompe
   const base = `/sitios?municipio=${encodeURIComponent(municipio)}`;
 
   assert.equal((await api("get", base)).body.total, 2);
-  for (const malo of ["presupuesto_max=abc", "presupuesto_max=-5", "presupuesto_max=", "fecha=2031-02-31", "fecha=2031-13-45", "fecha=ayer", "calificacion_min=abc", "lat=x&lng=y&orden=cercania", "page=-3&limit=zzz"]) {
+  for (const malo of ["presupuesto_max=abc", "presupuesto_max=-5", "presupuesto_max=", "fecha=2031-02-31", "fecha=2031-13-45", "fecha=ayer", "calificacion_min=abc", "lat=x&lng=y&orden=cercania", "page=-3&limit=zzz",
+    // propiedades heredadas de los objetos y valores con forma de objeto: nada de esto puede llegar a la consulta
+    "orden=__proto__", "orden=constructor", "orden=toString", "categoria[$gt]=1", "municipio[$gt]=1", "tipo_viaje[$ne]=x", "texto[$gt]=1"]) {
     const res = await api("get", `${base}&${malo}`);
     assert.equal(res.status, 200, malo);
     assert.equal(res.body.total, 2, malo);
@@ -131,4 +134,68 @@ test("las fechas imposibles se rechazan con un mensaje claro al reservar, planea
 
   const periodo = await api("get", "/prestadores/me/estadisticas?desde=2031-02-31&hasta=2031-03-10").set(auth(prest.token));
   assert.equal(periodo.status, 400);
+});
+
+test("un filtro repetido en la dirección (?categoria=a&categoria=b) no rompe la búsqueda", async () => {
+  const res = await api("get", "/sitios?categoria=Naturaleza&categoria=NoExiste");
+  assert.equal(res.status, 200);
+  assert.equal(res.body.total, 0); // se usa el último valor, como cualquier filtro simple
+});
+
+test("los filtros de las listas de administración ignoran valores que no existen en lugar de dar error 500", async () => {
+  const admin = await registrar("turista");
+  await Usuario.update({ rol: "administrador" }, { where: { id: admin.usuario.id } });
+  for (const ruta of ["/admin/sitios", "/prestadores/", "/admin/usuarios", "/admin/auditoria"]) {
+    const sin = await api("get", ruta).set(auth(admin.token));
+    assert.equal(sin.status, 200, ruta);
+    for (const malo of ["estado=zzz", "estado=__proto__", "rol=zzz", "rol=__proto__", "accion[$gt]=1", "estado[$ne]=x", "rol[]=a&rol[]=b"]) {
+      const res = await api("get", `${ruta}?${malo}`).set(auth(admin.token));
+      assert.equal(res.status, 200, `${ruta}?${malo} → ${res.status}`);
+    }
+  }
+  // un valor válido sí filtra
+  const soloAdmins = await api("get", "/admin/usuarios?rol=administrador").set(auth(admin.token));
+  assert.equal(soloAdmins.status, 200);
+  assert.ok(soloAdmins.body.length >= 1 && soloAdmins.body.every((u) => u.rol === "administrador"));
+});
+
+test("ninguna ruta de lectura responde 5xx a parámetros de consulta hostiles, con la sesión que le corresponde", async () => {
+  const sesiones = { turista: await registrar("turista"), prestador: await registrar("prestador"), administrador: await registrar("turista") };
+  await Usuario.update({ rol: "administrador" }, { where: { id: sesiones.administrador.usuario.id } });
+  const hostiles = ["orden=__proto__", "estado=zzz", "rol=zzz", "categoria[$gt]=1", "mes=2026-13", "despues=abc&antes=-1", "page=-1&limit=999999", "texto=%25%25%00", "desde=2020-13-45&hasta=zzz"];
+  const rutas = listarRutas(app).filter((r) => r.metodo === "GET");
+  assert.ok(rutas.length >= 40, "el inventario de rutas debe incluir las de lectura");
+  const fallos = [];
+  for (const r of rutas) {
+    const quien = !r.sesion ? null : r.roles ? (r.roles.includes("turista") ? sesiones.turista : sesiones[r.roles[0]]) : sesiones.turista;
+    for (const q of hostiles) {
+      let pedido = request(app).get(`${r.ruta.replace(/:\w+/g, "1")}?${q}`);
+      if (quien) pedido = pedido.set(auth(quien.token));
+      const res = await pedido;
+      if (res.status >= 500) fallos.push(`${r.ruta}?${q} → ${res.status}`);
+    }
+  }
+  assert.deepEqual(fallos, []);
+});
+
+test("los precios y totales que no caben en la base de datos se rechazan con un mensaje claro, no con un error interno", async () => {
+  const prest = await registrar("prestador");
+  await Prestador.create({ usuario_id: prest.usuario.id, nombre_negocio: "Límites", categoria: "Naturaleza", municipio: "Florencia", estado_verificacion: "aprobado" });
+  const crear = (precio) => api("post", "/sitios").set(auth(prest.token)).send({ nombre: "Límite", categoria: "Naturaleza", municipio: "Florencia", precio });
+
+  const caro = await crear(99999999); // el máximo que guarda la columna
+  assert.equal(caro.status, 201);
+  for (const precio of [100000000, 100000001]) assert.equal((await crear(precio)).status, 400, `precio ${precio}`);
+
+  // 500 personas a ese precio dan un total que no cabe en reservas.total: 400 con su motivo, en la solicitud y al modificarla
+  const turista = await registrar("turista");
+  const fecha = new Date(Date.now() + 30 * 864e5).toLocaleDateString("en-CA");
+  const grande = await api("post", "/reservas").set(auth(turista.token)).send({ sitio_id: caro.body.id, fecha_servicio: fecha, personas: 500 });
+  assert.equal(grande.status, 400);
+  assert.match(grande.body.error, /demasiado alto/);
+  const normal = await api("post", "/reservas").set(auth(turista.token)).send({ sitio_id: caro.body.id, fecha_servicio: fecha, personas: 2 });
+  assert.equal(normal.status, 201);
+  const editada = await api("patch", `/reservas/${normal.body.id}/editar`).set(auth(turista.token)).send({ fecha_servicio: fecha, personas: 500 });
+  assert.equal(editada.status, 400);
+  assert.match(editada.body.error, /demasiado alto/);
 });

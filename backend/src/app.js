@@ -10,6 +10,7 @@ const { ErrorHttp } = require("./utils/errores");
 const { opcionesCors } = require("./config/entorno");
 const { registroPeticiones } = require("./middlewares/registro");
 const { limiteGeneral } = require("./middlewares/limites");
+const { consultaPlana } = require("./middlewares/parametros");
 const logger = require("./utils/logger");
 const { eliminarSubidas } = require("./utils/archivos");
 
@@ -17,6 +18,7 @@ const app = express();
 
 // Detrás de un proxy (nginx, un balanceador) la IP real llega en X-Forwarded-For: TRUST_PROXY = cuántos proxies hay delante.
 app.set("trust proxy", Number(process.env.TRUST_PROXY) || 0);
+app.set("query parser", "simple"); // sin objetos anidados en los filtros de la dirección (ver consultaPlana)
 
 app.use(registroPeticiones);
 // Las fotos de /uploads las carga el frontend desde otro origen: sin esto el navegador las bloquearía.
@@ -49,7 +51,7 @@ app.get("/", (req, res) => {
   res.json({ proyecto: "PubliTours (Caquetá Vive IA)", estado: "API en funcionamiento" });
 });
 
-app.use("/api/v1", limiteGeneral, apiRoutes);
+app.use("/api/v1", limiteGeneral, consultaPlana, apiRoutes);
 
 // Manejador de errores centralizado
 const MENSAJES_SUBIDA = {
@@ -58,10 +60,15 @@ const MENSAJES_SUBIDA = {
   LIMIT_UNEXPECTED_FILE: "Archivo inesperado: revisa el campo de la imagen.",
 };
 
+// Mensajes del lector de formularios (busboy), que multer deja pasar como un Error común.
+const ERRORES_FORMULARIO = /^(Malformed part header|Unexpected end of form|Malformed urlencoded form|Multipart: Boundary not found|Missing Content-Type|Unsupported content type)/;
+
 app.use((err, req, res, _next) => {
   eliminarSubidas(req); // si la petición falló, lo que llegó a subirse no se queda en el disco
   if (err instanceof multer.MulterError) return res.status(400).json({ error: MENSAJES_SUBIDA[err.code] || "No se pudo procesar el archivo." });
   if (err instanceof ErrorHttp) return res.status(err.status).json({ error: err.message, ...err.extra });
+  // Un formulario con partes mal formadas (por ejemplo, un nombre de archivo con caracteres de control) también es un error del cliente.
+  if (ERRORES_FORMULARIO.test(err.message || "")) return res.status(400).json({ error: "El formulario enviado no es válido." });
   // Un JSON mal formado o demasiado grande es un error del cliente, no del servidor.
   if (err.type === "entity.parse.failed" || err.type === "entity.too.large") return res.status(400).json({ error: "El cuerpo de la petición no es válido." });
   logger.error("Error no controlado", err, { id: req.id, metodo: req.method, ruta: req.originalUrl.split("?")[0] });

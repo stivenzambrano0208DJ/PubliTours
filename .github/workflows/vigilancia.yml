@@ -7,6 +7,12 @@ name: Vigilancia
 on:
   schedule:
     - cron: "*/10 * * * *"
+  # Las ejecuciones programadas nuevas pueden tardar en empezar (en este repositorio la primera no apareció en más de 90 minutos):
+  # por eso también corre al cambiar sus propios archivos, y así se comprueba de verdad en cada ajuste.
+  push:
+    paths:
+      - ".github/workflows/vigilancia.yml"
+      - "scripts/vigilar-sitio.sh"
   workflow_dispatch: # también se puede lanzar a mano desde la pestaña Actions
 
 permissions:

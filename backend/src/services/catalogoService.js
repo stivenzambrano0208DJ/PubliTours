@@ -65,7 +65,7 @@ async function buscar({ texto, municipio, categoria, presupuesto_max, tipo_viaje
 
   const pageNum = Math.max(1, parseInt(page, 10) || 1);
   const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10) || 10));
-  let order = ORDEN_PERMITIDO[orden] || ORDEN_PERMITIDO.relevancia;
+  let order = ORDEN_PERMITIDO[Object.hasOwn(ORDEN_PERMITIDO, orden) ? orden : "relevancia"];
   if (orden === "calificacion") order = [[literal(`${PROMEDIO_SQL} DESC, "SitioTuristico"."nombre"`), "ASC"]];
 
   const latN = Number(lat), lngN = Number(lng);
