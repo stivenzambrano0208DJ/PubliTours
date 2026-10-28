@@ -1018,29 +1018,30 @@ test("28. al pasar a otra página se vuelve al inicio, no se queda a la altura d
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
 });
 
-test("29. en escritorio la tarjeta de reserva queda arriba, sobre la portada, y se mantiene fija al bajar", async ({ browser }) => {
+test("29. en escritorio la tarjeta de reserva está junto a la portada desde el inicio y no se mueve al bajar", async ({ browser }) => {
   const page = await abrirSesion(browser);
-  await page.setViewportSize({ width: 1366, height: 700 });
+  await page.setViewportSize({ width: 1366, height: 900 });
   await page.goto(urlServicio);
-  const tarjeta = page.locator("aside").first();
-  const portada = page.locator("section").filter({ has: page.locator("h1") }).first();
-  await expect(tarjeta).toBeVisible();
-  // arriba del todo: ya está a la vista dentro de la pantalla y se superpone con la portada
-  const caja = await tarjeta.boundingBox(), hero = await portada.boundingBox();
-  expect(caja.y).toBeLessThan(hero.y + hero.height - 100);
-  expect(caja.y + 100).toBeLessThan(700);
-  // los botones de la portada (favorito y compartir) no quedan tapados por la tarjeta
-  const compartir = await page.getByRole("button", { name: "Compartir" }).boundingBox();
-  expect(compartir.x + compartir.width).toBeLessThanOrEqual(caja.x);
-  // el prestador dueño del servicio ve una tarjeta corta: se queda fija bajo el encabezado hasta el final de la página, con el pie ya a la vista
+  await expect(page.locator("aside").first()).toBeVisible();
+  await page.screenshot({ path: process.env.CAPTURA_SITIO || "test-results/sitio.png" });
+  // a la vista desde que abre la página y sin taparse con la portada (queda a su derecha)
+  const caja = await page.locator("aside").first().boundingBox();
+  const hero = await page.locator("section").filter({ has: page.locator("h1") }).first().boundingBox();
+  expect(caja.y).toBeLessThan(250);
+  expect(caja.x).toBeGreaterThanOrEqual(hero.x + hero.width);
+
+  // el prestador dueño del servicio ve una tarjeta corta: no se desplaza ni al principio ni al bajar, hasta el pie
   const dueno = paginas.prestador;
   await dueno.setViewportSize({ width: 1366, height: 900 });
   await dueno.goto(urlServicio);
   const suya = dueno.locator("aside").first();
   await expect(suya.getByText("Este es uno de tus servicios")).toBeVisible();
-  for (const y of [400, 800, 5000]) {
+  const alturas = [];
+  for (const y of [0, 200, 400, 800, 5000]) {
     await dueno.evaluate((v) => window.scrollTo(0, v), y);
-    await expect.poll(async () => Math.round((await suya.boundingBox()).y)).toBe(96);
+    await dueno.waitForTimeout(150);
+    alturas.push(Math.round((await suya.boundingBox()).y));
   }
+  expect(Math.max(...alturas) - Math.min(...alturas)).toBeLessThanOrEqual(8);
   await expect(dueno.getByRole("contentinfo")).toBeInViewport();
 });

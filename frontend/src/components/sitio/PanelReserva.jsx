@@ -98,7 +98,7 @@ export default function PanelReserva({ sitio, esAdmin, esPropio }) {
   }
 
   return (
-    <aside className="lg:col-span-4 lg:-mt-[280px] z-10 sticky top-24">
+    <aside className="lg:col-span-4 sticky top-32">
       <div className="rounded-3xl bg-surface-container-lowest p-6 shadow-xl flex flex-col gap-5">
         <div className="flex items-baseline gap-1">
           <span className="font-headline-xl text-headline-xl text-primary font-bold">{gratis ? "Gratuito" : pesos(sitio.precio)}</span>

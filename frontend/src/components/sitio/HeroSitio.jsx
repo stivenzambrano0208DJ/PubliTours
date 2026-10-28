@@ -9,7 +9,7 @@ const BOTON_VIDRIO = "px-4 py-2 rounded-xl bg-surface-container-lowest/15 hover:
 export default function HeroSitio({ sitio, fotos, onAbrirVisor, onCompartir }) {
   const activo = sitio.estado === "activo";
   return (
-    <section className="relative w-full overflow-hidden -mt-1">
+    <section className="relative overflow-hidden -mx-gutter lg:mx-0 lg:rounded-3xl">
       <div className="relative w-full h-[360px] md:h-[440px] bg-primary-container">
         {fotos.length > 0 ? (
           <button onClick={() => onAbrirVisor(0)} className="absolute inset-0 w-full h-full">
@@ -23,7 +23,7 @@ export default function HeroSitio({ sitio, fotos, onAbrirVisor, onCompartir }) {
         <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/80 to-transparent pointer-events-none" />
 
         <div className="absolute inset-x-0 bottom-0 max-w-[1360px] mx-auto px-gutter pb-space-lg text-on-primary">
-          <div className="flex flex-col gap-space-md">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md">
             <div className="flex flex-col gap-2 max-w-3xl">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-xs text-label-xs font-semibold">
