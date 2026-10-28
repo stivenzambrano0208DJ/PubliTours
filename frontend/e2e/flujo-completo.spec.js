@@ -1018,30 +1018,43 @@ test("28. al pasar a otra página se vuelve al inicio, no se queda a la altura d
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
 });
 
-test("29. en escritorio la tarjeta de reserva está junto a la portada desde el inicio y no se mueve al bajar", async ({ browser }) => {
+test("29. en escritorio la tarjeta de reserva queda fija en la pantalla: no se mueve al desplazar la página", async ({ browser }) => {
   const page = await abrirSesion(browser);
   await page.setViewportSize({ width: 1366, height: 900 });
   await page.goto(urlServicio);
   await expect(page.locator("aside").first()).toBeVisible();
   await page.screenshot({ path: process.env.CAPTURA_SITIO || "test-results/sitio.png" });
+  // en celular nada se sale de la pantalla (ni siquiera un nombre largo sin espacios)
+  await page.setViewportSize({ width: 390, height: 800 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  await page.setViewportSize({ width: 1366, height: 900 });
   // a la vista desde que abre la página y sin taparse con la portada (queda a su derecha)
   const caja = await page.locator("aside").first().boundingBox();
-  const hero = await page.locator("section").filter({ has: page.locator("h1") }).first().boundingBox();
+  const hero = await page.locator("header").filter({ has: page.locator("h1") }).first().boundingBox();
   expect(caja.y).toBeLessThan(250);
   expect(caja.x).toBeGreaterThanOrEqual(hero.x + hero.width);
 
-  // el prestador dueño del servicio ve una tarjeta corta: no se desplaza ni al principio ni al bajar, hasta el pie
+  // la tarjeta queda fija en la pantalla: en ningún punto del desplazamiento cambia de lugar, y cabe entera en la ventana
+  const posiciones = async (p) => {
+    const fija = p.locator("[data-tarjeta-fija]");
+    await expect(fija).toBeVisible();
+    const ys = [];
+    for (const y of [0, 300, 800, 5000]) {
+      await p.evaluate((v) => window.scrollTo(0, v), y);
+      await p.waitForTimeout(150);
+      const caja = await fija.boundingBox();
+      ys.push(Math.round(caja.y));
+      expect(caja.y + caja.height).toBeLessThanOrEqual(900);
+    }
+    return ys;
+  };
+  const visitante = await posiciones(page);
+  expect(new Set(visitante).size).toBe(1);
+
+  // también la tarjeta corta del prestador dueño del servicio
   const dueno = paginas.prestador;
   await dueno.setViewportSize({ width: 1366, height: 900 });
   await dueno.goto(urlServicio);
-  const suya = dueno.locator("aside").first();
-  await expect(suya.getByText("Este es uno de tus servicios")).toBeVisible();
-  const alturas = [];
-  for (const y of [0, 200, 400, 800, 5000]) {
-    await dueno.evaluate((v) => window.scrollTo(0, v), y);
-    await dueno.waitForTimeout(150);
-    alturas.push(Math.round((await suya.boundingBox()).y));
-  }
-  expect(Math.max(...alturas) - Math.min(...alturas)).toBeLessThanOrEqual(8);
-  await expect(dueno.getByRole("contentinfo")).toBeInViewport();
+  await expect(dueno.locator("aside").first().getByText("Este es uno de tus servicios")).toBeVisible();
+  expect(new Set(await posiciones(dueno)).size).toBe(1);
 });

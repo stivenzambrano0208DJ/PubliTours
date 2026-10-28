@@ -10,6 +10,7 @@ import ResenasSitio from "../components/sitio/ResenasSitio";
 import { Estrellas } from "../components/Estrellas";
 import { useConsulta } from "../hooks/useConsulta";
 import { pesos } from "../utils/moneda";
+import TarjetaFija from "../components/TarjetaFija";
 
 
 export default function PaqueteDetalle() {
@@ -142,7 +143,7 @@ export default function PaqueteDetalle() {
           <ResenasSitio paqueteId={paquete.id} />
         </div>
 
-        <aside className="lg:col-span-4 lg:sticky lg:top-24">
+        <TarjetaFija className="lg:col-span-4">
           <div className="rounded-3xl bg-surface-container-lowest p-6 shadow-xl flex flex-col gap-4">
             <div>
               <div className="flex items-baseline gap-2">
@@ -194,7 +195,7 @@ export default function PaqueteDetalle() {
               </div>
             )}
           </div>
-        </aside>
+        </TarjetaFija>
       </div>
 
       {visorIndice !== null && (

@@ -7,7 +7,8 @@ import { useEsServicioPropio } from "../hooks/useEsServicioPropio";
 import { fotosDelSitio } from "../utils/imagenes";
 import MapaVisor from "../components/mapa/MapaVisor";
 import ResenasSitio from "../components/sitio/ResenasSitio";
-import HeroSitio from "../components/sitio/HeroSitio";
+import EncabezadoSitio from "../components/sitio/EncabezadoSitio";
+import GaleriaSitio from "../components/sitio/GaleriaSitio";
 import VisorFotos from "../components/sitio/VisorFotos";
 import FichaTecnica from "../components/sitio/FichaTecnica";
 import TarjetaPrestador from "../components/sitio/TarjetaPrestador";
@@ -16,14 +17,13 @@ import { useAvisos } from "../context/avisos";
 
 const MENSAJE_CARGANDO = "max-w-[1360px] mx-auto px-gutter py-space-xl font-body-md text-body-md text-on-surface-variant";
 
-function Titulo({ icono, children }) {
+// Cada bloque de información del servicio: título y contenido, separados del anterior por una línea.
+function Seccion({ titulo, children }) {
   return (
-    <div className="flex items-center gap-2">
-      <span className="p-2 rounded-xl bg-secondary-container/40 text-on-secondary-container">
-        <span className="material-symbols-outlined text-[22px]">{icono}</span>
-      </span>
-      <h2 className="font-headline-md text-headline-md text-primary font-bold">{children}</h2>
-    </div>
+    <section className="flex flex-col gap-3 pt-space-lg border-t border-surface-container-high">
+      <h2 className="font-headline-md text-headline-md text-primary font-bold">{titulo}</h2>
+      {children}
+    </section>
   );
 }
 
@@ -75,28 +75,30 @@ export default function SitioDetalle() {
       <main className="max-w-[1360px] w-full mx-auto px-gutter">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           <div className="lg:col-span-8 flex flex-col gap-space-lg pb-20">
-            <HeroSitio sitio={sitio} fotos={fotos} onAbrirVisor={setVisorIndice} onCompartir={compartir} />
+            <EncabezadoSitio sitio={sitio} onCompartir={compartir} />
+            <FichaTecnica sitio={sitio} />
+            <GaleriaSitio sitio={sitio} fotos={fotos} onAbrirVisor={setVisorIndice} />
             {visorIndice !== null && (
               <VisorFotos fotos={fotos} indice={visorIndice} nombre={sitio.nombre} onCambiar={setVisorIndice} onCerrar={() => setVisorIndice(null)} />
             )}
-            <FichaTecnica sitio={sitio} />
 
-            <article className="flex flex-col gap-3">
-              <Titulo icono="history_edu">Acerca de este sitio</Titulo>
+            <Seccion titulo="Acerca de este sitio">
               <p className="font-body-lg text-body-lg text-on-surface leading-relaxed">
                 {sitio.descripcion || "Este prestador aún no agregó una descripción detallada para este sitio."}
               </p>
-            </article>
+            </Seccion>
+
+            {sitio.Prestador && <TarjetaPrestador prestador={sitio.Prestador} />}
 
             {sitio.latitud && sitio.longitud && (
-              <section className="flex flex-col gap-3">
-                <Titulo icono="pin_drop">Ubicación</Titulo>
+              <Seccion titulo="Ubicación">
                 <MapaVisor lat={sitio.latitud} lng={sitio.longitud} nombre={sitio.nombre} />
-              </section>
+              </Seccion>
             )}
 
-            <ResenasSitio sitioId={sitio.id} />
-            {sitio.Prestador && <TarjetaPrestador prestador={sitio.Prestador} />}
+            <div className="pt-space-lg border-t border-surface-container-high">
+              <ResenasSitio sitioId={sitio.id} />
+            </div>
           </div>
 
           <PanelReserva sitio={sitio} esAdmin={usuario?.rol === "administrador"} esPropio={esPropio} />

@@ -118,6 +118,26 @@ describe("SitioDetalle", () => {
   });
 
   describe("fotos", () => {
+    it("la galería avanza con las flechas y las miniaturas, y el visor se abre en la foto que se está viendo", async () => {
+      await abrir({ imagenes: [{ imagen_url: "/a.jpg" }, { imagen_url: "/b.jpg" }, { imagen_url: "/c.jpg" }] });
+      expect(screen.getByText("1 de 3")).toBeInTheDocument();
+      await userEvent.click(screen.getByRole("button", { name: "Foto siguiente" }));
+      expect(screen.getByText("2 de 3")).toBeInTheDocument();
+      await userEvent.click(screen.getByRole("button", { name: "Foto 3" }));
+      expect(screen.getByText("3 de 3")).toBeInTheDocument();
+      await userEvent.click(screen.getByRole("button", { name: "Foto siguiente" }));
+      expect(screen.getByText("1 de 3")).toBeInTheDocument(); // da la vuelta
+      await userEvent.click(screen.getByRole("button", { name: "Foto 2" }));
+      await userEvent.click(screen.getByRole("button", { name: /Ver 3 fotos/ }));
+      expect(screen.getByText("2 / 3")).toBeInTheDocument();
+    });
+
+    it("sin fotos muestra un marcador en lugar de la galería", async () => {
+      await abrir({ imagenes: [], imagen_url: null });
+      expect(screen.queryByRole("button", { name: "Foto siguiente" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("img", { name: "Cascada La Diabla" })).not.toBeInTheDocument();
+    });
+
     it("con una sola foto se abre a pantalla completa sin controles de navegación", async () => {
       await abrir({ imagenes: [], imagen_url: "/uploads/a.jpg" });
       expect(screen.queryByRole("button", { name: /Ver \d+ fotos/ })).not.toBeInTheDocument();

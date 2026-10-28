@@ -7,6 +7,7 @@ import PoliticaCancelacion from "./PoliticaCancelacion";
 import { fechaMinima } from "../../constants";
 import { pesos } from "../../utils/moneda";
 import BotonPreguntar from "../mensajes/BotonPreguntar";
+import TarjetaFija from "../TarjetaFija";
 
 
 function Aviso({ icono, color, children }) {
@@ -98,7 +99,7 @@ export default function PanelReserva({ sitio, esAdmin, esPropio }) {
   }
 
   return (
-    <aside className="lg:col-span-4 sticky top-32">
+    <TarjetaFija className="lg:col-span-4">
       <div className="rounded-3xl bg-surface-container-lowest p-6 shadow-xl flex flex-col gap-5">
         <div className="flex items-baseline gap-1">
           <span className="font-headline-xl text-headline-xl text-primary font-bold">{gratis ? "Gratuito" : pesos(sitio.precio)}</span>
@@ -113,6 +114,6 @@ export default function PanelReserva({ sitio, esAdmin, esPropio }) {
           </div>
         )}
       </div>
-    </aside>
+    </TarjetaFija>
   );
 }
