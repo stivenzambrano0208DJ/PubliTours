@@ -7,7 +7,7 @@ import PoliticaCancelacion from "./PoliticaCancelacion";
 import { fechaMinima } from "../../constants";
 import { pesos } from "../../utils/moneda";
 import BotonPreguntar from "../mensajes/BotonPreguntar";
-import TarjetaFija from "../TarjetaFija";
+import TarjetaFija, { ReservaEnVentana } from "../TarjetaFija";
 
 
 function Aviso({ icono, color, children }) {
@@ -82,6 +82,12 @@ export default function PanelReserva({ sitio, esAdmin, esPropio }) {
     );
   } else {
     contenido = (
+      <ReservaEnVentana
+        titulo="Reservar"
+        subtitulo={`${sitio.nombre} · ${sitio.municipio}`}
+        boton={usuario ? "Elegir fecha y personas" : "Inicia sesión para reservar"}
+        alPulsar={usuario ? undefined : () => navigate("/login")}
+      >
       <form onSubmit={reservar} className="flex flex-col gap-3">
         <CamposReserva sitio={sitio} valores={valores} onCambio={setValores} />
         <PoliticaCancelacion politica={sitio.politica_cancelacion} />
@@ -95,6 +101,7 @@ export default function PanelReserva({ sitio, esAdmin, esPropio }) {
           <span>{enviando ? "Enviando..." : usuario ? "Reservar" : "Inicia sesión para reservar"}</span>
         </button>
       </form>
+      </ReservaEnVentana>
     );
   }
 

@@ -154,6 +154,7 @@ test("4. el turista se registra, encuentra el servicio y solicita una reserva", 
   await expect(page).toHaveURL(/\/sitios\/\d+/);
   urlServicio = new URL(page.url()).pathname;
 
+  await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
   await page.getByLabel(/Número de personas/).fill("2");
   await page.getByPlaceholder(/Viajamos con un niño/).fill("Somos vegetarianos");
   await expect(page.getByText(/\$100\.000 COP/)).toBeVisible(); // 2 personas × $50.000
@@ -198,6 +199,7 @@ test("6. el turista ve su reserva confirmada y puede cancelar una segunda", asyn
 
   // Segunda reserva en otra fecha y cancelación posterior
   await page.goto(urlServicio);
+  await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
   await page.locator('input[type="date"]').fill(diaDentroDe(3));
   await page.getByRole("button", { name: "Reservar" }).click();
   await expect(page.getByText("Solicitud enviada")).toBeVisible();
@@ -340,6 +342,7 @@ test("11. el prestador arma un paquete con dos servicios y un turista lo reserva
   await turista.getByRole("button", { name: "Cerrar visor" }).click();
   await expect(turista.getByText(SERVICIO)).toBeVisible();
   await expect(turista.getByText(CABALGATA)).toBeVisible();
+  await turista.getByRole("button", { name: "Elegir fecha y personas" }).click();
   await turista.getByLabel(/Número de personas/).fill("2");
   await expect(turista.getByText(/\$120\.000 COP/)).toBeVisible(); // 2 × $60.000
   await turista.getByRole("button", { name: "Reservar paquete" }).click();
@@ -478,9 +481,11 @@ test("15. un correo sin verificar no puede reservar; con el código de verificac
 
   // Puede navegar, pero no reservar
   await page.goto(urlServicio);
+  await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
   await page.getByRole("button", { name: "Reservar" }).click();
   await expect(page.getByText(/Verifica tu correo para continuar/).first()).toBeVisible();
   await expect(page.getByText("Solicitud enviada")).toHaveCount(0);
+  await page.keyboard.press("Escape"); // cierra la ventana de reserva para usar el aviso de la página
 
   // Un código incorrecto no sirve
   await aviso.getByLabel("Código de verificación").fill("000000");
@@ -498,6 +503,7 @@ test("15. un correo sin verificar no puede reservar; con el código de verificac
   await expect(aviso).toHaveCount(0); // el aviso desaparece
 
   // Ahora sí puede reservar
+  await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
   await page.getByRole("button", { name: "Reservar" }).click();
   await expect(page.getByText("Solicitud enviada")).toBeVisible();
 });
@@ -538,6 +544,7 @@ test("17. precios flexibles, calendario de disponibilidad, comprobante con códi
   await expect(page.getByText("10 % de descuento desde 4 personas")).toBeVisible();
 
   const fecha = diaDentroDe(8);
+  await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
   await page.locator('input[type="date"]').first().fill(fecha);
   await page.getByLabel(/Número de personas/).fill("4");
   await page.getByLabel(/De ellas, niños/).fill("2");
@@ -662,6 +669,7 @@ test("20. la política de cancelación se elige, se ve antes de reservar y marca
   const page = await abrirSesion(browser);
   await registrar(page, viajero, "turista");
   await page.goto(urlServicio);
+  await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
   await expect(page.getByText("Cancelación moderada.")).toBeVisible();
   await expect(page.getByText(/Gratis hasta 3 días antes del servicio/)).toBeVisible();
 
@@ -702,6 +710,7 @@ test("21. el prestador registra la asistencia: «no asistió» no permite califi
   await registrar(page, viajero, "turista");
   for (const dias of [4, 5]) {
     await page.goto(urlServicio);
+    await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
     await page.locator('input[type="date"]').first().fill(diaDentroDe(dias));
     await page.getByRole("button", { name: "Reservar" }).click();
     await expect(page.getByText("Solicitud enviada")).toBeVisible();
@@ -835,6 +844,7 @@ test("25. el prestador atiende a un turista con el código del comprobante y reg
   const page = await abrirSesion(browser);
   await registrar(page, viajero, "turista");
   await page.goto(urlServicio);
+  await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
   await page.locator('input[type="date"]').first().fill(diaDentroDe(6));
   await page.getByRole("button", { name: "Reservar" }).click();
   await expect(page.getByText("Solicitud enviada")).toBeVisible();
@@ -1022,21 +1032,21 @@ test("29. en escritorio la tarjeta de reserva queda fija en la pantalla: no se m
   const page = await abrirSesion(browser);
   await page.setViewportSize({ width: 1366, height: 900 });
   await page.goto(urlServicio);
-  await expect(page.locator("aside").first()).toBeVisible();
+  await expect(page.locator("div[data-tarjeta-fija]")).toBeVisible();
   await page.screenshot({ path: process.env.CAPTURA_SITIO || "test-results/sitio.png" });
   // en celular nada se sale de la pantalla (ni siquiera un nombre largo sin espacios)
   await page.setViewportSize({ width: 390, height: 800 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   await page.setViewportSize({ width: 1366, height: 900 });
   // a la vista desde que abre la página y sin taparse con la portada (queda a su derecha)
-  const caja = await page.locator("aside").first().boundingBox();
+  const caja = await page.locator("div[data-tarjeta-fija]").boundingBox();
   const hero = await page.locator("header").filter({ has: page.locator("h1") }).first().boundingBox();
   expect(caja.y).toBeLessThan(250);
   expect(caja.x).toBeGreaterThanOrEqual(hero.x + hero.width);
 
   // la tarjeta queda fija en la pantalla: en ningún punto del desplazamiento cambia de lugar, y cabe entera en la ventana
   const posiciones = async (p) => {
-    const fija = p.locator("[data-tarjeta-fija]");
+    const fija = p.locator("div[data-tarjeta-fija]");
     await expect(fija).toBeVisible();
     const ys = [];
     for (const y of [0, 300, 800, 5000]) {
@@ -1050,6 +1060,10 @@ test("29. en escritorio la tarjeta de reserva queda fija en la pantalla: no se m
   };
   const visitante = await posiciones(page);
   expect(new Set(visitante).size).toBe(1);
+  // al final de la página el pie deja libre la columna de la tarjeta: ninguno de sus textos queda debajo de ella
+  const bordeTarjeta = (await page.locator("div[data-tarjeta-fija]").boundingBox()).x;
+  const enlacePie = await page.getByRole("contentinfo").getByRole("link", { name: "Términos y condiciones" }).boundingBox();
+  expect(enlacePie.x + enlacePie.width).toBeLessThanOrEqual(bordeTarjeta);
 
   // también la tarjeta corta del prestador dueño del servicio
   const dueno = paginas.prestador;

@@ -158,3 +158,10 @@
   -webkit-font-feature-settings: "liga";
   -webkit-font-smoothing: antialiased;
 }
+
+/* Con una tarjeta de reserva fija en pantalla (TarjetaFija), el pie de página y el aviso de verificar el correo le dejan libre
+   su columna, para que la tarjeta no tape sus textos ni sus botones. */
+@media (min-width: 1024px) {
+  body[data-tarjeta-fija] footer > div > * { margin-right: var(--tarjeta-fija-ancho, 0); }
+  body[data-tarjeta-fija] [data-libre-tarjeta] > div { padding-right: calc(var(--spacing-gutter) + var(--tarjeta-fija-ancho, 0px)); }
+}
