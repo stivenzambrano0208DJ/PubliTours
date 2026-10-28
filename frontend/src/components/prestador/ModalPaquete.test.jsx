@@ -29,7 +29,7 @@ describe("ModalPaquete — galería de fotos", () => {
   });
   afterEach(() => vi.unstubAllGlobals());
 
-  const campoGaleria = (c) => c.querySelector('input[data-galeria="true"]');
+  const campoGaleria = () => document.body.querySelector('input[data-galeria="true"]'); // la ventana se dibuja sobre el body
 
   it("al crear, encola las fotos y las sube después de crear el paquete", async () => {
     api.crearPaquete.mockResolvedValue({ id: 9 });
@@ -143,12 +143,12 @@ describe("ModalPaquete", () => {
   it("envía la foto de portada elegida junto con el paquete", async () => {
     api.crearPaquete.mockResolvedValue({ id: 9 });
     URL.createObjectURL = vi.fn(() => "blob:vista-previa");
-    const { container } = montar();
+    montar();
     const foto = new File(["x"], "portada.png", { type: "image/png" });
     // la imagen es grande, así que no se muestra la advertencia de baja resolución
     vi.stubGlobal("Image", class { set src(_) { this.naturalWidth = 1600; this.naturalHeight = 900; setTimeout(() => this.onload?.(), 0); } });
 
-    await userEvent.upload(container.querySelector('input[type="file"]'), foto);
+    await userEvent.upload(document.body.querySelector('input[type="file"]'), foto);
     expect(await screen.findByAltText("Vista previa de la portada")).toBeInTheDocument();
 
     await userEvent.type(screen.getByPlaceholderText("Nombre del paquete"), "Paquete con foto");

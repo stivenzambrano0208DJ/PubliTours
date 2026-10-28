@@ -154,7 +154,14 @@ test("4. el turista se registra, encuentra el servicio y solicita una reserva", 
   await expect(page).toHaveURL(/\/sitios\/\d+/);
   urlServicio = new URL(page.url()).pathname;
 
+  await page.setViewportSize({ width: 1366, height: 650 }); // una pantalla baja, como la de un portátil con la barra del navegador
   await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
+  // la ventana queda por encima de todo (también del encabezado fijo): su título es lo que se ve en su lugar, y el botón cabe en pantalla
+  const ventanaReserva = page.getByRole("dialog", { name: "Reservar" });
+  const titulo = await ventanaReserva.getByRole("heading", { name: "Reservar" }).boundingBox();
+  expect(await page.evaluate(({ x, y }) => !!document.elementFromPoint(x, y)?.closest('[role="dialog"]'), { x: titulo.x + 5, y: titulo.y + titulo.height / 2 })).toBe(true);
+  await expect(ventanaReserva.getByRole("button", { name: "Reservar" })).toBeInViewport({ ratio: 1 });
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.getByLabel(/Número de personas/).fill("2");
   await page.getByPlaceholder(/Viajamos con un niño/).fill("Somos vegetarianos");
   await expect(page.getByText(/\$100\.000 COP/)).toBeVisible(); // 2 personas × $50.000

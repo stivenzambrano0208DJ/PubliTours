@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 // Ventana emergente base: reúne lo que toda ventana accesible necesita (rol y nombre, Escape, foco, scroll del fondo) para que cada
-// pantalla solo aporte su contenido. Se renderiza solo cuando está abierta: quien la usa decide cuándo montarla.
+// pantalla solo aporte su contenido. Se renderiza solo cuando está abierta: quien la usa decide cuándo montarla. Se dibuja siempre
+// sobre el <body>, así ningún contenedor (una tarjeta fija, un elemento con transform…) la deja por debajo del encabezado ni la recorta.
 //  - etiqueta / tituloId: nombre accesible del diálogo (texto directo, o id del título que ya muestra la ventana).
 //  - onCerrar: se llama con Escape y al pulsar el fondo. Con cerrarConEscape / cerrarAlPulsarFondo en false, cada uno se desactiva.
 //    Una vez que la persona escribe o cambia algún campo, Escape deja de cerrarla (una tecla no debe descartar lo escrito); el botón de volver y el fondo sí.
@@ -79,11 +81,12 @@ export default function Modal({ etiqueta, tituloId, onCerrar, cerrarConEscape = 
     };
   }, []);
 
-  return (
+  return createPortal(
     <div className={`fixed inset-0 flex justify-center ${fondo}`} onClick={(e) => { if (cerrarAlPulsarFondo && e.target === e.currentTarget) onCerrar?.(); }}>
       <Panel ref={panel} role="dialog" aria-modal="true" aria-label={etiqueta} aria-labelledby={tituloId} tabIndex={-1} {...panelProps} onInput={(e) => { editado.current = true; panelProps.onInput?.(e); }}>
         {children}
       </Panel>
-    </div>
+    </div>,
+    document.body
   );
 }

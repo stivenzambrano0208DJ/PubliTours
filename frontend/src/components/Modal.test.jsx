@@ -51,14 +51,14 @@ describe("Modal", () => {
 
   it("el fondo la cierra, pero pulsar dentro del panel no; y puede desactivarse", async () => {
     const onCerrar = vi.fn();
-    const { container, rerender } = render(<Modal etiqueta="x" onCerrar={onCerrar}><button>a</button></Modal>);
+    const { rerender } = render(<Modal etiqueta="x" onCerrar={onCerrar}><button>a</button></Modal>);
     await userEvent.click(screen.getByRole("button", { name: "a" }));
     await userEvent.click(screen.getByRole("dialog"));
     expect(onCerrar).not.toHaveBeenCalled();
-    await userEvent.click(container.firstChild);
+    await userEvent.click(screen.getByRole("dialog").parentElement);
     expect(onCerrar).toHaveBeenCalledTimes(1);
     rerender(<Modal etiqueta="x" onCerrar={onCerrar} cerrarAlPulsarFondo={false}><button>a</button></Modal>);
-    await userEvent.click(container.firstChild);
+    await userEvent.click(screen.getByRole("dialog").parentElement);
     expect(onCerrar).toHaveBeenCalledTimes(1);
   });
 

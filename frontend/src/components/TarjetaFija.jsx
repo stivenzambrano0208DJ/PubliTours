@@ -65,7 +65,8 @@ export default function TarjetaFija({ className = "", children }) {
 const BOTON = "w-full py-3.5 px-4 rounded-xl bg-primary text-on-primary hover:bg-primary-container transition-all font-label-md text-label-md font-bold shadow-lg flex items-center justify-center gap-2";
 
 // El formulario de reserva: en escritorio, un botón en la tarjeta fija que lo abre en una ventana (así la tarjeta siempre cabe en la
-// pantalla); en celular, el formulario directamente en la página. `alPulsar` reemplaza la apertura (por ejemplo, ir a iniciar sesión).
+// pantalla); en celular, el formulario directamente en la página. En la ventana, el botón de enviar queda pegado al borde inferior
+// para verse siempre, aunque el formulario sea más alto que la pantalla. `alPulsar` reemplaza la apertura (por ejemplo, ir a iniciar sesión).
 export function ReservaEnVentana({ titulo, subtitulo, boton, icono = "event_available", alPulsar, children }) {
   const escritorio = useEscritorio();
   const [abierta, setAbierta] = useState(false);
@@ -77,12 +78,18 @@ export function ReservaEnVentana({ titulo, subtitulo, boton, icono = "event_avai
         <span>{boton}</span>
       </button>
       {abierta && (
-        <Modal etiqueta={titulo} onCerrar={() => setAbierta(false)} className="w-full max-w-md bg-surface-container-lowest rounded-2xl p-6 shadow-xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
-          <div>
-            <h3 className="font-headline-md text-headline-md text-primary">{titulo}</h3>
-            {subtitulo && <p className="font-body-sm text-body-sm text-on-surface-variant">{subtitulo}</p>}
+        <Modal
+          etiqueta={titulo}
+          onCerrar={() => setAbierta(false)}
+          className="w-full max-w-md bg-surface-container-lowest rounded-2xl px-6 pt-6 shadow-xl max-h-[92vh] overflow-y-auto [&_button[type=submit]]:sticky [&_button[type=submit]]:bottom-0"
+        >
+          <div className="flex flex-col gap-4 pb-6">
+            <div>
+              <h3 className="font-headline-md text-headline-md text-primary">{titulo}</h3>
+              {subtitulo && <p className="font-body-sm text-body-sm text-on-surface-variant">{subtitulo}</p>}
+            </div>
+            {children}
           </div>
-          {children}
         </Modal>
       )}
     </>
