@@ -1,5 +1,5 @@
-import { lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import { lazy, Suspense, useEffect } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
@@ -29,12 +29,23 @@ import { AuthProvider } from "./context/AuthContext";
 import { AvisosProvider } from "./context/AvisosContext";
 import { FavoritosProvider } from "./context/FavoritosContext";
 
+// Al cambiar de página se vuelve al inicio: el router conserva el desplazamiento y una página corta quedaría pegada al pie.
+// Cambiar solo los filtros de la dirección (?...) no cuenta, y un enlace con #ancla se deja a su destino.
+function VolverArriba() {
+  const { pathname, hash } = useLocation();
+  useEffect(() => {
+    if (!hash) window.scrollTo(0, 0);
+  }, [pathname, hash]);
+  return null;
+}
+
 export default function App() {
   return (
     <AvisosProvider>
     <AuthProvider>
       <FavoritosProvider>
       <Suspense fallback={<p role="status" className="p-8 text-center text-on-surface-variant">Cargando…</p>}>
+      <VolverArriba />
       <Routes>
         {/* Sin Layout (sin header/footer del sitio): pantallas de autenticación a pantalla completa */}
         <Route path="/login" element={<Login />} />

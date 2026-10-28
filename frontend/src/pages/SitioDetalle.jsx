@@ -77,9 +77,9 @@ export default function SitioDetalle() {
         <VisorFotos fotos={fotos} indice={visorIndice} nombre={sitio.nombre} onCambiar={setVisorIndice} onCerrar={() => setVisorIndice(null)} />
       )}
 
-      <main className="max-w-[1360px] w-full mx-auto px-gutter mb-20">
+      <main className="max-w-[1360px] w-full mx-auto px-gutter">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-          <div className="lg:col-span-8 flex flex-col gap-space-lg">
+          <div className="lg:col-span-8 flex flex-col gap-space-lg pb-20">
             <FichaTecnica sitio={sitio} />
 
             <article className="flex flex-col gap-3">
