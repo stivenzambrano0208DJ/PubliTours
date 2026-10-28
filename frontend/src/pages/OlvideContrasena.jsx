@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api/client";
 import MarcaAuth from "../components/auth/MarcaAuth";
 import BotonAuth from "../components/auth/BotonAuth";
+import CampoAuth from "../components/auth/CampoAuth";
 
 export default function OlvideContrasena() {
   const navigate = useNavigate();
@@ -71,24 +72,18 @@ export default function OlvideContrasena() {
               </p>
 
               <form className="space-y-4" onSubmit={handleSolicitarCodigo}>
-                <div>
-                  <label className="block font-label-md text-label-md text-on-surface mb-1.5" htmlFor="email">
-                    Correo electrónico
-                  </label>
-                  <div className="relative flex items-center">
-                    <span className="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">mail</span>
-                    <input
-                      id="email"
-                      autoComplete="email"
-                      className="w-full pl-11 pr-4 py-3 bg-surface-container-low border border-surface-container-high rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:bg-surface-container-lowest focus:border-secondary transition-all outline-none"
-                      placeholder="correo@dominio.com"
-                      type="email"
-                      required
-                      value={correo}
-                      onChange={(e) => setCorreo(e.target.value)}
-                    />
-                  </div>
-                </div>
+                <CampoAuth id="email" etiqueta="Correo electrónico" icono="mail">
+                  <input
+                    id="email"
+                    autoComplete="email"
+                    className="w-full pl-11 pr-4 py-3 bg-surface-container-low border border-surface-container-high rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:bg-surface-container-lowest focus:border-secondary transition-all outline-none"
+                    placeholder="correo@dominio.com"
+                    type="email"
+                    required
+                    value={correo}
+                    onChange={(e) => setCorreo(e.target.value)}
+                  />
+                </CampoAuth>
 
                 {error && <p className="text-error font-body-sm text-body-sm">{error}</p>}
 
@@ -110,72 +105,54 @@ export default function OlvideContrasena() {
               </p>
 
               <form className="space-y-4" onSubmit={handleRestablecer}>
-                <div>
-                  <label className="block font-label-md text-label-md text-on-surface mb-1.5" htmlFor="codigo">
-                    Código de verificación
-                  </label>
-                  <div className="relative flex items-center">
-                    <span className="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">pin</span>
-                    <input
-                      id="codigo"
-                      inputMode="numeric"
-                      maxLength={6}
-                      className="w-full pl-11 pr-4 py-3 bg-surface-container-low border border-surface-container-high rounded-xl text-on-surface font-title-lg text-title-lg tracking-[0.4em] placeholder:tracking-normal placeholder:text-outline focus:bg-surface-container-lowest focus:border-secondary transition-all outline-none"
-                      placeholder="000000"
-                      required
-                      value={codigo}
-                      onChange={(e) => setCodigo(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                    />
-                  </div>
-                </div>
+                <CampoAuth id="codigo" etiqueta="Código de verificación" icono="pin">
+                  <input
+                    id="codigo"
+                    inputMode="numeric"
+                    maxLength={6}
+                    className="w-full pl-11 pr-4 py-3 bg-surface-container-low border border-surface-container-high rounded-xl text-on-surface font-title-lg text-title-lg tracking-[0.4em] placeholder:tracking-normal placeholder:text-outline focus:bg-surface-container-lowest focus:border-secondary transition-all outline-none"
+                    placeholder="000000"
+                    required
+                    value={codigo}
+                    onChange={(e) => setCodigo(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  />
+                </CampoAuth>
 
-                <div>
-                  <label className="block font-label-md text-label-md text-on-surface mb-1.5" htmlFor="password">
-                    Contraseña nueva
-                  </label>
-                  <div className="relative flex items-center">
-                    <span className="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">lock</span>
-                    <input
-                      id="password"
-                      autoComplete="new-password"
-                      className="w-full pl-11 pr-11 py-3 bg-surface-container-low border border-surface-container-high rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:bg-surface-container-lowest focus:border-secondary transition-all outline-none tracking-widest"
-                      placeholder="Mínimo 8 caracteres"
-                      type={mostrarPassword ? "text" : "password"}
-                      required
-                      minLength={8}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <button
-                      type="button"
-                      aria-label="Mostrar u ocultar contraseña"
-                      className="absolute right-3.5 text-outline hover:text-on-surface transition-colors"
-                      onClick={() => setMostrarPassword((v) => !v)}
-                    >
-                      <span className="material-symbols-outlined text-[20px]">{mostrarPassword ? "visibility_off" : "visibility"}</span>
-                    </button>
-                  </div>
-                </div>
+                <CampoAuth id="password" etiqueta="Contraseña nueva" icono="lock">
+                  <input
+                    id="password"
+                    autoComplete="new-password"
+                    className="w-full pl-11 pr-11 py-3 bg-surface-container-low border border-surface-container-high rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:bg-surface-container-lowest focus:border-secondary transition-all outline-none tracking-widest"
+                    placeholder="Mínimo 8 caracteres"
+                    type={mostrarPassword ? "text" : "password"}
+                    required
+                    minLength={8}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    aria-label="Mostrar u ocultar contraseña"
+                    className="absolute right-3.5 text-outline hover:text-on-surface transition-colors"
+                    onClick={() => setMostrarPassword((v) => !v)}
+                  >
+                    <span className="material-symbols-outlined text-[20px]">{mostrarPassword ? "visibility_off" : "visibility"}</span>
+                  </button>
+                </CampoAuth>
 
-                <div>
-                  <label className="block font-label-md text-label-md text-on-surface mb-1.5" htmlFor="confirmar">
-                    Confirmar contraseña
-                  </label>
-                  <div className="relative flex items-center">
-                    <span className="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">lock_reset</span>
-                    <input
-                      id="confirmar"
-                      autoComplete="new-password"
-                      className="w-full pl-11 pr-4 py-3 bg-surface-container-low border border-surface-container-high rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:bg-surface-container-lowest focus:border-secondary transition-all outline-none tracking-widest"
-                      placeholder="Repite la contraseña"
-                      type={mostrarPassword ? "text" : "password"}
-                      required
-                      minLength={8}
-                      value={confirmar}
-                      onChange={(e) => setConfirmar(e.target.value)}
-                    />
-                  </div>
-                </div>
+                <CampoAuth id="confirmar" etiqueta="Confirmar contraseña" icono="lock_reset">
+                  <input
+                    id="confirmar"
+                    autoComplete="new-password"
+                    className="w-full pl-11 pr-4 py-3 bg-surface-container-low border border-surface-container-high rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:bg-surface-container-lowest focus:border-secondary transition-all outline-none tracking-widest"
+                    placeholder="Repite la contraseña"
+                    type={mostrarPassword ? "text" : "password"}
+                    required
+                    minLength={8}
+                    value={confirmar}
+                    onChange={(e) => setConfirmar(e.target.value)}
+                  />
+                </CampoAuth>
 
                 {error && <p className="text-error font-body-sm text-body-sm">{error}</p>}
 

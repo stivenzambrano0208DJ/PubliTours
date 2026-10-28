@@ -969,3 +969,40 @@ test("26. una turista le pregunta al negocio con una foto sin tener reserva; el 
   const { rows: fotos } = await consultar("SELECT archivo FROM mensaje_imagenes");
   for (const { archivo } of fotos) fs.rmSync(path.join(BACKEND_DIR, "public", "uploads", "privado", "mensajes", archivo), { force: true });
 });
+
+test("27. las ventanas emergentes se manejan con teclado: foco contenido, Escape, scroll de la página bloqueado y hoja inferior en el celular", async ({ browser }) => {
+  const page = await abrirSesion(browser);
+  await page.setViewportSize({ width: 375, height: 700 }); // celular
+  await registrar(page, { nombre: "Teclado E2E", correo: `teclado${id}@e2e.com`, password: "ClaveE2E123" }, "turista");
+  await page.goto(urlServicio);
+  const abrir = page.getByRole("button", { name: "Preguntar al negocio" });
+  const ventana = page.getByRole("dialog", { name: "Preguntar al negocio" });
+  const dentro = () => page.evaluate(() => !!document.activeElement?.closest('[role="dialog"]'));
+
+  // Al abrir: el foco entra a la ventana, la página de fondo no se desplaza y en el celular sube desde abajo
+  await abrir.click();
+  await expect(ventana).toBeVisible();
+  expect(await dentro()).toBe(true);
+  expect(await page.evaluate(() => document.body.style.overflow)).toBe("hidden");
+  const caja = await ventana.boundingBox();
+  expect(Math.round(caja.y + caja.height)).toBe(700);
+
+  // Tab y Mayús+Tab dan la vuelta sin salir de la ventana
+  for (let i = 0; i < 12; i++) { await page.keyboard.press("Tab"); expect(await dentro()).toBe(true); }
+  for (let i = 0; i < 12; i++) { await page.keyboard.press("Shift+Tab"); expect(await dentro()).toBe(true); }
+
+  // Escape sin haber escrito la cierra, devuelve el foco al botón y libera el scroll
+  await page.keyboard.press("Escape");
+  await expect(ventana).toHaveCount(0);
+  await expect(abrir).toBeFocused();
+  expect(await page.evaluate(() => document.body.style.overflow)).toBe("");
+
+  // Con texto escrito, Escape no lo descarta; el botón de cerrar sí la cierra
+  await abrir.click();
+  await ventana.getByLabel("Escribe tu mensaje").fill("Borrador que no debe perderse");
+  await page.keyboard.press("Escape");
+  await expect(ventana).toBeVisible();
+  await expect(ventana.getByLabel("Escribe tu mensaje")).toHaveValue("Borrador que no debe perderse");
+  await ventana.getByRole("button", { name: "Cerrar" }).click();
+  await expect(ventana).toHaveCount(0);
+});

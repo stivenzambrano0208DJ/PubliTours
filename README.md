@@ -50,16 +50,7 @@ La aplicación queda en `http://localhost:8080` (cambia `PUERTO_WEB` y `CORS_ORI
 
 ### Copias de seguridad
 
-```bash
-# Respaldo de la base de datos
-docker compose exec -T db pg_dump -U publitours_app publitours > respaldo-$(date +%F).sql
-# Restaurar en una base vacía
-docker compose exec -T db psql -U publitours_app publitours < respaldo-AAAA-MM-DD.sql
-# Fotos subidas
-docker run --rm -v publitours_uploads:/datos -v "$PWD":/copia alpine tar czf /copia/fotos-$(date +%F).tgz -C /datos .
-```
-
-Programa el respaldo de la base (y de las fotos) en el servidor y guarda las copias **fuera** de él.
+Hay que respaldar **la base de datos** y **las fotos subidas** (incluidas las privadas de las conversaciones), y guardar las copias **fuera** del servidor. Los comandos, ya probados con una restauración real (PowerShell y Bash), están en [`PILOTO.md`](PILOTO.md#6-copia-de-seguridad).
 
 ## Operación y seguridad en producción
 

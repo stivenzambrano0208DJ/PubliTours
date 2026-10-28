@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 // pantalla solo aporte su contenido. Se renderiza solo cuando está abierta: quien la usa decide cuándo montarla.
 //  - etiqueta / tituloId: nombre accesible del diálogo (texto directo, o id del título que ya muestra la ventana).
 //  - onCerrar: se llama con Escape y al pulsar el fondo. Con cerrarConEscape / cerrarAlPulsarFondo en false, cada uno se desactiva.
+//    Una vez que la persona escribe o cambia algún campo, Escape deja de cerrarla (una tecla no debe descartar lo escrito); el botón de volver y el fondo sí.
 //  - as: etiqueta del panel ("form" cuando toda la ventana es un formulario); el resto de props (onSubmit, className…) pasan al panel.
 //  - fondo: clases de la capa que cubre la pantalla (color, altura/posición y z-index propios de cada ventana).
 
@@ -26,6 +27,10 @@ function bloquearScroll() {
 
 export default function Modal({ etiqueta, tituloId, onCerrar, cerrarConEscape = true, cerrarAlPulsarFondo = true, as: Panel = "div", fondo = "bg-black/40 z-[60] items-center p-4", children, ...panelProps }) {
   const panel = useRef(null);
+  const editado = useRef(false);
+  // Quién tenía el foco al abrir: se anota ya en el primer render, porque un campo con autoFocus lo mueve antes de que corra el efecto.
+  const previo = useRef(null);
+  if (previo.current === null) previo.current = document.activeElement;
   const cerrar = useRef(onCerrar);
   const conEscape = useRef(cerrarConEscape);
   useEffect(() => {
@@ -34,7 +39,6 @@ export default function Modal({ etiqueta, tituloId, onCerrar, cerrarConEscape = 
   });
 
   useEffect(() => {
-    const previo = document.activeElement;
     const quitarScroll = bloquearScroll();
     const yo = {};
     abiertas.push(yo);
@@ -44,7 +48,8 @@ export default function Modal({ etiqueta, tituloId, onCerrar, cerrarConEscape = 
 
     const alTeclear = (e) => {
       if (abiertas[abiertas.length - 1] !== yo) return;
-      if (e.key === "Escape" && conEscape.current) {
+      if (e.key === "Escape") {
+        if (!conEscape.current || editado.current) return;
         e.stopPropagation();
         cerrar.current?.();
       } else if (e.key === "Tab") {
@@ -69,13 +74,14 @@ export default function Modal({ etiqueta, tituloId, onCerrar, cerrarConEscape = 
       document.removeEventListener("keydown", alTeclear);
       abiertas.splice(abiertas.indexOf(yo), 1);
       quitarScroll();
-      if (previo?.isConnected && typeof previo.focus === "function") previo.focus();
+      const anterior = previo.current;
+      if (anterior?.isConnected && typeof anterior.focus === "function") anterior.focus();
     };
   }, []);
 
   return (
     <div className={`fixed inset-0 flex justify-center ${fondo}`} onClick={(e) => { if (cerrarAlPulsarFondo && e.target === e.currentTarget) onCerrar?.(); }}>
-      <Panel ref={panel} role="dialog" aria-modal="true" aria-label={etiqueta} aria-labelledby={tituloId} tabIndex={-1} {...panelProps}>
+      <Panel ref={panel} role="dialog" aria-modal="true" aria-label={etiqueta} aria-labelledby={tituloId} tabIndex={-1} {...panelProps} onInput={(e) => { editado.current = true; panelProps.onInput?.(e); }}>
         {children}
       </Panel>
     </div>

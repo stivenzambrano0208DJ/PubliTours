@@ -80,12 +80,12 @@ curl.exe http://localhost:8081/salud      # {"estado":"ok","base_de_datos":"ok"}
 ```
 
 **Verificado (en un entorno temporal que ya se eliminó):** construcción de las imágenes (≈3 min la primera vez), arranque en modo producción,
-las 21 migraciones sobre una base vacía, zona horaria `America/Bogota`, proceso sin permisos de administrador, nginx sirviendo la
+todas las migraciones sobre una base vacía, zona horaria `America/Bogota`, proceso sin permisos de administrador, nginx sirviendo la
 aplicación y las rutas internas (`/ayuda`), la API detrás de nginx, registro con cookie `HttpOnly`, defensa CSRF, errores sin detalles
 internos y `seed:admin`, `cambiar:clave` y `probar:correo` dentro de la imagen. Las fotos subidas **sobreviven a un reinicio** (volumen `uploads`).
 En producción el arranque **falla a propósito** si faltan `JWT_SECRET`, `CORS_ORIGIN`, `EMAIL_USER` o `EMAIL_PASS`: complétalos antes.
 
-**Sin verificar:** la integración continua de GitHub (nunca se ha ejecutado en línea) y todo lo que depende de **HTTPS real**.
+La integración continua de GitHub corre en cada cambio (pruebas del backend y del frontend, recorridos de punta a punta y construcción de las imágenes). **Sin verificar en este entorno local:** lo que depende de **HTTPS real** (en producción lo da Dokploy).
 
 **HTTPS: por qué importa.** La cookie de sesión se marca `Secure` si la petición llega por HTTPS, y el navegador solo deja usar la
 cámara (escáner QR) con HTTPS o en `localhost`.
@@ -138,6 +138,14 @@ docker run --rm -v publitours_uploads:/datos -v "${PWD}:/copia" alpine tar czf /
 > **No uses `docker compose exec … pg_dump > archivo.sql` en Windows PowerShell:** la redirección `>` de PowerShell 5.1 antepone una marca
 > BOM (o guarda en UTF-16) y ensucia el archivo; se comprobó. La forma de arriba (`-f` + `docker compose cp`) sale limpia.
 > En Git Bash, antes de `docker run` con rutas como `/datos`, usa `MSYS_NO_PATHCONV=1` o Git Bash las reescribe.
+
+En Linux o Git Bash la redirección sí es segura:
+
+```bash
+docker compose exec -T db pg_dump -U publitours_app publitours > respaldo-$(date +%F).sql
+docker compose exec -T db psql -U publitours_app publitours < respaldo-AAAA-MM-DD.sql   # restaurar en una base vacía
+docker run --rm -v publitours_uploads:/datos -v "$PWD":/copia alpine tar czf /copia/fotos-$(date +%F).tgz -C /datos .
+```
 
 ```powershell
 # Restaurar en una base vacía (primero crea la base y luego carga el archivo)

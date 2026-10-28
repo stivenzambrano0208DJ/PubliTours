@@ -41,6 +41,14 @@ describe("Modal", () => {
     expect(onCerrar).toHaveBeenCalledTimes(1);
   });
 
+  it("Escape deja de cerrarla cuando la persona ya escribió algo", async () => {
+    const onCerrar = vi.fn();
+    render(<Modal etiqueta="x" onCerrar={onCerrar}><input aria-label="campo" /></Modal>);
+    await userEvent.type(screen.getByLabelText("campo"), "hola");
+    await userEvent.keyboard("{Escape}");
+    expect(onCerrar).not.toHaveBeenCalled();
+  });
+
   it("el fondo la cierra, pero pulsar dentro del panel no; y puede desactivarse", async () => {
     const onCerrar = vi.fn();
     const { container, rerender } = render(<Modal etiqueta="x" onCerrar={onCerrar}><button>a</button></Modal>);
@@ -62,6 +70,18 @@ describe("Modal", () => {
     await userEvent.keyboard("{Escape}");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(abrir).toHaveFocus();
+  });
+
+  it("devuelve el foco a quien la abrió aunque un campo con autoFocus lo haya movido al abrir", async () => {
+    function ConCampo() {
+      const [abierto, setAbierto] = useState(false);
+      return <><button onClick={() => setAbierto(true)}>Abrir</button>{abierto && <Modal etiqueta="x" onCerrar={() => setAbierto(false)}><input aria-label="campo" autoFocus /></Modal>}</>;
+    }
+    render(<ConCampo />);
+    await userEvent.click(screen.getByRole("button", { name: "Abrir" }));
+    expect(screen.getByLabelText("campo")).toHaveFocus();
+    await userEvent.keyboard("{Escape}");
+    expect(screen.getByRole("button", { name: "Abrir" })).toHaveFocus();
   });
 
   it("respeta el campo que la ventana ya enfocó por su cuenta", () => {

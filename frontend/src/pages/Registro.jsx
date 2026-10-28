@@ -6,6 +6,7 @@ import CamposNegocio from "../components/CamposNegocio";
 import LayoutAuth from "../components/auth/LayoutAuth";
 import MarcaAuth from "../components/auth/MarcaAuth";
 import BotonAuth from "../components/auth/BotonAuth";
+import CampoAuth from "../components/auth/CampoAuth";
 import { CAMPO_AUTH_ICONO } from "../estilos";
 
 const NEGOCIO_VACIO = { nombre_negocio: "", categoria: "", municipio: "" };
@@ -25,18 +26,6 @@ function Seccion({ icono, titulo, separada = false, children }) {
       </h2>
       {children}
     </section>
-  );
-}
-
-function Campo({ id, etiqueta, icono, children }) {
-  return (
-    <div>
-      <label className="block font-label-md text-label-md text-on-surface mb-1.5" htmlFor={id}>{etiqueta}</label>
-      <div className="relative flex items-center">
-        <span className="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none" aria-hidden="true">{icono}</span>
-        {children}
-      </div>
-    </div>
   );
 }
 
@@ -127,7 +116,7 @@ export default function Registro() {
           </fieldset>
 
           <Seccion icono="person" titulo="Tu cuenta">
-            <Campo id="nombre" etiqueta="Nombre completo" icono="person">
+            <CampoAuth id="nombre" etiqueta="Nombre completo" icono="person">
               <input
                 id="nombre"
                 autoComplete="name"
@@ -138,9 +127,9 @@ export default function Registro() {
                 value={form.nombre}
                 onChange={(e) => setForm({ ...form, nombre: e.target.value })}
               />
-            </Campo>
+            </CampoAuth>
 
-            <Campo id="email" etiqueta="Correo electrónico" icono="mail">
+            <CampoAuth id="email" etiqueta="Correo electrónico" icono="mail">
               <input
                 id="email"
                 autoComplete="email"
@@ -151,9 +140,9 @@ export default function Registro() {
                 value={form.correo}
                 onChange={(e) => setForm({ ...form, correo: e.target.value })}
               />
-            </Campo>
+            </CampoAuth>
 
-            <Campo id="password" etiqueta="Contraseña" icono="lock">
+            <CampoAuth id="password" etiqueta="Contraseña" icono="lock">
               <input
                 id="password"
                 autoComplete="new-password"
@@ -175,7 +164,7 @@ export default function Registro() {
                   {mostrarPassword ? "visibility_off" : "visibility"}
                 </span>
               </button>
-            </Campo>
+            </CampoAuth>
           </Seccion>
 
           {form.rol === "prestador" && (
