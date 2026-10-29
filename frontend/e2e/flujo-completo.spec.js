@@ -154,19 +154,6 @@ test("4. el turista se registra, encuentra el servicio y solicita una reserva", 
   await expect(page).toHaveURL(/\/sitios\/\d+/);
   urlServicio = new URL(page.url()).pathname;
 
-  // En una pantalla baja (un portátil con la barra del navegador) la tarjeta de reserva cabe entera y queda quieta: el formulario
-  // completo está dentro y lo que no cabe se desplaza por dentro de la tarjeta, sin mover la página
-  await page.setViewportSize({ width: 1366, height: 650 });
-  const tarjetaReserva = page.locator("div[data-tarjeta-fija]");
-  const cajaReserva = await tarjetaReserva.boundingBox();
-  expect(cajaReserva.y + cajaReserva.height).toBeLessThanOrEqual(650);
-  expect(await tarjetaReserva.evaluate((t) => t.scrollHeight > t.clientHeight)).toBe(true); // el formulario no cabe: tiene desplazamiento propio
-  await tarjetaReserva.evaluate((t) => t.scrollTo(0, t.scrollHeight));
-  await expect(tarjetaReserva.getByRole("button", { name: "Reservar" })).toBeInViewport({ ratio: 1 });
-  expect(await page.evaluate(() => window.scrollY)).toBe(0); // la página no se movió
-  expect(Math.round((await tarjetaReserva.boundingBox()).y)).toBe(Math.round(cajaReserva.y)); // ni la tarjeta
-  await tarjetaReserva.evaluate((t) => t.scrollTo(0, 0));
-  await page.setViewportSize({ width: 1440, height: 900 });
   await page.getByLabel(/Número de personas/).fill("2");
   await page.getByPlaceholder(/Viajamos con un niño/).fill("Somos vegetarianos");
   await expect(page.getByText(/\$100\.000 COP/)).toBeVisible(); // 2 personas × $50.000
@@ -1031,47 +1018,36 @@ test("28. al pasar a otra página se vuelve al inicio, no se queda a la altura d
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
 });
 
-test("29. en escritorio la tarjeta de reserva queda fija en la pantalla: no se mueve al desplazar la página", async ({ browser }) => {
+test("29. la tarjeta de reserva está al inicio, junto al título, y se queda allí al bajar (no acompaña hasta el pie)", async ({ browser }) => {
   const page = await abrirSesion(browser);
   await page.setViewportSize({ width: 1366, height: 900 });
   await page.goto(urlServicio);
-  await expect(page.locator("div[data-tarjeta-fija]")).toBeVisible();
+  const tarjeta = page.locator("aside").first();
+  await expect(tarjeta).toBeVisible();
   await page.screenshot({ path: process.env.CAPTURA_SITIO || "test-results/sitio.png" });
+
   // en celular nada se sale de la pantalla (ni siquiera un nombre largo sin espacios)
   await page.setViewportSize({ width: 390, height: 800 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   await page.setViewportSize({ width: 1366, height: 900 });
-  // a la vista desde que abre la página y sin taparse con la portada (queda a su derecha)
-  const caja = await page.locator("div[data-tarjeta-fija]").boundingBox();
-  const hero = await page.locator("header").filter({ has: page.locator("h1") }).first().boundingBox();
+
+  // arriba, a la derecha del título, desde que abre la página
+  const caja = await tarjeta.boundingBox();
+  const encabezado = await page.locator("header").filter({ has: page.locator("h1") }).first().boundingBox();
   expect(caja.y).toBeLessThan(250);
-  expect(caja.x).toBeGreaterThanOrEqual(hero.x + hero.width);
+  expect(caja.x).toBeGreaterThanOrEqual(encabezado.x + encabezado.width);
 
-  // la tarjeta queda fija en la pantalla: en ningún punto del desplazamiento cambia de lugar, y cabe entera en la ventana
-  const posiciones = async (p) => {
-    const fija = p.locator("div[data-tarjeta-fija]");
-    await expect(fija).toBeVisible();
-    const ys = [];
-    for (const y of [0, 300, 800, 5000]) {
-      await p.evaluate((v) => window.scrollTo(0, v), y);
-      await p.waitForTimeout(150);
-      const caja = await fija.boundingBox();
-      ys.push(Math.round(caja.y));
-      expect(caja.y + caja.height).toBeLessThanOrEqual(900);
-    }
-    return ys;
-  };
-  const visitante = await posiciones(page);
-  expect(new Set(visitante).size).toBe(1);
-  // al final de la página el pie deja libre la columna de la tarjeta: ninguno de sus textos queda debajo de ella
-  const bordeTarjeta = (await page.locator("div[data-tarjeta-fija]").boundingBox()).x;
-  const enlacePie = await page.getByRole("contentinfo").getByRole("link", { name: "Términos y condiciones" }).boundingBox();
-  expect(enlacePie.x + enlacePie.width).toBeLessThanOrEqual(bordeTarjeta);
-
-  // también la tarjeta corta del prestador dueño del servicio
-  const dueno = paginas.prestador;
-  await dueno.setViewportSize({ width: 1366, height: 900 });
-  await dueno.goto(urlServicio);
-  await expect(dueno.locator("aside").first().getByText("Este es uno de tus servicios")).toBeVisible();
-  expect(new Set(await posiciones(dueno)).size).toBe(1);
+  // al bajar hasta el final se queda en su sitio de la página (sube con el contenido) y no queda encima del pie
+  const enPagina = async () => page.evaluate(() => {
+    const t = document.querySelector("aside").getBoundingClientRect();
+    const pie = document.querySelector("footer").getBoundingClientRect();
+    return { tarjeta: t.top + window.scrollY, finTarjeta: t.bottom + window.scrollY, pie: pie.top + window.scrollY };
+  });
+  const arriba = await enPagina();
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await page.waitForTimeout(150);
+  const abajo = await enPagina();
+  expect(abajo.tarjeta).toBe(arriba.tarjeta); // no se movió de su lugar en la página
+  expect(abajo.finTarjeta).toBeLessThanOrEqual(abajo.pie); // y termina antes del pie
+  await expect(tarjeta).not.toBeInViewport(); // al llegar al pie ya quedó atrás, arriba
 });

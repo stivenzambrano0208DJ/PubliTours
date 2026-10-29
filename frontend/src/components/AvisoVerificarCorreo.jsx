@@ -46,7 +46,7 @@ export default function AvisoVerificarCorreo() {
   };
 
   return (
-    <div role="region" aria-label="Verifica tu correo" data-libre-tarjeta className="print:hidden w-full bg-tertiary-fixed/60 border-b border-tertiary-fixed-dim text-on-surface">
+    <div role="region" aria-label="Verifica tu correo" className="print:hidden w-full bg-tertiary-fixed/60 border-b border-tertiary-fixed-dim text-on-surface">
       <div className="max-w-[1360px] mx-auto px-gutter py-3 flex flex-col lg:flex-row lg:items-center gap-3">
         <div className="flex items-start gap-2 flex-1 min-w-0">
           <span className="material-symbols-outlined text-on-tertiary-container text-[22px] shrink-0">mark_email_unread</span>
