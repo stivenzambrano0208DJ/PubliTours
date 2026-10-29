@@ -10,7 +10,7 @@ import ResenasSitio from "../components/sitio/ResenasSitio";
 import { Estrellas } from "../components/Estrellas";
 import { useConsulta } from "../hooks/useConsulta";
 import { pesos } from "../utils/moneda";
-import TarjetaFija, { ReservaEnVentana } from "../components/TarjetaFija";
+import TarjetaFija from "../components/TarjetaFija";
 
 
 export default function PaqueteDetalle() {
@@ -164,13 +164,6 @@ export default function PaqueteDetalle() {
             ) : !disponible ? (
               <p className="p-4 rounded-xl bg-surface-container-low text-on-surface-variant font-body-sm text-body-sm">Este paquete no está disponible en este momento.</p>
             ) : !reservaOk ? (
-              <ReservaEnVentana
-                titulo="Reservar paquete"
-                subtitulo={paquete.nombre}
-                icono="inventory_2"
-                boton={usuario ? "Elegir fecha y personas" : "Inicia sesión para reservar"}
-                alPulsar={usuario ? undefined : () => navigate("/login")}
-              >
               <form onSubmit={reservar} className="flex flex-col gap-3">
                 <CamposReserva
                   sitio={{ id: paquete.id, precio: paquete.precio, capacidad: paquete.capacidad }}
@@ -187,7 +180,6 @@ export default function PaqueteDetalle() {
                   <span>{enviando ? "Enviando..." : usuario ? "Reservar paquete" : "Inicia sesión para reservar"}</span>
                 </button>
               </form>
-              </ReservaEnVentana>
             ) : (
               <div className="flex flex-col items-center text-center gap-2 py-2">
                 <span className="material-symbols-outlined text-secondary text-[40px]">check_circle</span>

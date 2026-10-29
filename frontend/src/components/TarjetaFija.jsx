@@ -1,10 +1,10 @@
 import { useLayoutEffect, useRef, useState } from "react";
-import Modal from "./Modal";
 
 const ESCRITORIO = "(min-width: 1024px)"; // lg
 const ARRIBA = 104; // px bajo el encabezado fijo
 const MARGEN = 8; // para que la sombra de la tarjeta no se recorte
 const SEPARACION = 40; // espacio entre el pie de página y la tarjeta
+const ABAJO = 16; // aire entre la tarjeta y el borde inferior de la ventana
 
 // ¿Pantalla de escritorio? Sin matchMedia (pruebas o navegadores viejos) se asume que no, y todo queda como en celular.
 function useEscritorio() {
@@ -19,9 +19,10 @@ function useEscritorio() {
   return escritorio;
 }
 
-// Columna derecha de las páginas de detalle (precio y reserva). En escritorio la tarjeta queda fija en la pantalla: no se mueve
-// al desplazar la página, y el pie de página pasa por debajo dejándole su espacio a la derecha. Para que quepa siempre entera,
-// el formulario largo se abre en una ventana (ver ReservaEnVentana). En celular se muestra en su lugar, como cualquier bloque.
+// Columna derecha de las páginas de detalle (precio y formulario de reserva). En escritorio la tarjeta queda fija en la pantalla:
+// no se mueve al desplazar la página. Si su contenido es más alto que la ventana (por ejemplo, con el calendario abierto), se
+// desplaza solo el contenido, por dentro de la tarjeta. El pie de página pasa por debajo y le deja libre su columna.
+// En celular se muestra en su lugar, como cualquier bloque.
 export default function TarjetaFija({ className = "", children }) {
   const escritorio = useEscritorio();
   const hueco = useRef(null);
@@ -53,45 +54,11 @@ export default function TarjetaFija({ className = "", children }) {
     <aside ref={hueco} className={className}>
       <div
         data-tarjeta-fija={fija ? "" : undefined}
-        className={fija ? "fixed z-10" : undefined}
-        style={fija ? { top: ARRIBA - MARGEN, left: fija.left - MARGEN, width: fija.width + 2 * MARGEN, padding: MARGEN } : undefined}
+        className={fija ? "fixed z-10 overflow-y-auto overscroll-contain [scrollbar-width:thin]" : undefined}
+        style={fija ? { top: ARRIBA - MARGEN, left: fija.left - MARGEN, width: fija.width + 2 * MARGEN, padding: MARGEN, maxHeight: `calc(100vh - ${ARRIBA - MARGEN + ABAJO}px)` } : undefined}
       >
         {children}
       </div>
     </aside>
-  );
-}
-
-const BOTON = "w-full py-3.5 px-4 rounded-xl bg-primary text-on-primary hover:bg-primary-container transition-all font-label-md text-label-md font-bold shadow-lg flex items-center justify-center gap-2";
-
-// El formulario de reserva: en escritorio, un botón en la tarjeta fija que lo abre en una ventana (así la tarjeta siempre cabe en la
-// pantalla); en celular, el formulario directamente en la página. En la ventana, el botón de enviar queda pegado al borde inferior
-// para verse siempre, aunque el formulario sea más alto que la pantalla. `alPulsar` reemplaza la apertura (por ejemplo, ir a iniciar sesión).
-export function ReservaEnVentana({ titulo, subtitulo, boton, icono = "event_available", alPulsar, children }) {
-  const escritorio = useEscritorio();
-  const [abierta, setAbierta] = useState(false);
-  if (!escritorio) return children;
-  return (
-    <>
-      <button type="button" onClick={alPulsar || (() => setAbierta(true))} className={BOTON}>
-        <span className="material-symbols-outlined text-[20px]" aria-hidden="true">{icono}</span>
-        <span>{boton}</span>
-      </button>
-      {abierta && (
-        <Modal
-          etiqueta={titulo}
-          onCerrar={() => setAbierta(false)}
-          className="w-full max-w-md bg-surface-container-lowest rounded-2xl px-6 pt-6 shadow-xl max-h-[92vh] overflow-y-auto [&_button[type=submit]]:sticky [&_button[type=submit]]:bottom-0"
-        >
-          <div className="flex flex-col gap-4 pb-6">
-            <div>
-              <h3 className="font-headline-md text-headline-md text-primary">{titulo}</h3>
-              {subtitulo && <p className="font-body-sm text-body-sm text-on-surface-variant">{subtitulo}</p>}
-            </div>
-            {children}
-          </div>
-        </Modal>
-      )}
-    </>
   );
 }

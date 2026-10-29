@@ -154,13 +154,18 @@ test("4. el turista se registra, encuentra el servicio y solicita una reserva", 
   await expect(page).toHaveURL(/\/sitios\/\d+/);
   urlServicio = new URL(page.url()).pathname;
 
-  await page.setViewportSize({ width: 1366, height: 650 }); // una pantalla baja, como la de un portátil con la barra del navegador
-  await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
-  // la ventana queda por encima de todo (también del encabezado fijo): su título es lo que se ve en su lugar, y el botón cabe en pantalla
-  const ventanaReserva = page.getByRole("dialog", { name: "Reservar" });
-  const titulo = await ventanaReserva.getByRole("heading", { name: "Reservar" }).boundingBox();
-  expect(await page.evaluate(({ x, y }) => !!document.elementFromPoint(x, y)?.closest('[role="dialog"]'), { x: titulo.x + 5, y: titulo.y + titulo.height / 2 })).toBe(true);
-  await expect(ventanaReserva.getByRole("button", { name: "Reservar" })).toBeInViewport({ ratio: 1 });
+  // En una pantalla baja (un portátil con la barra del navegador) la tarjeta de reserva cabe entera y queda quieta: el formulario
+  // completo está dentro y lo que no cabe se desplaza por dentro de la tarjeta, sin mover la página
+  await page.setViewportSize({ width: 1366, height: 650 });
+  const tarjetaReserva = page.locator("div[data-tarjeta-fija]");
+  const cajaReserva = await tarjetaReserva.boundingBox();
+  expect(cajaReserva.y + cajaReserva.height).toBeLessThanOrEqual(650);
+  expect(await tarjetaReserva.evaluate((t) => t.scrollHeight > t.clientHeight)).toBe(true); // el formulario no cabe: tiene desplazamiento propio
+  await tarjetaReserva.evaluate((t) => t.scrollTo(0, t.scrollHeight));
+  await expect(tarjetaReserva.getByRole("button", { name: "Reservar" })).toBeInViewport({ ratio: 1 });
+  expect(await page.evaluate(() => window.scrollY)).toBe(0); // la página no se movió
+  expect(Math.round((await tarjetaReserva.boundingBox()).y)).toBe(Math.round(cajaReserva.y)); // ni la tarjeta
+  await tarjetaReserva.evaluate((t) => t.scrollTo(0, 0));
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.getByLabel(/Número de personas/).fill("2");
   await page.getByPlaceholder(/Viajamos con un niño/).fill("Somos vegetarianos");
@@ -206,7 +211,6 @@ test("6. el turista ve su reserva confirmada y puede cancelar una segunda", asyn
 
   // Segunda reserva en otra fecha y cancelación posterior
   await page.goto(urlServicio);
-  await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
   await page.locator('input[type="date"]').fill(diaDentroDe(3));
   await page.getByRole("button", { name: "Reservar" }).click();
   await expect(page.getByText("Solicitud enviada")).toBeVisible();
@@ -349,7 +353,6 @@ test("11. el prestador arma un paquete con dos servicios y un turista lo reserva
   await turista.getByRole("button", { name: "Cerrar visor" }).click();
   await expect(turista.getByText(SERVICIO)).toBeVisible();
   await expect(turista.getByText(CABALGATA)).toBeVisible();
-  await turista.getByRole("button", { name: "Elegir fecha y personas" }).click();
   await turista.getByLabel(/Número de personas/).fill("2");
   await expect(turista.getByText(/\$120\.000 COP/)).toBeVisible(); // 2 × $60.000
   await turista.getByRole("button", { name: "Reservar paquete" }).click();
@@ -488,11 +491,9 @@ test("15. un correo sin verificar no puede reservar; con el código de verificac
 
   // Puede navegar, pero no reservar
   await page.goto(urlServicio);
-  await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
   await page.getByRole("button", { name: "Reservar" }).click();
   await expect(page.getByText(/Verifica tu correo para continuar/).first()).toBeVisible();
   await expect(page.getByText("Solicitud enviada")).toHaveCount(0);
-  await page.keyboard.press("Escape"); // cierra la ventana de reserva para usar el aviso de la página
 
   // Un código incorrecto no sirve
   await aviso.getByLabel("Código de verificación").fill("000000");
@@ -510,7 +511,6 @@ test("15. un correo sin verificar no puede reservar; con el código de verificac
   await expect(aviso).toHaveCount(0); // el aviso desaparece
 
   // Ahora sí puede reservar
-  await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
   await page.getByRole("button", { name: "Reservar" }).click();
   await expect(page.getByText("Solicitud enviada")).toBeVisible();
 });
@@ -551,7 +551,6 @@ test("17. precios flexibles, calendario de disponibilidad, comprobante con códi
   await expect(page.getByText("10 % de descuento desde 4 personas")).toBeVisible();
 
   const fecha = diaDentroDe(8);
-  await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
   await page.locator('input[type="date"]').first().fill(fecha);
   await page.getByLabel(/Número de personas/).fill("4");
   await page.getByLabel(/De ellas, niños/).fill("2");
@@ -676,7 +675,6 @@ test("20. la política de cancelación se elige, se ve antes de reservar y marca
   const page = await abrirSesion(browser);
   await registrar(page, viajero, "turista");
   await page.goto(urlServicio);
-  await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
   await expect(page.getByText("Cancelación moderada.")).toBeVisible();
   await expect(page.getByText(/Gratis hasta 3 días antes del servicio/)).toBeVisible();
 
@@ -717,7 +715,6 @@ test("21. el prestador registra la asistencia: «no asistió» no permite califi
   await registrar(page, viajero, "turista");
   for (const dias of [4, 5]) {
     await page.goto(urlServicio);
-    await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
     await page.locator('input[type="date"]').first().fill(diaDentroDe(dias));
     await page.getByRole("button", { name: "Reservar" }).click();
     await expect(page.getByText("Solicitud enviada")).toBeVisible();
@@ -851,7 +848,6 @@ test("25. el prestador atiende a un turista con el código del comprobante y reg
   const page = await abrirSesion(browser);
   await registrar(page, viajero, "turista");
   await page.goto(urlServicio);
-  await page.getByRole("button", { name: "Elegir fecha y personas" }).click();
   await page.locator('input[type="date"]').first().fill(diaDentroDe(6));
   await page.getByRole("button", { name: "Reservar" }).click();
   await expect(page.getByText("Solicitud enviada")).toBeVisible();
