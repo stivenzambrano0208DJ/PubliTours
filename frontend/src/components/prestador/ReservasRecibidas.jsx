@@ -8,7 +8,7 @@ import Modal from "../Modal";
 
 
 
-export default function ReservasRecibidas({ reservas, cargando, accionando, onAccion }) {
+export default function ReservasRecibidas({ reservas, cargando, accionando, onAccion, onProblema }) {
   const { confirmar } = useAvisos();
   const [rechazando, setRechazando] = useState(null);
   const [motivo, setMotivo] = useState("");
@@ -98,6 +98,12 @@ export default function ReservasRecibidas({ reservas, cargando, accionando, onAc
                 {r.estado === "rechazada" && r.motivo_rechazo && (
                   <p className="mt-1 font-label-xs text-label-xs text-error">Motivo: {r.motivo_rechazo}</p>
                 )}
+                {onProblema && r.estado !== "pendiente" && (
+                  <button onClick={() => onProblema(r)} className="mt-1 self-start inline-flex items-center gap-1.5 font-label-xs text-label-xs font-semibold text-on-surface-variant hover:text-error transition-colors">
+                    <span className="material-symbols-outlined text-[16px]" aria-hidden="true">report</span>
+                    Tengo un problema con esta reserva
+                  </button>
+                )}
               </div>
             </div>
             {r.estado === "confirmada" && r.fecha_servicio <= hoyISO() && (
@@ -145,7 +151,7 @@ export default function ReservasRecibidas({ reservas, cargando, accionando, onAc
       </div>
 
       {rechazando && (
-        <Modal as="form" etiqueta="Rechazar reserva" onCerrar={() => setRechazando(null)} onSubmit={confirmarRechazo} className="w-full max-w-md bg-surface-container-lowest rounded-2xl p-6 shadow-xl flex flex-col gap-3">
+        <Modal as="form" etiqueta="Rechazar reserva" onCerrar={() => setRechazando(null)} onSubmit={confirmarRechazo} className="w-full max-w-md max-h-[90vh] overflow-y-auto bg-surface-container-lowest rounded-2xl p-6 shadow-xl flex flex-col gap-3">
           <h3 className="font-headline-md text-headline-md text-primary">Rechazar reserva</h3>
           <p className="font-body-sm text-body-sm text-on-surface-variant">
             {rechazando.turista?.nombre} · {rechazando.paquete?.nombre || rechazando.sitio?.nombre} · {rechazando.fecha_servicio}

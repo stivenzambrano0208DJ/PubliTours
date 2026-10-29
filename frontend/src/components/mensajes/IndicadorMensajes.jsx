@@ -1,12 +1,14 @@
 import { Link } from "react-router-dom";
 import { useMensajesSinLeer } from "../../hooks/useMensajesSinLeer";
+import { useIdioma } from "../../context/idioma";
 
 // Acceso a los mensajes desde el encabezado, con el número de mensajes sin leer (se actualiza solo).
 export default function IndicadorMensajes() {
+  const { t } = useIdioma();
   const total = useMensajesSinLeer(true);
   return (
     <Link
-      to="/mensajes" aria-label={total > 0 ? `Mensajes: ${total} sin leer` : "Mensajes"}
+      to="/mensajes" aria-label={total > 0 ? t("Mensajes: {n} sin leer", { n: total }) : t("Mensajes")}
       className="relative w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"
     >
       <span className="material-symbols-outlined text-[24px]" aria-hidden="true">chat</span>

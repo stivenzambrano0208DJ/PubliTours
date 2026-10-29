@@ -1,3 +1,4 @@
+import { useIdioma } from "../../context/idioma";
 function Dato({ icono, etiqueta, children }) {
   return (
     <div className="flex flex-col gap-1 p-3 rounded-xl bg-surface-container-lowest shadow-sm">
@@ -12,14 +13,15 @@ function Dato({ icono, etiqueta, children }) {
 
 // Datos del servicio tal como los registró el prestador; lo que falta se dice con honestidad.
 export default function FichaTecnica({ sitio }) {
+  const { t, td } = useIdioma();
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-surface-container-low">
-      <Dato icono="payments" etiqueta="Precio">
-        {Number(sitio.precio) === 0 ? "Gratuito" : `$${Number(sitio.precio).toLocaleString("es-CO")}`}
+      <Dato icono="payments" etiqueta={t("Precio")}>
+        {Number(sitio.precio) === 0 ? t("Gratuito") : `$${Number(sitio.precio).toLocaleString("es-CO")}`}
       </Dato>
-      <Dato icono="schedule" etiqueta="Horario">{sitio.horario || "No registrado"}</Dato>
-      <Dato icono="category" etiqueta="Categoría">{sitio.categoria}</Dato>
-      <Dato icono="sell" etiqueta="Tipo de viaje">{sitio.tipo_viaje || "No registrado"}</Dato>
+      <Dato icono="schedule" etiqueta={t("Horario")}>{sitio.horario || t("No registrado")}</Dato>
+      <Dato icono="category" etiqueta={t("Categoría")}>{td(sitio.categoria)}</Dato>
+      <Dato icono="sell" etiqueta={t("Tipo de viaje")}>{sitio.tipo_viaje ? sitio.tipo_viaje.split(",").map((v) => v.replace(v.trim(), td(v.trim()))).join(",") : t("No registrado")}</Dato>
     </div>
   );
 }

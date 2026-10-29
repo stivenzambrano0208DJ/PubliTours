@@ -1,8 +1,10 @@
 import { Children, useCallback, useEffect, useRef, useState } from "react";
+import { useIdioma } from "../context/idioma";
 
 // Carrusel horizontal con scroll-snap: avanza solo, tiene flechas y puntos, y se detiene al pasar el mouse
 // o enfocarlo. Muestra 1 elemento en celular, 2 en tablet y 3 en escritorio. Respeta "reducir movimiento".
 export default function Carrusel({ children, intervaloMs = 5000, etiqueta = "Carrusel" }) {
+  const { t } = useIdioma();
   const pista = useRef(null);
   const [indice, setIndice] = useState(0);
   const [visibles, setVisibles] = useState(1);
@@ -77,7 +79,7 @@ export default function Carrusel({ children, intervaloMs = 5000, etiqueta = "Car
         <>
           <button
             type="button"
-            aria-label="Anterior"
+            aria-label={t("Anterior")}
             onClick={() => irA(indice <= 0 ? maximo : indice - 1)}
             className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-surface-container-lowest shadow-lg text-primary items-center justify-center hover:bg-primary-container hover:text-on-primary transition-colors"
           >
@@ -85,7 +87,7 @@ export default function Carrusel({ children, intervaloMs = 5000, etiqueta = "Car
           </button>
           <button
             type="button"
-            aria-label="Siguiente"
+            aria-label={t("Siguiente")}
             onClick={() => irA(indice >= maximo ? 0 : indice + 1)}
             className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-surface-container-lowest shadow-lg text-primary items-center justify-center hover:bg-primary-container hover:text-on-primary transition-colors"
           >

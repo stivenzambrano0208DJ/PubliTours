@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Comision from "../components/Comision";
+import { AvisoSoloEspanol } from "../components/PaginaLegal";
 
 const CATEGORIAS = [
   {
@@ -79,6 +80,7 @@ export default function ConviertetePrestador() {
 
   return (
     <div className="flex flex-col w-full">
+      <div className="max-w-[1360px] w-full mx-auto px-gutter pt-space-md empty:hidden"><AvisoSoloEspanol /></div>
       {/* HERO */}
       <section className="relative w-full overflow-hidden bg-primary text-on-primary">
         <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-secondary-fixed/10 blur-3xl pointer-events-none" />

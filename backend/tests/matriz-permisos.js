@@ -9,6 +9,8 @@
 // uno o varios roles separados por "|" · "+ correo verificado" cuando además se exige el correo confirmado.
 const MATRIZ = {
   "POST /admin/anuncios": "administrador",
+  "GET /admin/invitaciones": "administrador",
+  "POST /admin/invitaciones": "administrador",
   "GET /admin/auditoria": "administrador",
   "PATCH /admin/paquetes/:id/estado": "administrador",
   "GET /admin/paquetes": "administrador",
@@ -98,6 +100,10 @@ const MATRIZ = {
   "GET /usuarios/me": "sesión",
   // Mensajería: la ven solo sus dos partes (el administrador no lee conversaciones; solo ve los mensajes reportados y sus fotos).
   // Abrir una conversación y escribir exigen correo verificado.
+  "GET /admin/casos": "administrador",
+  "PATCH /admin/casos/:id": "administrador",
+  "POST /casos": "turista|prestador + correo verificado",
+  "GET /casos/mios": "turista|prestador",
   "GET /admin/reportes-mensajes": "administrador",
   "PATCH /admin/reportes-mensajes/:id": "administrador",
   "GET /conversaciones": "turista|prestador",

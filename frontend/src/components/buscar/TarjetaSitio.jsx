@@ -3,9 +3,11 @@ import { urlImagen } from "../../api/client";
 import BotonFavorito from "../BotonFavorito";
 import { Estrellas } from "../Estrellas";
 import { CATEGORIA_GRADIENTE } from "../../constants";
+import { useIdioma } from "../../context/idioma";
 
 // Tarjeta de un destino. Un administrador no reserva: en su lugar abre la ficha del servicio.
 export default function TarjetaSitio({ sitio, esAdmin, onReservar, onInfo }) {
+  const { t, td, locale } = useIdioma();
   const navigate = useNavigate();
   const gratis = Number(sitio.precio) === 0;
 
@@ -19,9 +21,14 @@ export default function TarjetaSitio({ sitio, esAdmin, onReservar, onInfo }) {
       >
         {sitio.imagen_url && <div className="absolute inset-0 bg-gradient-to-t from-primary/70 via-primary/10 to-transparent" />}
         <div className="relative flex items-center justify-between">
-          <span className="px-3 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-primary font-label-xs text-label-xs font-semibold shadow-sm">
-            {sitio.categoria}
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="px-3 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-primary font-label-xs text-label-xs font-semibold shadow-sm">
+              {td(sitio.categoria)}
+            </span>
+            {sitio.es_nuevo && (
+              <span className="px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-xs text-label-xs font-bold shadow-sm">{t("Nuevo")}</span>
+            )}
+          </div>
           <BotonFavorito sitioId={sitio.id} />
         </div>
         <div className="relative flex items-center gap-1.5 font-label-md text-label-md text-on-primary">
@@ -41,7 +48,7 @@ export default function TarjetaSitio({ sitio, esAdmin, onReservar, onInfo }) {
             </div>
           )}
           <p className="font-body-sm text-body-sm text-on-surface-variant mt-1.5 line-clamp-2">
-            {sitio.descripcion || "Sin descripción disponible."}
+            {sitio.descripcion || t("Sin descripción disponible.")}
           </p>
           {sitio.tipo_viaje && (
             <div className="flex flex-wrap gap-1.5 mt-3">
@@ -54,10 +61,10 @@ export default function TarjetaSitio({ sitio, esAdmin, onReservar, onInfo }) {
 
         <div className="pt-space-sm flex items-center justify-between">
           <div className="flex flex-col">
-            <span className="font-label-xs text-label-xs text-on-surface-variant uppercase">Desde</span>
+            <span className="font-label-xs text-label-xs text-on-surface-variant uppercase">{t("Desde")}</span>
             <div className="flex items-baseline gap-1">
               <span className="font-title-lg text-title-lg font-bold text-primary">
-                {gratis ? "Gratuito" : `$${Number(sitio.precio).toLocaleString("es-CO")}`}
+                {gratis ? t("Gratuito") : `$${Number(sitio.precio).toLocaleString(locale)}`}
               </span>
               {!gratis && <span className="font-body-sm text-body-sm text-on-surface-variant">COP</span>}
             </div>
@@ -67,7 +74,7 @@ export default function TarjetaSitio({ sitio, esAdmin, onReservar, onInfo }) {
               onClick={() => navigate(`/sitios/${sitio.id}`)}
               className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high shadow-sm transition-all"
             >
-              <span>Ver detalle</span>
+              <span>{t("Ver detalle")}</span>
               <span className="material-symbols-outlined text-[16px]">visibility</span>
             </button>
             {esAdmin ? (
@@ -75,7 +82,7 @@ export default function TarjetaSitio({ sitio, esAdmin, onReservar, onInfo }) {
                 onClick={() => onInfo(sitio)}
                 className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-surface-container text-primary font-label-md text-label-md hover:bg-surface-container-high shadow-sm transition-all"
               >
-                <span>Más información</span>
+                <span>{t("Más información")}</span>
                 <span className="material-symbols-outlined text-[16px]">info</span>
               </button>
             ) : (
@@ -83,7 +90,7 @@ export default function TarjetaSitio({ sitio, esAdmin, onReservar, onInfo }) {
                 onClick={() => onReservar(sitio)}
                 className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container shadow-sm transition-all"
               >
-                <span>Reservar</span>
+                <span>{t("Reservar")}</span>
                 <span className="material-symbols-outlined text-[16px]">bookmark_added</span>
               </button>
             )}

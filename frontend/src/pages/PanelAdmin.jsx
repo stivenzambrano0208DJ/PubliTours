@@ -10,6 +10,8 @@ import TendenciasAdmin from "../components/admin/TendenciasAdmin";
 import AuditoriaAdmin from "../components/admin/AuditoriaAdmin";
 import AnunciosAdmin from "../components/admin/AnunciosAdmin";
 import ReportesMensajesAdmin from "../components/admin/ReportesMensajesAdmin";
+import CasosAdmin from "../components/admin/CasosAdmin";
+import InvitacionesAdmin from "../components/admin/InvitacionesAdmin";
 import { useAvisos } from "../context/avisos";
 
 const TABS = [
@@ -18,9 +20,11 @@ const TABS = [
   { id: "servicios", label: "Servicios", icono: "map" },
   { id: "paquetes", label: "Paquetes", icono: "inventory_2" },
   { id: "resenas", label: "Reseñas", icono: "star" },
+  { id: "casos", label: "Casos de soporte", icono: "support_agent" },
   { id: "mensajes", label: "Mensajes reportados", icono: "flag" },
   { id: "tendencias", label: "Tendencias", icono: "monitoring" },
   { id: "anuncios", label: "Anuncios", icono: "campaign" },
+  { id: "invitaciones", label: "Invitar negocios", icono: "person_add" },
   { id: "auditoria", label: "Historial", icono: "history" },
 ];
 
@@ -114,9 +118,11 @@ export default function PanelAdmin() {
       {tab === "servicios" && <ServiciosAdmin />}
       {tab === "paquetes" && <PaquetesAdmin />}
       {tab === "resenas" && <ResenasAdmin />}
+      {tab === "casos" && <CasosAdmin />}
       {tab === "mensajes" && <ReportesMensajesAdmin />}
       {tab === "tendencias" && <TendenciasAdmin />}
       {tab === "anuncios" && <AnunciosAdmin />}
+      {tab === "invitaciones" && <InvitacionesAdmin />}
       {tab === "auditoria" && <AuditoriaAdmin />}
 
       {tab === "resumen" && <>

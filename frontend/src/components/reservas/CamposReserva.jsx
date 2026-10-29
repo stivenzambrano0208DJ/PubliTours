@@ -5,6 +5,7 @@ import { fechaMinima } from "../../constants";
 import CalendarioDisponibilidad from "./CalendarioDisponibilidad";
 import { pesos } from "../../utils/moneda";
 import { CAMPO_ANCHO } from "../../estilos";
+import { useIdioma } from "../../context/idioma";
 
 const CAMPO_RESERVA = `mt-1.5 ${CAMPO_ANCHO}`;
 
@@ -17,6 +18,7 @@ export default function CamposReserva({
   cargarDisponibilidad = (mes) => api.disponibilidadSitio(sitio.id, mes),
   cotizar = api.cotizarSitio,
 }) {
+  const { t } = useIdioma();
   const [bloqueadas, setBloqueadas] = useState([]);
   const [verCalendario, setVerCalendario] = useState(false);
   const [cotizacion, setCotizacion] = useState(null);
@@ -49,7 +51,7 @@ export default function CamposReserva({
     <>
       <div>
         <label className="font-label-md text-label-md text-on-surface">
-          Fecha del servicio
+          {t("Fecha del servicio")}
           <input
             type="date"
             required
@@ -61,7 +63,7 @@ export default function CamposReserva({
         </label>
         <button type="button" onClick={() => setVerCalendario((v) => !v)} aria-expanded={verCalendario} className="mt-1.5 inline-flex items-center gap-1 font-label-xs text-label-xs text-secondary font-semibold hover:underline">
           <span className="material-symbols-outlined text-[16px]">calendar_month</span>
-          {verCalendario ? "Ocultar calendario" : "Ver calendario de disponibilidad"}
+          {verCalendario ? t("Ocultar calendario") : t("Ver calendario de disponibilidad")}
         </button>
       </div>
       {verCalendario && (
@@ -74,13 +76,13 @@ export default function CamposReserva({
       {bloqueo && (
         <p className="flex items-start gap-1.5 text-error font-body-sm text-body-sm">
           <span className="material-symbols-outlined text-[18px] shrink-0">event_busy</span>
-          El prestador no atiende ese día{bloqueo.motivo ? ` (${bloqueo.motivo})` : ""}. Elige otra fecha.
+          {bloqueo.motivo ? t("El prestador no atiende ese día ({motivo}). Elige otra fecha.", { motivo: bloqueo.motivo }) : t("El prestador no atiende ese día. Elige otra fecha.")}
         </p>
       )}
 
       <div className={mostrarNinos ? "grid grid-cols-2 gap-3" : ""}>
         <label className="font-label-md text-label-md text-on-surface">
-          Número de personas
+          {t("Número de personas")}
           <input
             type="number"
             required
@@ -90,11 +92,11 @@ export default function CamposReserva({
             onChange={(e) => onCambio({ ...valores, personas: e.target.value })}
             className={CAMPO_RESERVA}
           />
-          {sitio.capacidad && <span className="font-label-xs text-label-xs text-on-surface-variant">Cupo máximo: {sitio.capacidad} personas por día.</span>}
+          {sitio.capacidad && <span className="font-label-xs text-label-xs text-on-surface-variant">{t("Cupo máximo: {n} personas por día.", { n: sitio.capacidad })}</span>}
         </label>
         {mostrarNinos && (
           <label className="font-label-md text-label-md text-on-surface">
-            De ellas, niños
+            {t("De ellas, niños")}
             <input
               type="number"
               min={0}
@@ -103,17 +105,17 @@ export default function CamposReserva({
               onChange={(e) => onCambio({ ...valores, ninos: e.target.value })}
               className={CAMPO_RESERVA}
             />
-            <span className="font-label-xs text-label-xs text-on-surface-variant">Con tarifa de niño.</span>
+            <span className="font-label-xs text-label-xs text-on-surface-variant">{t("Con tarifa de niño.")}</span>
           </label>
         )}
       </div>
 
       <label className="font-label-md text-label-md text-on-surface">
-        Nota para el prestador <span className="text-on-surface-variant font-normal">(opcional)</span>
+        {t("Nota para el prestador")} <span className="text-on-surface-variant font-normal">{t("(opcional)")}</span>
         <textarea
           rows={2}
           maxLength={500}
-          placeholder="Ej. Viajamos con un niño, necesitamos guía en español…"
+          placeholder={t("Ej. Viajamos con un niño, necesitamos guía en español…")}
           value={valores.nota}
           onChange={(e) => onCambio({ ...valores, nota: e.target.value })}
           className={`${CAMPO_RESERVA} resize-none`}
@@ -122,15 +124,15 @@ export default function CamposReserva({
 
       <div className="flex flex-col gap-1 p-3 rounded-xl bg-surface-container-low">
         <div className="flex items-center justify-between">
-          <span className="font-label-md text-label-md text-on-surface-variant">Total estimado</span>
+          <span className="font-label-md text-label-md text-on-surface-variant">{t("Total estimado")}</span>
           <span className="font-title-sm text-title-sm text-primary font-bold">{total === 0 ? "Gratuito" : `${pesos(total)} COP`}</span>
         </div>
         {avanzada && cotizacion && (
           <p className="font-label-xs text-label-xs text-on-surface-variant">
-            {cotizacion.temporada && <>Tarifa «{cotizacion.temporada}». </>}
-            {cotizacion.adultos} adulto{cotizacion.adultos === 1 ? "" : "s"} × {pesos(cotizacion.precio_adulto)}
-            {cotizacion.ninos > 0 && <> + {cotizacion.ninos} niño{cotizacion.ninos === 1 ? "" : "s"} × {pesos(cotizacion.precio_nino)}</>}
-            {cotizacion.descuento > 0 && <> · descuento por grupo {cotizacion.descuento_pct} % (−{pesos(cotizacion.descuento)})</>}
+            {cotizacion.temporada && <>{t("Tarifa «{nombre}».", { nombre: cotizacion.temporada })} </>}
+            {(cotizacion.adultos === 1 ? t("1 adulto", { n: cotizacion.adultos }) : t("{n} adultos", { n: cotizacion.adultos }))} × {pesos(cotizacion.precio_adulto)}
+            {cotizacion.ninos > 0 && <> + {(cotizacion.ninos === 1 ? t("1 niño", { n: cotizacion.ninos }) : t("{n} niños", { n: cotizacion.ninos }))} × {pesos(cotizacion.precio_nino)}</>}
+            {cotizacion.descuento > 0 && <> · {t("descuento por grupo {pct} %", { pct: cotizacion.descuento_pct })} (−{pesos(cotizacion.descuento)})</>}
           </p>
         )}
       </div>

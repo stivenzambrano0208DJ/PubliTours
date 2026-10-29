@@ -10,6 +10,7 @@ const politicas = require("../politicas");
 const { hoyLocal } = require("../utils/fechas");
 const { prestadorDeUsuario } = require("./negocioPropio");
 const mensajeService = require("./mensajeService");
+const casoService = require("./casoService");
 
 
 // Descarga de datos personales: todo lo que la plataforma guarda sobre la persona, sin contraseñas ni códigos.
@@ -36,6 +37,7 @@ async function exportarDatos(usuario_id) {
     cuenta: usuario,
     reservas, resenas, favoritos, itinerarios, notificaciones,
     mensajes: await mensajeService.exportarMensajes({ id: usuario_id }), // sus conversaciones (de las fotos, solo cuántas hay)
+    casos_soporte: await casoService.exportarCasos(usuario_id),
   };
   if (prestador) {
     datos.negocio = prestador;
@@ -74,6 +76,7 @@ async function eliminarCuenta({ usuario_id, password }) {
   await sequelize.transaction(async (transaction) => {
     // Sus conversaciones (como turista y como dueño de un negocio) se borran con todos sus mensajes y fotos.
     fotosDeMensajes = await mensajeService.eliminarConversacionesDe(usuario_id, transaction);
+    await casoService.eliminarCasosDe(usuario_id, transaction); // sus casos de soporte llevan texto libre suyo
     const donde = { where: { usuario_id }, transaction };
     await Promise.all([Favorito.destroy(donde), Notificacion.destroy(donde), CodigoVerificacion.destroy(donde), PasswordReset.destroy(donde)]);
     await Itinerario.destroy({ where: { turista_id: usuario_id }, transaction }); // sus ítems caen en cascada

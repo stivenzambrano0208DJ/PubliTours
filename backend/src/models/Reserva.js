@@ -24,6 +24,7 @@ const Reserva = sequelize.define("Reserva", {
   cancelacion_tardia: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }, // el turista canceló una confirmada fuera del plazo
   cierre_automatico: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }, // se completó sola porque el prestador no registró la asistencia
   aviso_cierre_en: { type: DataTypes.DATE, allowNull: true }, // cuándo se le recordó al prestador registrar la asistencia
+  recordatorio_resena_en: { type: DataTypes.DATE, allowNull: true }, // cuándo se le recordó a la turista calificar (una sola vez)
   comision_pct: { type: DataTypes.DECIMAL(4, 1), allowNull: true }, // % de comisión estimada, congelado al confirmar
   comision: { type: DataTypes.DECIMAL(12, 2), allowNull: true }, // comisión estimada (no se cobra todavía)
   nota: { type: DataTypes.TEXT, allowNull: true },

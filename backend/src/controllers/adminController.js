@@ -2,6 +2,7 @@ const adminService = require("../services/adminService");
 const mensajeService = require("../services/mensajeService");
 const auditoria = require("../services/auditoriaService");
 const reportes = require("../services/adminReportesService");
+const invitaciones = require("../services/invitacionService");
 const { ErrorHttp } = require("../utils/errores");
 
 // Zona del administrador: la moderación y las listas viven en services/adminService.js, los reportes en adminReportesService.js.
@@ -49,4 +50,7 @@ const anunciar = async (req, res) => {
   return res.status(201).json(resultado);
 };
 
-module.exports = { listarReportesMensajes, resolverReporteMensaje, tendencias, descargarTendencias, historial, anunciar, listarPaquetes, moderarPaquete, listarUsuarios, cambiarEstadoUsuario, listarSitios, moderarSitio, listarResenas, eliminarResena };
+const invitarNegocio = async (req, res) => res.status(201).json(await invitaciones.invitar({ ...req.body, admin_id: actor(req) }));
+const listarInvitaciones = async (req, res) => res.json(await invitaciones.listar());
+
+module.exports = { invitarNegocio, listarInvitaciones, listarReportesMensajes, resolverReporteMensaje, tendencias, descargarTendencias, historial, anunciar, listarPaquetes, moderarPaquete, listarUsuarios, cambiarEstadoUsuario, listarSitios, moderarSitio, listarResenas, eliminarResena };

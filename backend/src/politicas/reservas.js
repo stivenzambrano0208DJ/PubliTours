@@ -7,6 +7,10 @@ const { esAdministrador, exigir } = require("./comun");
 const puedeVerReserva = (usuario, reserva) =>
   reserva.turista_id === usuario.id || reserva.prestador?.usuario_id === usuario.id || esAdministrador(usuario);
 
+// ¿Es parte de la reserva? La turista que reservó o el negocio que la recibió: los únicos que pueden abrir un caso de soporte sobre ella.
+const esParteDeLaReserva = (usuario, reserva) =>
+  Boolean(reserva) && (reserva.turista_id === usuario.id || reserva.prestador?.usuario_id === usuario.id);
+
 // ¿Puede esta cuenta de prestador gestionar (confirmar, rechazar, registrar asistencia) las reservas de ese negocio?
 const puedeGestionarReserva = (usuario_id, negocio) => Boolean(negocio) && negocio.usuario_id === usuario_id;
 const exigirGestionarReserva = (usuario_id, negocio) =>
@@ -22,5 +26,5 @@ const exigirNoEsAutoReserva = (turista_id, negocio) =>
   exigir(!esAutoReserva(turista_id, negocio), 400, "No puedes reservar un servicio de tu propio negocio.");
 
 module.exports = {
-  puedeVerReserva, puedeGestionarReserva, exigirGestionarReserva, esTuristaDeLaReserva, exigirTuristaDeLaReserva, esAutoReserva, exigirNoEsAutoReserva,
+  puedeVerReserva, esParteDeLaReserva, puedeGestionarReserva, exigirGestionarReserva, esTuristaDeLaReserva, exigirTuristaDeLaReserva, esAutoReserva, exigirNoEsAutoReserva,
 };

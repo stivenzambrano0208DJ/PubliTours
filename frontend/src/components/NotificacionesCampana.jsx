@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api/client";
+import { useIdioma } from "../context/idioma";
 
 const INTERVALO_MS = 15000;
 const ICONOS = {
@@ -28,16 +29,17 @@ const ICONOS = {
 
 const destinoDe = (n) => (n.tipo === "mensaje_nuevo" || n.tipo === "mensaje_retirado" ? "/mensajes" : n.tipo === "mensaje_reportado" ? "/admin" : n.tipo === "nueva_reserva" || n.tipo === "asistencia_pendiente" ? "/mi-negocio" : n.tipo === "reserva_cancelada" ? "/mi-negocio" : n.tipo === "nueva_resena" ? "/mi-negocio" : n.tipo === "prestador_nuevo" ? "/admin" : n.tipo.startsWith("prestador_") || n.tipo.startsWith("sitio_") ? "/mi-negocio" : n.tipo === "resena_respondida" ? "/mis-reservas" : n.tipo.startsWith("reserva_") ? "/mis-reservas" : null);
 
-function tiempoRelativo(fecha) {
+function tiempoRelativo(fecha, t, locale) {
   const min = Math.floor((Date.now() - new Date(fecha).getTime()) / 60000);
-  if (min < 1) return "hace un momento";
-  if (min < 60) return `hace ${min} min`;
-  if (min < 1440) return `hace ${Math.floor(min / 60)} h`;
-  return new Date(fecha).toLocaleDateString("es-CO");
+  if (min < 1) return t("hace un momento");
+  if (min < 60) return t("hace {n} min", { n: min });
+  if (min < 1440) return t("hace {n} h", { n: Math.floor(min / 60) });
+  return new Date(fecha).toLocaleDateString(locale);
 }
 
 // Campana con contador, lista desplegable y alerta emergente cuando llega una notificación nueva.
 export default function NotificacionesCampana() {
+  const { t, locale } = useIdioma();
   const navigate = useNavigate();
   const [notificaciones, setNotificaciones] = useState([]);
   const [abierto, setAbierto] = useState(false);
@@ -49,7 +51,7 @@ export default function NotificacionesCampana() {
     setNotificaciones(lista);
     const noLeidas = lista.filter((n) => !n.leido);
     if (vistas.current === null) {
-      if (noLeidas.length > 0) setAlerta(noLeidas.length === 1 ? noLeidas[0] : { id: "resumen", tipo: "resumen", mensaje: `Tienes ${noLeidas.length} notificaciones sin leer.` });
+      if (noLeidas.length > 0) setAlerta(noLeidas.length === 1 ? noLeidas[0] : { id: "resumen", tipo: "resumen", mensaje: t("Tienes {n} notificaciones sin leer.", { n: noLeidas.length }) });
     } else {
       const nueva = noLeidas.find((n) => !vistas.current.has(n.id));
       if (nueva) setAlerta(nueva);
@@ -57,7 +59,7 @@ export default function NotificacionesCampana() {
     vistas.current = new Set(lista.map((n) => n.id));
   }).catch(() => {
     /* sin conexión o sesión vencida: se reintenta en el siguiente ciclo */
-  }), []);
+  }), [t]);
 
   useEffect(() => {
     cargar();
@@ -102,7 +104,7 @@ export default function NotificacionesCampana() {
         <button
           onClick={() => setAbierto((v) => !v)}
           className="relative p-2 rounded-xl text-on-surface hover:bg-surface-container transition-colors"
-          aria-label="Notificaciones"
+          aria-label={t("Notificaciones")}
         >
           <span className="material-symbols-outlined text-[24px]">{noLeidas ? "notifications_active" : "notifications"}</span>
           {noLeidas > 0 && (
@@ -115,16 +117,16 @@ export default function NotificacionesCampana() {
         {abierto && (
           <div className="absolute right-0 top-full mt-2 w-80 max-w-[90vw] rounded-2xl bg-surface-container-lowest shadow-[0_20px_40px_-8px_rgba(6,78,59,0.18)] border border-surface-container-high overflow-hidden z-50">
             <div className="flex items-center justify-between px-4 py-3 border-b border-surface-container-high">
-              <span className="font-title-sm text-title-sm text-on-surface font-semibold">Notificaciones</span>
+              <span className="font-title-sm text-title-sm text-on-surface font-semibold">{t("Notificaciones")}</span>
               {noLeidas > 0 && (
                 <button onClick={marcarTodas} className="font-label-xs text-label-xs text-secondary font-semibold hover:underline">
-                  Marcar todas como leídas
+                  {t("Marcar todas como leídas")}
                 </button>
               )}
             </div>
             <div className="max-h-96 overflow-y-auto">
               {notificaciones.length === 0 && (
-                <p className="px-4 py-6 text-center font-body-sm text-body-sm text-on-surface-variant">Aún no tienes notificaciones.</p>
+                <p className="px-4 py-6 text-center font-body-sm text-body-sm text-on-surface-variant">{t("Aún no tienes notificaciones.")}</p>
               )}
               {notificaciones.map((n) => (
                 <button
@@ -137,7 +139,7 @@ export default function NotificacionesCampana() {
                   </span>
                   <span className="flex-1 min-w-0">
                     <span className={`block font-body-sm text-body-sm ${n.leido ? "text-on-surface-variant" : "text-on-surface font-semibold"}`}>{n.mensaje}</span>
-                    <span className="block font-label-xs text-label-xs text-outline mt-0.5">{tiempoRelativo(n.fecha)}</span>
+                    <span className="block font-label-xs text-label-xs text-outline mt-0.5">{tiempoRelativo(n.fecha, t, locale)}</span>
                   </span>
                   {!n.leido && <span className="w-2 h-2 rounded-full bg-secondary mt-1.5 shrink-0" />}
                 </button>
@@ -154,20 +156,20 @@ export default function NotificacionesCampana() {
         >
           <span className="material-symbols-outlined text-[26px] text-tertiary-fixed shrink-0">{ICONOS[alerta.tipo] || "notifications_active"}</span>
           <div className="flex-1 min-w-0">
-            <p className="font-title-sm text-title-sm font-semibold">{alerta.tipo === "nueva_reserva" ? "¡Nueva reserva!" : "Notificación"}</p>
+            <p className="font-title-sm text-title-sm font-semibold">{alerta.tipo === "nueva_reserva" ? t("¡Nueva reserva!") : t("Notificación")}</p>
             <p className="font-body-sm text-body-sm opacity-90 mt-0.5">{alerta.mensaje}</p>
             {alerta.id !== "resumen" && destinoDe(alerta) && (
               <button onClick={() => abrir(alerta)} className="mt-2 font-label-xs text-label-xs font-semibold underline">
-                Ver ahora
+                {t("Ver ahora")}
               </button>
             )}
             {alerta.id === "resumen" && (
               <button onClick={() => { setAlerta(null); setAbierto(true); }} className="mt-2 font-label-xs text-label-xs font-semibold underline">
-                Ver notificaciones
+                {t("Ver notificaciones")}
               </button>
             )}
           </div>
-          <button onClick={() => setAlerta(null)} aria-label="Cerrar" className="opacity-80 hover:opacity-100">
+          <button onClick={() => setAlerta(null)} aria-label={t("Cerrar")} className="opacity-80 hover:opacity-100">
             <span className="material-symbols-outlined text-[18px]">close</span>
           </button>
         </div>

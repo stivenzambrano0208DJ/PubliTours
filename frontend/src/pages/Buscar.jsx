@@ -10,11 +10,12 @@ import Paginacion from "../components/buscar/Paginacion";
 import BannerItinerario from "../components/buscar/BannerItinerario";
 import ModalReservaRapida from "../components/buscar/ModalReservaRapida";
 import ModalInfoSitio from "../components/buscar/ModalInfoSitio";
+import { useIdioma } from "../context/idioma";
 
-const VISTAS = [{ id: "lista", icono: "grid_view", label: "Lista" }, { id: "mapa", icono: "map", label: "Mapa" }];
 
 // Explorar destinos: buscador, filtros, resultados (lista o mapa) y reserva rápida. La lógica de búsqueda vive en useBusquedaSitios.
 export default function Buscar() {
+  const { t } = useIdioma();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { usuario } = useAuth();
@@ -47,10 +48,10 @@ export default function Buscar() {
       <main className="max-w-[1360px] mx-auto px-gutter py-space-xl w-full">
         <div className="flex items-center justify-between mb-space-lg flex-wrap gap-2">
           <span className="font-title-lg text-title-lg text-on-surface font-semibold">
-            {cargando ? "Buscando..." : `${resultado.total} destino(s) encontrado(s)`}
+            {cargando ? t("Buscando...") : t("{n} destino(s) encontrado(s)", { n: resultado.total })}
           </span>
           <div className="inline-flex rounded-xl bg-surface-container p-1">
-            {VISTAS.map((v) => (
+            {[{ id: "lista", icono: "grid_view", label: t("Lista") }, { id: "mapa", icono: "map", label: t("Mapa") }].map((v) => (
               <button
                 key={v.id}
                 onClick={() => busqueda.setVista(v.id)}
@@ -66,11 +67,11 @@ export default function Buscar() {
         {error && <p className="text-error font-body-sm text-body-sm mb-4">{error}</p>}
 
         {!cargando && resultado.resultados.length === 0 && !error && (
-          <p className="text-on-surface-variant font-body-md text-body-md">No se encontraron resultados. Intenta ampliar los filtros de búsqueda.</p>
+          <p className="text-on-surface-variant font-body-md text-body-md">{t("No se encontraron resultados. Intenta ampliar los filtros de búsqueda.")}</p>
         )}
 
         {vista === "mapa" && (busqueda.cargandoMapa ? (
-          <p className="text-on-surface-variant font-body-md text-body-md">Cargando mapa...</p>
+          <p className="text-on-surface-variant font-body-md text-body-md">{t("Cargando mapa...")}</p>
         ) : (
           <MapaSitios sitios={busqueda.sitiosMapa} ubicacionUsuario={filtros.lat && filtros.lng ? { lat: Number(filtros.lat), lng: Number(filtros.lng) } : null} />
         ))}

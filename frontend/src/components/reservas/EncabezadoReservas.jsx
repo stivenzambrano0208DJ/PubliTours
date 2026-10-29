@@ -1,5 +1,6 @@
 import { urlImagen } from "../../api/client";
 import { CATEGORIA_ICONOS } from "../../constants";
+import { useIdioma } from "../../context/idioma";
 
 function Cifra({ etiqueta, valor, color }) {
   return (
@@ -12,24 +13,25 @@ function Cifra({ etiqueta, valor, color }) {
 
 // Saludo y tres cifras reales del viajero.
 export function ResumenViajero({ nombre, proximaFecha, totalConfirmado, totalReservas }) {
+  const { t, locale } = useIdioma();
   return (
     <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-space-lg pb-space-lg">
       <div className="space-y-space-xs max-w-2xl">
         <div className="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container-high text-secondary font-label-xs text-label-xs uppercase tracking-widest">
           <span className="w-2 h-2 rounded-full bg-secondary animate-pulse" />
-          Portal del Viajero
+          {t("Portal del Viajero")}
         </div>
         <h1 className="font-headline-xl text-headline-xl text-primary font-bold tracking-tight">
-          {nombre ? `¡Hola, ${nombre}!` : "Mis Reservas"}
+          {nombre ? t("¡Hola, {nombre}!", { nombre }) : t("Mis Reservas")}
         </h1>
         <p className="font-body-lg text-body-lg text-on-surface-variant">
-          Consulta el estado real de tus solicitudes de reserva con los prestadores del Caquetá.
+          {t("Consulta el estado real de tus solicitudes de reserva con los prestadores del Caquetá.")}
         </p>
       </div>
       <div className="grid grid-cols-3 gap-space-sm bg-surface-container-low p-space-sm rounded-2xl shadow-sm self-start lg:self-auto">
-        <Cifra etiqueta="Próxima confirmada" valor={proximaFecha || "—"} color="text-primary" />
-        <Cifra etiqueta="Total confirmado" valor={`$${totalConfirmado.toLocaleString("es-CO")}`} color="text-secondary" />
-        <Cifra etiqueta="Reservas totales" valor={totalReservas} color="text-on-tertiary-container" />
+        <Cifra etiqueta={t("Próxima confirmada")} valor={proximaFecha || "—"} color="text-primary" />
+        <Cifra etiqueta={t("Total confirmado")} valor={`$${totalConfirmado.toLocaleString(locale)}`} color="text-secondary" />
+        <Cifra etiqueta={t("Reservas totales")} valor={totalReservas} color="text-on-tertiary-container" />
       </div>
     </div>
   );
@@ -37,6 +39,7 @@ export function ResumenViajero({ nombre, proximaFecha, totalConfirmado, totalRes
 
 // El próximo viaje confirmado, solo con datos reales (sin inventar guía, clima ni cronograma).
 export function ProximoViaje({ reserva }) {
+  const { t, locale } = useIdioma();
   return (
     <div className="mb-space-lg relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-container to-secondary text-on-primary p-space-lg shadow-[0_12px_36px_-6px_rgba(6,78,59,0.2)] flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
       <div className="flex items-center gap-space-md">
@@ -48,7 +51,7 @@ export function ProximoViaje({ reserva }) {
           )}
         </div>
         <div>
-          <span className="font-label-xs text-label-xs uppercase tracking-widest text-tertiary-fixed font-semibold">Tu próximo viaje confirmado</span>
+          <span className="font-label-xs text-label-xs uppercase tracking-widest text-tertiary-fixed font-semibold">{t("Tu próximo viaje confirmado")}</span>
           <h2 className="font-title-lg text-title-lg font-bold">{reserva.paquete?.nombre || reserva.sitio?.nombre}</h2>
           <div className="flex flex-wrap items-center gap-x-space-md gap-y-1 font-body-sm text-body-sm text-on-primary-container mt-1">
             <span className="flex items-center gap-1">
@@ -69,9 +72,9 @@ export function ProximoViaje({ reserva }) {
         </div>
       </div>
       <div className="text-right shrink-0">
-        <span className="font-label-xs text-label-xs text-tertiary-fixed uppercase block">Valor</span>
+        <span className="font-label-xs text-label-xs text-tertiary-fixed uppercase block">{t("Valor")}</span>
         <span className="font-title-lg text-title-lg font-bold">
-          {Number(reserva.total) === 0 ? "Gratuito" : Number(reserva.total).toLocaleString("es-CO")}
+          {Number(reserva.total) === 0 ? t("Gratuito") : Number(reserva.total).toLocaleString(locale)}
         </span>
       </div>
     </div>

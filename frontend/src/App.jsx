@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect } from "react";
+import { IdiomaProvider } from "./context/IdiomaContext";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -41,6 +42,7 @@ function VolverArriba() {
 
 export default function App() {
   return (
+    <IdiomaProvider>
     <AvisosProvider>
     <AuthProvider>
       <FavoritosProvider>
@@ -95,5 +97,6 @@ export default function App() {
       </FavoritosProvider>
     </AuthProvider>
     </AvisosProvider>
+    </IdiomaProvider>
   );
 }

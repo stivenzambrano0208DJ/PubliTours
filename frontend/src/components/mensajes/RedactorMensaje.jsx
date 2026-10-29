@@ -2,10 +2,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useConfiguracion } from "../../hooks/useConfiguracion";
 import { admitirFotos, TIPOS_FOTO } from "../../utils/fotos";
 import { prepararFoto } from "../../utils/imagenes";
+import { useIdioma } from "../../context/idioma";
 
 // Caja para escribir un mensaje, con fotos opcionales. Los topes (largo, cantidad y tamaño de fotos) los manda el servidor en /configuracion:
 // mientras no han llegado no se ofrece adjuntar fotos en vez de inventar números. `onEnviar(texto, fotos)` debe lanzar un error si falla.
-export default function RedactorMensaje({ onEnviar, placeholder = "Escribe tu mensaje…", textoBoton = "Enviar", autoFocus = false, deshabilitado = false }) {
+export default function RedactorMensaje({ onEnviar, placeholder: placeholderPropio, textoBoton: textoBotonPropio, autoFocus = false, deshabilitado = false }) {
+  const { t, idioma } = useIdioma();
+  const placeholder = placeholderPropio || t("Escribe tu mensaje…");
+  const textoBoton = textoBotonPropio || t("Enviar");
   const config = useConfiguracion()?.mensajeria;
   const [texto, setTexto] = useState("");
   const [fotos, setFotos] = useState([]);
@@ -26,7 +30,7 @@ export default function RedactorMensaje({ onEnviar, placeholder = "Escribe tu me
     setPreparando(true);
     try {
       const listas = await Promise.all(elegidas.map((f) => (TIPOS_FOTO.includes(f.type) ? prepararFoto(f) : f)));
-      const { aceptadas, error: aviso } = admitirFotos(fotos, listas, { max: config.fotos_max, maxMb: config.foto_max_mb });
+      const { aceptadas, error: aviso } = admitirFotos(fotos, listas, { max: config.fotos_max, maxMb: config.foto_max_mb }, idioma);
       setFotos((actuales) => [...actuales, ...aceptadas]);
       setError(aviso);
     } finally {
@@ -59,12 +63,12 @@ export default function RedactorMensaje({ onEnviar, placeholder = "Escribe tu me
   return (
     <form onSubmit={enviar} className="flex flex-col gap-2">
       {previas.length > 0 && (
-        <ul className="flex flex-wrap gap-2" aria-label="Fotos para enviar">
+        <ul className="flex flex-wrap gap-2" aria-label={t("Fotos para enviar")}>
           {previas.map((url, i) => (
             <li key={url} className="relative">
-              <img src={url} alt={`Foto ${i + 1} para enviar`} className="h-16 w-16 rounded-xl object-cover bg-surface-container" />
+              <img src={url} alt={t("Foto {n} para enviar", { n: i + 1 })} className="h-16 w-16 rounded-xl object-cover bg-surface-container" />
               <button
-                type="button" onClick={() => quitarFoto(i)} aria-label={`Quitar foto ${i + 1}`}
+                type="button" onClick={() => quitarFoto(i)} aria-label={t("Quitar foto {n}", { n: i + 1 })}
                 className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-on-surface text-surface flex items-center justify-center shadow"
               >
                 <span className="material-symbols-outlined text-[14px]" aria-hidden="true">close</span>
@@ -78,13 +82,13 @@ export default function RedactorMensaje({ onEnviar, placeholder = "Escribe tu me
         <input ref={selector} type="file" accept={TIPOS_FOTO.join(",")} multiple hidden onChange={elegirFotos} data-testid="selector-fotos" />
         <button
           type="button" onClick={() => selector.current?.click()} disabled={!config || deshabilitado || preparando || fotos.length >= (config?.fotos_max ?? 0)}
-          aria-label="Adjuntar foto" title="Adjuntar foto"
+          aria-label={t("Adjuntar foto")} title={t("Adjuntar foto")}
           className="shrink-0 w-11 h-11 rounded-xl bg-surface-container text-on-surface-variant hover:bg-surface-container-high flex items-center justify-center transition-colors disabled:opacity-50"
         >
           <span className="material-symbols-outlined" aria-hidden="true">add_photo_alternate</span>
         </button>
         <div className="flex-1">
-          <label htmlFor="texto-mensaje" className="sr-only">Escribe tu mensaje</label>
+          <label htmlFor="texto-mensaje" className="sr-only">{t("Escribe tu mensaje")}</label>
           <textarea
             id="texto-mensaje" rows={2} value={texto} onChange={(e) => setTexto(e.target.value)} onKeyDown={alTeclear}
             maxLength={config?.texto_max} placeholder={placeholder} autoFocus={autoFocus} disabled={deshabilitado}
@@ -96,7 +100,7 @@ export default function RedactorMensaje({ onEnviar, placeholder = "Escribe tu me
           className="shrink-0 h-11 px-4 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary-container transition-colors disabled:opacity-50 inline-flex items-center gap-1.5"
         >
           <span className="material-symbols-outlined text-[18px]" aria-hidden="true">{ocupado ? "hourglass_top" : "send"}</span>
-          {enviando ? "Enviando…" : preparando ? "Preparando foto…" : textoBoton}
+          {enviando ? t("Enviando…") : preparando ? t("Preparando foto…") : textoBoton}
         </button>
       </div>
 

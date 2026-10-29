@@ -10,9 +10,11 @@ import ResenasSitio from "../components/sitio/ResenasSitio";
 import { Estrellas } from "../components/Estrellas";
 import { useConsulta } from "../hooks/useConsulta";
 import { pesos } from "../utils/moneda";
+import { useIdioma } from "../context/idioma";
 
 
 export default function PaqueteDetalle() {
+  const { t, td } = useIdioma();
   const { id } = useParams();
   const navigate = useNavigate();
   const { usuario } = useAuth();
@@ -59,12 +61,12 @@ export default function PaqueteDetalle() {
     }
   };
 
-  if (cargando) return <p className="max-w-[1360px] mx-auto px-gutter py-space-xl font-body-md text-body-md text-on-surface-variant">Cargando...</p>;
+  if (cargando) return <p className="max-w-[1360px] mx-auto px-gutter py-space-xl font-body-md text-body-md text-on-surface-variant">{t("Cargando...")}</p>;
   if (error || !paquete) {
     return (
       <div className="max-w-md mx-auto px-gutter py-space-xl text-center">
-        <p className="text-error font-body-md text-body-md">{error || "Paquete no encontrado."}</p>
-        <Link to="/paquetes" className="inline-block mt-4 px-5 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md">Ver paquetes</Link>
+        <p className="text-error font-body-md text-body-md">{error || t("Paquete no encontrado.")}</p>
+        <Link to="/paquetes" className="inline-block mt-4 px-5 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md">{t("Ver paquetes")}</Link>
       </div>
     );
   }
@@ -74,7 +76,7 @@ export default function PaqueteDetalle() {
   return (
     <div className="max-w-[1360px] mx-auto px-gutter py-space-xl flex flex-col gap-space-lg">
       <nav className="flex items-center gap-2 font-label-xs text-label-xs text-on-surface-variant">
-        <Link to="/paquetes" className="hover:text-primary transition-colors">Paquetes</Link>
+        <Link to="/paquetes" className="hover:text-primary transition-colors">{t("Paquetes")}</Link>
         <span className="material-symbols-outlined text-[14px]">chevron_right</span>
         <span className="text-secondary font-semibold">{paquete.nombre}</span>
       </nav>
@@ -88,7 +90,7 @@ export default function PaqueteDetalle() {
                   type="button"
                   key={f}
                   onClick={() => setVisorIndice(i)}
-                  aria-label={i === 0 ? `Ver fotos de ${paquete.nombre}` : `Ver foto ${i + 1}`}
+                  aria-label={i === 0 ? t("Ver fotos de {nombre}", { nombre: paquete.nombre }) : t("Ver foto {n}", { n: i + 1 })}
                   className={`relative w-full h-full overflow-hidden ${fotos.length === 1 ? "" : i === 0 ? "col-span-2 row-span-2" : ""}`}
                 >
                   <img src={urlImagen(f)} alt={i === 0 ? paquete.nombre : ""} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
@@ -105,7 +107,7 @@ export default function PaqueteDetalle() {
             <p className="font-body-sm text-body-sm text-on-surface-variant flex flex-wrap items-center gap-x-3 gap-y-1">
               <span className="inline-flex items-center gap-1"><span className="material-symbols-outlined text-[16px]">storefront</span><Link to={`/negocios/${paquete.Prestador?.id}`} className="hover:text-secondary hover:underline transition-colors">{paquete.Prestador?.nombre_negocio}</Link></span>
               <span className="inline-flex items-center gap-1"><span className="material-symbols-outlined text-[16px]">location_on</span>{paquete.Prestador?.municipio}</span>
-              <span className="inline-flex items-center gap-1 text-secondary font-semibold"><span className="material-symbols-outlined text-[16px]">verified</span>Prestador verificado</span>
+              <span className="inline-flex items-center gap-1 text-secondary font-semibold"><span className="material-symbols-outlined text-[16px]">verified</span>{t("Prestador verificado")}</span>
               {paquete.total_resenas > 0 && (
                 <span className="inline-flex items-center gap-1.5"><Estrellas valor={paquete.calificacion_promedio} tamano={16} />{paquete.calificacion_promedio} ({paquete.total_resenas})</span>
               )}
@@ -114,10 +116,10 @@ export default function PaqueteDetalle() {
           </header>
 
           <section className="flex flex-col gap-3">
-            <h2 className="font-headline-md text-headline-md text-primary font-bold">Qué incluye</h2>
+            <h2 className="font-headline-md text-headline-md text-primary font-bold">{t("Qué incluye")}</h2>
             {porDia.map(([dia, items]) => (
               <div key={dia} className="flex flex-col gap-2">
-                {porDia.length > 1 && <span className="font-label-md text-label-md text-secondary font-bold uppercase tracking-wider">Día {dia}</span>}
+                {porDia.length > 1 && <span className="font-label-md text-label-md text-secondary font-bold uppercase tracking-wider">{t("Día {n}", { n: dia })}</span>}
                 {items.map((i) => (
                   <Link key={i.id} to={`/sitios/${i.sitio_id}`} className="group flex items-center gap-4 p-3 rounded-2xl bg-surface-container-lowest shadow-sm hover:shadow-md transition-all">
                     {i.sitio?.imagen_url ? (
@@ -129,7 +131,7 @@ export default function PaqueteDetalle() {
                     )}
                     <div className="flex flex-col min-w-0 flex-1">
                       <span className="font-title-sm text-title-sm text-on-surface font-semibold group-hover:text-secondary transition-colors">{i.sitio?.nombre}</span>
-                      <span className="font-label-xs text-label-xs text-outline">{i.sitio?.municipio} · {i.sitio?.categoria}{i.sitio?.horario ? ` · ${i.sitio.horario}` : ""}</span>
+                      <span className="font-label-xs text-label-xs text-outline">{i.sitio?.municipio} · {td(i.sitio?.categoria)}{i.sitio?.horario ? ` · ${i.sitio.horario}` : ""}</span>
                       {i.sitio?.descripcion && <span className="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mt-0.5">{i.sitio.descripcion}</span>}
                     </div>
                     <span className="font-label-xs text-label-xs text-outline shrink-0 hidden sm:block">suelto {Number(i.sitio?.precio) === 0 ? "gratis" : pesos(i.sitio?.precio)}</span>
@@ -146,22 +148,22 @@ export default function PaqueteDetalle() {
           <div className="rounded-3xl bg-surface-container-lowest p-6 shadow-xl flex flex-col gap-4">
             <div>
               <div className="flex items-baseline gap-2">
-                <span className="font-headline-xl text-headline-xl text-primary font-bold">{Number(paquete.precio) === 0 ? "Gratuito" : pesos(paquete.precio)}</span>
-                {Number(paquete.precio) > 0 && <span className="font-body-sm text-body-sm text-on-surface-variant">COP / persona</span>}
+                <span className="font-headline-xl text-headline-xl text-primary font-bold">{Number(paquete.precio) === 0 ? t("Gratuito") : pesos(paquete.precio)}</span>
+                {Number(paquete.precio) > 0 && <span className="font-body-sm text-body-sm text-on-surface-variant">{t("COP / persona")}</span>}
               </div>
               {paquete.ahorro > 0 && (
                 <p className="font-body-sm text-body-sm text-secondary font-semibold mt-1">
-                  Por separado: <span className="line-through text-outline font-normal">{pesos(paquete.precio_suelto)}</span> · ahorras {pesos(paquete.ahorro)} por persona
+                  {t("Por separado:")} <span className="line-through text-outline font-normal">{pesos(paquete.precio_suelto)}</span> · {t("ahorras {valor} por persona", { valor: pesos(paquete.ahorro) })}
                 </p>
               )}
             </div>
 
             {esAdmin ? (
-              <p className="p-4 rounded-xl bg-surface-container-low text-on-surface-variant font-body-sm text-body-sm">Estás viendo este paquete en modo administrador.</p>
+              <p className="p-4 rounded-xl bg-surface-container-low text-on-surface-variant font-body-sm text-body-sm">{t("Estás viendo este paquete en modo administrador.")}</p>
             ) : esPropio ? (
-              <p className="p-4 rounded-xl bg-surface-container-low text-on-surface-variant font-body-sm text-body-sm">Este es uno de tus paquetes. Gestiónalo desde tu Portal Prestador.</p>
+              <p className="p-4 rounded-xl bg-surface-container-low text-on-surface-variant font-body-sm text-body-sm">{t("Este es uno de tus paquetes. Gestiónalo desde tu Portal Prestador.")}</p>
             ) : !disponible ? (
-              <p className="p-4 rounded-xl bg-surface-container-low text-on-surface-variant font-body-sm text-body-sm">Este paquete no está disponible en este momento.</p>
+              <p className="p-4 rounded-xl bg-surface-container-low text-on-surface-variant font-body-sm text-body-sm">{t("Este paquete no está disponible en este momento.")}</p>
             ) : !reservaOk ? (
               <form onSubmit={reservar} className="flex flex-col gap-3">
                 <CamposReserva
@@ -176,20 +178,20 @@ export default function PaqueteDetalle() {
                 {errorReserva && <p className="text-error font-body-sm text-body-sm">{errorReserva}</p>}
                 <button type="submit" disabled={enviando} className="w-full py-3.5 rounded-xl bg-primary text-on-primary hover:bg-primary-container transition-all font-label-md text-label-md font-bold shadow-lg flex items-center justify-center gap-2 disabled:opacity-60">
                   <span className="material-symbols-outlined text-[20px]">inventory_2</span>
-                  <span>{enviando ? "Enviando..." : usuario ? "Reservar paquete" : "Inicia sesión para reservar"}</span>
+                  <span>{enviando ? t("Enviando...") : usuario ? t("Reservar paquete") : t("Inicia sesión para reservar")}</span>
                 </button>
               </form>
             ) : (
               <div className="flex flex-col items-center text-center gap-2 py-2">
                 <span className="material-symbols-outlined text-secondary text-[40px]">check_circle</span>
-                <h3 className="font-title-lg text-title-lg text-primary">Solicitud enviada</h3>
-                <p className="font-body-sm text-body-sm text-on-surface-variant">Tu solicitud del paquete quedó pendiente de confirmación del prestador.</p>
-                <button onClick={() => navigate("/mis-reservas")} className="mt-2 w-full py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors">Ver mis reservas</button>
+                <h3 className="font-title-lg text-title-lg text-primary">{t("Solicitud enviada")}</h3>
+                <p className="font-body-sm text-body-sm text-on-surface-variant">{t("Tu solicitud del paquete quedó pendiente de confirmación del prestador.")}</p>
+                <button onClick={() => navigate("/mis-reservas")} className="mt-2 w-full py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors">{t("Ver mis reservas")}</button>
               </div>
             )}
             {!esPropio && (
               <div className="pt-4 border-t border-surface-container-high flex flex-col gap-2">
-                <p className="font-body-sm text-body-sm text-on-surface-variant">¿Tienes dudas antes de reservar?</p>
+                <p className="font-body-sm text-body-sm text-on-surface-variant">{t("¿Tienes dudas antes de reservar?")}</p>
                 <BotonPreguntar tema={{ paquete_id: paquete.id }} nombre={paquete.nombre} className="w-full" />
               </div>
             )}
@@ -199,13 +201,13 @@ export default function PaqueteDetalle() {
 
       {visorIndice !== null && (
         <div className="fixed inset-0 bg-black/90 z-[70] flex items-center justify-center p-4" onClick={() => setVisorIndice(null)}>
-          <button onClick={() => setVisorIndice(null)} aria-label="Cerrar visor" className="absolute top-4 right-4 text-white p-2 rounded-full hover:bg-white/10">
+          <button onClick={() => setVisorIndice(null)} aria-label={t("Cerrar visor")} className="absolute top-4 right-4 text-white p-2 rounded-full hover:bg-white/10">
             <span className="material-symbols-outlined text-[28px]">close</span>
           </button>
           {fotos.length > 1 && (
             <button
               onClick={(e) => { e.stopPropagation(); setVisorIndice((visorIndice - 1 + fotos.length) % fotos.length); }}
-              aria-label="Foto anterior"
+              aria-label={t("Foto anterior")}
               className="absolute left-4 text-white p-2 rounded-full hover:bg-white/10"
             >
               <span className="material-symbols-outlined text-[32px]">chevron_left</span>
@@ -220,7 +222,7 @@ export default function PaqueteDetalle() {
           {fotos.length > 1 && (
             <button
               onClick={(e) => { e.stopPropagation(); setVisorIndice((visorIndice + 1) % fotos.length); }}
-              aria-label="Foto siguiente"
+              aria-label={t("Foto siguiente")}
               className="absolute right-4 text-white p-2 rounded-full hover:bg-white/10"
             >
               <span className="material-symbols-outlined text-[32px]">chevron_right</span>

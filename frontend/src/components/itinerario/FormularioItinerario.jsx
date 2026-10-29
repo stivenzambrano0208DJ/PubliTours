@@ -1,6 +1,7 @@
 import InterpretarViaje from "./InterpretarViaje";
 import { fechaMinima } from "../../constants";
 import { pesos } from "../../utils/moneda";
+import { useIdioma } from "../../context/idioma";
 
 const OPCIONES_INTERES = [
   { valor: "pareja", icono: "favorite" },
@@ -35,25 +36,26 @@ function Campo({ id, icono, texto, children }) {
 
 // Pantalla previa al itinerario: la IA interpreta el texto libre y el turista revisa los campos antes de generar.
 export default function FormularioItinerario({ form, setForm, onToggleInteres, onInterpretacion, onSubmit, cargando, error }) {
+  const { t, td } = useIdioma();
   const porPersonaDia = presupuestoPorPersonaDia(form);
   return (
     <div className="max-w-2xl mx-auto px-gutter py-space-xl">
       <div className="text-center mb-space-lg">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-container/30 text-secondary font-label-xs text-label-xs mb-3">
           <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
-          <span>Motor de scoring PubliTours</span>
+          <span>{t("Motor de scoring PubliTours")}</span>
         </div>
-        <h1 className="font-headline-xl text-headline-xl text-primary tracking-tight">Genera tu itinerario personalizado</h1>
+        <h1 className="font-headline-xl text-headline-xl text-primary tracking-tight">{t("Genera tu itinerario personalizado")}</h1>
         <p className="font-body-md text-body-md text-on-surface-variant mt-2">
-          Indica tu presupuesto, duración e intereses. El sistema combina las mejores opciones del catálogo verificado.
+          {t("Indica tu presupuesto, duración e intereses. El sistema combina las mejores opciones del catálogo verificado.")}
         </p>
       </div>
 
-      <ol className="flex items-center justify-center gap-2 sm:gap-3 mb-space-md font-label-xs text-label-xs text-on-surface-variant" aria-label="Pasos">
+      <ol className="flex items-center justify-center gap-2 sm:gap-3 mb-space-md font-label-xs text-label-xs text-on-surface-variant" aria-label={t("Pasos")}>
         {PASOS.map((p, i) => (
           <li key={p} className="flex items-center gap-2">
             <span className={`w-6 h-6 rounded-full flex items-center justify-center font-bold ${i < 2 ? "bg-primary text-on-primary" : "bg-surface-container-high text-on-surface-variant"}`}>{i + 1}</span>
-            <span className="hidden sm:inline">{p}</span>
+            <span className="hidden sm:inline">{td(p)}</span>
             {i < PASOS.length - 1 && <span className="w-4 sm:w-8 h-px bg-outline-variant" aria-hidden="true" />}
           </li>
         ))}
@@ -63,7 +65,7 @@ export default function FormularioItinerario({ form, setForm, onToggleInteres, o
 
       <div className="flex items-center gap-3 my-space-md font-label-xs text-label-xs text-on-surface-variant" aria-hidden="true">
         <span className="flex-1 h-px bg-outline-variant/60" />
-        <span>o completa los datos tú mismo</span>
+        <span>{t("o completa los datos tú mismo")}</span>
         <span className="flex-1 h-px bg-outline-variant/60" />
       </div>
 
@@ -71,32 +73,32 @@ export default function FormularioItinerario({ form, setForm, onToggleInteres, o
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Campo id="iti-presupuesto" icono="payments" texto="Presupuesto total">
             <input
-              id="iti-presupuesto" type="number" placeholder="Presupuesto total (COP)" required min="1" className={CAMPO}
+              id="iti-presupuesto" type="number" placeholder={t("Presupuesto total (COP)")} required min="1" className={CAMPO}
               value={form.presupuesto} onChange={(e) => setForm({ ...form, presupuesto: e.target.value })}
             />
           </Campo>
-          <Campo id="iti-dias" icono="calendar_month" texto="Días de viaje">
+          <Campo id="iti-dias" icono="calendar_month" texto={t("Días de viaje")}>
             <input
-              id="iti-dias" type="number" placeholder="Días de viaje" required min="1" className={CAMPO}
+              id="iti-dias" type="number" placeholder={t("Días de viaje")} required min="1" className={CAMPO}
               value={form.dias} onChange={(e) => setForm({ ...form, dias: e.target.value })}
             />
           </Campo>
-          <Campo id="iti-fecha" icono="event" texto="Fecha de inicio">
+          <Campo id="iti-fecha" icono="event" texto={t("Fecha de inicio")}>
             <input id="iti-fecha" type="date" required min={fechaMinima()} className={CAMPO} value={form.fecha_inicio} onChange={(e) => setForm({ ...form, fecha_inicio: e.target.value })} />
           </Campo>
-          <Campo id="iti-personas" icono="group" texto="Número de personas">
+          <Campo id="iti-personas" icono="group" texto={t("Número de personas")}>
             <input id="iti-personas" type="number" required min="1" max="100" className={CAMPO} value={form.personas} onChange={(e) => setForm({ ...form, personas: e.target.value })} />
           </Campo>
         </div>
         {porPersonaDia && (
           <p className="flex items-center gap-2 px-3 py-2 rounded-xl bg-secondary-container/30 text-on-secondary-container font-body-sm text-body-sm" aria-live="polite">
             <span className="material-symbols-outlined text-[18px]" aria-hidden="true">info</span>
-            Tendrás unos {pesos(Math.round(porPersonaDia))} por persona al día.
+            {t("Tendrás unos {valor} por persona al día.", { valor: pesos(Math.round(porPersonaDia)) })}
           </p>
         )}
 
         <div>
-          <p className="font-label-md text-label-md text-on-surface-variant mb-2">¿Qué te interesa? <span className="font-label-xs text-label-xs">(puedes elegir varios)</span></p>
+          <p className="font-label-md text-label-md text-on-surface-variant mb-2">{t("¿Qué te interesa?")} <span className="font-label-xs text-label-xs">{t("(puedes elegir varios)")}</span></p>
           <div className="flex flex-wrap gap-2">
             {OPCIONES_INTERES.map(({ valor, icono }) => {
               const activo = form.preferencias.includes(valor);
@@ -108,7 +110,7 @@ export default function FormularioItinerario({ form, setForm, onToggleInteres, o
                   }`}
                 >
                   <span className="material-symbols-outlined text-[16px]" aria-hidden="true">{activo ? "check" : icono}</span>
-                  {valor}
+                  {td(valor)}
                 </button>
               );
             })}
@@ -117,10 +119,10 @@ export default function FormularioItinerario({ form, setForm, onToggleInteres, o
 
         {form.municipio && (
           <div className="flex items-center gap-2">
-            <span className="font-label-md text-label-md text-on-surface-variant">Solo en:</span>
+            <span className="font-label-md text-label-md text-on-surface-variant">{t("Solo en:")}</span>
             <span className="inline-flex items-center gap-1 pl-3 pr-1 py-1 rounded-full bg-secondary-container/50 font-label-md text-label-md text-on-secondary-container">
               {form.municipio}
-              <button type="button" aria-label="Quitar municipio" onClick={() => setForm({ ...form, municipio: "" })} className="w-5 h-5 rounded-full hover:bg-secondary-container flex items-center justify-center">
+              <button type="button" aria-label={t("Quitar municipio")} onClick={() => setForm({ ...form, municipio: "" })} className="w-5 h-5 rounded-full hover:bg-secondary-container flex items-center justify-center">
                 <span className="material-symbols-outlined text-[14px]">close</span>
               </button>
             </span>
@@ -131,7 +133,7 @@ export default function FormularioItinerario({ form, setForm, onToggleInteres, o
         <button type="submit" disabled={cargando} className="py-3.5 rounded-xl bg-primary text-on-primary font-title-sm text-title-sm hover:bg-primary-container transition-all disabled:opacity-60">
           <span className="inline-flex items-center justify-center gap-2">
             <span className="material-symbols-outlined text-[20px]" aria-hidden="true">{cargando ? "hourglass_top" : "route"}</span>
-            {cargando ? "Generando..." : "Generar itinerario"}
+            {cargando ? t("Generando...") : t("Generar itinerario")}
           </span>
         </button>
       </form>

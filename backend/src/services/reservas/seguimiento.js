@@ -1,7 +1,7 @@
 // Lo que pasa alrededor del servicio: recordatorio previo, registro de asistencia y cierre automático (tareas programadas).
 const { Op } = require("sequelize");
-const { DIAS_GRACIA_ASISTENCIA } = require("../../config/negocio");
-const { sequelize, Reserva, Prestador, Usuario } = require("../../models");
+const { DIAS_GRACIA_ASISTENCIA, DIAS_RECORDAR_RESENA, VENTANA_RECORDATORIO_RESENA } = require("../../config/negocio");
+const { sequelize, Reserva, Prestador, Usuario, Resena } = require("../../models");
 const { notificar } = require("../notificacionService");
 const { INCLUDE_RESERVA, etiqueta, exigirPrestadorDeReserva } = require("./comun");
 const { hoyLocal, fechaRelativa } = require("../../utils/fechas");
@@ -29,6 +29,28 @@ async function enviarRecordatorios({ diasAntes = 1 } = {}) {
       "reserva_recordatorio",
       `Mañana tienes ${etiqueta(r)} (${r.personas} persona${r.personas === 1 ? "" : "s"}). Presenta tu código de comprobante: ${r.codigo}.`
     );
+  }
+  return enviados;
+}
+
+// Recordatorio para calificar: si la turista no dejó reseña unos días después del servicio, se le recuerda UNA sola vez.
+// Solo para servicios de las últimas semanas: al activar esta función nadie recibe recordatorios de viajes de hace meses.
+async function recordarCalificar() {
+  const reservas = await Reserva.findAll({
+    where: {
+      estado: "completada",
+      recordatorio_resena_en: null,
+      fecha_servicio: { [Op.between]: [fechaRelativa(-VENTANA_RECORDATORIO_RESENA), fechaRelativa(-DIAS_RECORDAR_RESENA)] },
+    },
+    include: [...INCLUDE_RESERVA, { model: Resena, as: "resena", attributes: ["id"], required: false }],
+  });
+  let enviados = 0;
+  for (const r of reservas) {
+    if (r.resena) continue; // ya calificó
+    const [reclamada] = await Reserva.update({ recordatorio_resena_en: new Date() }, { where: { id: r.id, recordatorio_resena_en: null } });
+    if (reclamada === 0) continue; // otro proceso ya lo envió
+    enviados += 1;
+    await notificar(r.turista_id, "resena_recordatorio", `¿Cómo te fue en ${etiqueta(r)} el ${r.fecha_servicio}? Tu calificación ayuda a otros viajeros a elegir y a los negocios del Caquetá a mejorar.`);
   }
   return enviados;
 }
@@ -96,4 +118,4 @@ async function registrarAsistencia({ reservaId, usuarioPrestadorId, asistio }) {
   return reserva;
 }
 
-module.exports = { enviarRecordatorios, cerrarReservasVencidas, registrarAsistencia };
+module.exports = { enviarRecordatorios, recordarCalificar, cerrarReservasVencidas, registrarAsistencia };

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api } from "../../api/client";
+import { useIdioma } from "../../context/idioma";
 
 const EJEMPLOS = [
   { icono: "favorite", texto: "Escapada romántica de 3 días en Florencia con 500 mil pesos" },
@@ -11,6 +12,7 @@ const MINIMO = 5;
 
 // Cuadro de lenguaje natural: la IA solo interpreta; el turista revisa los campos y confirma antes de generar.
 export default function InterpretarViaje({ onResultado }) {
+  const { t } = useIdioma();
   const [texto, setTexto] = useState("");
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState("");
@@ -36,20 +38,21 @@ export default function InterpretarViaje({ onResultado }) {
     if ((e.ctrlKey || e.metaKey) && e.key === "Enter" && !cargando && texto.trim().length >= MINIMO) interpretar(e);
   };
 
-  const faltantes = resultado ? [!resultado.presupuesto && "el presupuesto", !resultado.dias && "los días"].filter(Boolean) : [];
+  const faltaPresupuesto = resultado && !resultado.presupuesto;
+  const faltanDias = resultado && !resultado.dias;
 
   return (
     <section className="p-space-lg rounded-2xl bg-gradient-to-br from-primary-container to-secondary text-on-primary shadow-lg mb-space-md">
       <div className="flex items-center gap-2 mb-1">
         <span className="material-symbols-outlined text-tertiary-fixed text-[22px]">auto_awesome</span>
-        <h2 className="font-title-lg text-title-lg font-bold">Cuéntanos tu viaje</h2>
+        <h2 className="font-title-lg text-title-lg font-bold">{t("Cuéntanos tu viaje")}</h2>
       </div>
       <p className="font-body-sm text-body-sm text-on-primary/85 mb-3">
-        Escríbelo como se lo dirías a un amigo. Entendemos tu presupuesto, los días y tus intereses, y rellenamos el formulario por ti.
+        {t("Escríbelo como se lo dirías a un amigo. Entendemos tu presupuesto, los días y tus intereses, y rellenamos el formulario por ti.")}
       </p>
 
       <form onSubmit={interpretar} className="flex flex-col gap-2">
-        <label htmlFor="texto-viaje" className="sr-only">Describe tu viaje</label>
+        <label htmlFor="texto-viaje" className="sr-only">{t("Describe tu viaje")}</label>
         <textarea
           id="texto-viaje"
           rows={4}
@@ -58,15 +61,15 @@ export default function InterpretarViaje({ onResultado }) {
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           onKeyDown={enviar}
-          placeholder="Ej. Quiero un viaje romántico de 3 días en Florencia con 500 mil pesos"
+          placeholder={t("Ej. Quiero un viaje romántico de 3 días en Florencia con 500 mil pesos")}
           className="w-full px-4 py-3 rounded-xl bg-surface-container-lowest text-on-surface placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-tertiary-fixed resize-none"
         />
         <div className="flex items-center justify-between gap-2 px-1 font-label-xs text-label-xs text-on-primary/80">
-          <span>{texto.trim().length < MINIMO ? `Escribe al menos ${MINIMO} caracteres` : "Listo para interpretar (Ctrl + Enter)"}</span>
+          <span>{texto.trim().length < MINIMO ? t("Escribe al menos {n} caracteres", { n: MINIMO }) : t("Listo para interpretar (Ctrl + Enter)")}</span>
           <span aria-live="off">{texto.length}/{MAXIMO}</span>
         </div>
         <div>
-          <p className="font-label-xs text-label-xs text-on-primary/80 mb-1.5">¿Sin ideas? Prueba con uno de estos:</p>
+          <p className="font-label-xs text-label-xs text-on-primary/80 mb-1.5">{t("¿Sin ideas? Prueba con uno de estos:")}</p>
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
             {EJEMPLOS.map((e) => (
               <button
@@ -87,7 +90,7 @@ export default function InterpretarViaje({ onResultado }) {
           className="mt-2 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-surface-container-lowest text-primary font-label-md text-label-md font-bold shadow-sm hover:bg-white hover:shadow-md active:scale-[0.99] disabled:bg-white/25 disabled:text-on-primary disabled:shadow-none disabled:cursor-not-allowed transition-all sm:self-start"
         >
           <span className="material-symbols-outlined text-[18px] text-secondary" aria-hidden="true">{cargando ? "hourglass_top" : "auto_awesome"}</span>
-          {cargando ? "Interpretando..." : "Interpretar mi viaje"}
+          {cargando ? t("Interpretando...") : t("Interpretar mi viaje")}
         </button>
       </form>
 
@@ -96,18 +99,20 @@ export default function InterpretarViaje({ onResultado }) {
       {resultado && (
         <div className="mt-3 p-3 rounded-xl bg-white/15 flex flex-col gap-1.5" role="status">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-label-md text-label-md font-semibold">Esto entendimos:</span>
+            <span className="font-label-md text-label-md font-semibold">{t("Esto entendimos:")}</span>
             <span className="px-2 py-0.5 rounded-full bg-white/20 font-label-xs text-label-xs">
-              {resultado.modo === "ia" ? "Interpretado con IA (Claude)" : "Interpretación básica"}
+              {resultado.modo === "ia" ? t("Interpretado con IA (Claude)") : t("Interpretación básica")}
             </span>
           </div>
-          <p className="font-body-md text-body-md">{resultado.resumen || "No detectamos datos concretos en tu mensaje."}</p>
-          {faltantes.length > 0 && (
+          <p className="font-body-md text-body-md">{resultado.resumen || t("No detectamos datos concretos en tu mensaje.")}</p>
+          {(faltaPresupuesto || faltanDias) && (
             <p className="font-body-sm text-body-sm text-tertiary-fixed">
-              No detectamos {faltantes.join(" ni ")}: complétalo en el formulario de abajo.
+              {faltaPresupuesto && faltanDias ? t("No detectamos el presupuesto ni los días: complétalo en el formulario de abajo.")
+                : faltaPresupuesto ? t("No detectamos el presupuesto: complétalo en el formulario de abajo.")
+                : t("No detectamos los días: complétalo en el formulario de abajo.")}
             </p>
           )}
-          <p className="font-label-xs text-label-xs text-on-primary/80">Revisa los campos y ajusta lo que quieras antes de generar tu itinerario.</p>
+          <p className="font-label-xs text-label-xs text-on-primary/80">{t("Revisa los campos y ajusta lo que quieras antes de generar tu itinerario.")}</p>
         </div>
       )}
     </section>

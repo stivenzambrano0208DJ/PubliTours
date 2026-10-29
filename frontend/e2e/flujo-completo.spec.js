@@ -824,7 +824,7 @@ test("24. la página de ayuda es pública, está en el pie de página y usa las 
   await page.getByText("¿Puedo cancelar o cambiar la fecha?").click();
   await expect(page.getByText(/Estricta: gratis hasta 7 días antes/)).toBeVisible(); // viene de /configuracion, no de un texto fijo
   await page.getByText("¿Cómo y cuándo pago?").click();
-  await expect(page.getByText(/no procesa pagos/)).toBeVisible();
+  await expect(page.getByText(/no procesa pagos/).first()).toBeVisible();
 });
 
 test("25. el prestador atiende a un turista con el código del comprobante y registra su asistencia", async ({ browser }) => {
@@ -1016,6 +1016,16 @@ test("28. al pasar a otra página se vuelve al inicio, no se queda a la altura d
   await page.getByRole("link", { name: "Explorar Destinos" }).click();
   await expect(page).toHaveURL(/\/explorar/);
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+
+  // y en las páginas de catálogo y de detalle nada acompaña el desplazamiento (solo el encabezado del sitio queda fijo)
+  const pegados = () => page.evaluate(() => [...document.querySelectorAll("body *")]
+    .filter((e) => ["sticky", "fixed"].includes(getComputedStyle(e).position) && e.tagName !== "HEADER" && e.getBoundingClientRect().height > 0)
+    .map((e) => e.tagName + "." + String(e.className).slice(0, 40)));
+  await expect(page.getByLabel("Calificación mínima")).toBeVisible();
+  expect(await pegados()).toEqual([]);
+  await page.goto(urlServicio);
+  await expect(page.locator("aside").first()).toBeVisible();
+  expect(await pegados()).toEqual([]);
 });
 
 test("29. la tarjeta de reserva está al inicio, junto al título, y se queda allí al bajar (no acompaña hasta el pie)", async ({ browser }) => {
@@ -1050,4 +1060,81 @@ test("29. la tarjeta de reserva está al inicio, junto al título, y se queda al
   expect(abajo.tarjeta).toBe(arriba.tarjeta); // no se movió de su lugar en la página
   expect(abajo.finTarjeta).toBeLessThanOrEqual(abajo.pie); // y termina antes del pie
   await expect(tarjeta).not.toBeInViewport(); // al llegar al pie ya quedó atrás, arriba
+});
+
+test("30. una turista reporta un problema con su reserva; la administración lo resuelve y ella ve la respuesta", async ({ browser }) => {
+  const prestador = paginas.prestador;
+  const admin = paginas.admin;
+  const viajera = { nombre: "Viajera Soporte", correo: `soporte${id}@e2e.com`, password: "ClaveE2E123" };
+  const detalle = "Llegamos a la hora acordada y el negocio estaba cerrado; nadie contestó el teléfono.";
+  const respuesta = "Hablamos con el negocio y reprogramó tu visita sin costo.";
+
+  // Reserva confirmada
+  const page = await abrirSesion(browser);
+  await registrar(page, viajera, "turista");
+  await page.goto(urlServicio);
+  await page.locator('input[type="date"]').first().fill(diaDentroDe(9));
+  await page.getByRole("button", { name: "Reservar" }).click();
+  await expect(page.getByText("Solicitud enviada")).toBeVisible();
+  await prestador.goto("/mi-negocio");
+  const fila = prestador.locator("div.rounded-xl", { hasText: viajera.nombre }).filter({ hasText: diaDentroDe(9) }).last();
+  await fila.getByRole("button", { name: "Confirmar" }).click();
+  await expect(fila).toContainText("Confirmada");
+
+  // Abre el caso desde «Mis reservas»
+  await page.goto("/mis-reservas");
+  await page.getByRole("button", { name: "Tengo un problema con esta reserva" }).first().click();
+  const ventana = page.getByRole("dialog", { name: "Tengo un problema con esta reserva" });
+  await ventana.getByRole("combobox").selectOption("no_presto_servicio");
+  await ventana.getByRole("textbox").fill(detalle);
+  await ventana.getByRole("button", { name: "Enviar caso" }).click();
+  await expect(ventana.getByText(/Recibimos tu caso/)).toBeVisible();
+  await ventana.getByRole("button", { name: "Cerrar" }).click();
+  const misCasos = page.getByRole("region", { name: "Mis casos de soporte" });
+  await expect(misCasos.getByText(detalle)).toBeVisible();
+  await expect(misCasos.getByText("Abierto", { exact: true })).toBeVisible();
+
+  // La administración lo ve y lo resuelve
+  await admin.goto("/admin");
+  await admin.getByRole("button", { name: "Casos de soporte" }).click();
+  const tarjeta = admin.getByRole("article").filter({ hasText: detalle });
+  await expect(tarjeta).toContainText(`Lo abrió la turista: ${viajera.nombre}`);
+  await tarjeta.getByRole("button", { name: "Resolver" }).click();
+  const resolver = admin.getByRole("dialog", { name: "Resolver caso" });
+  await resolver.getByRole("textbox").fill(respuesta);
+  await resolver.getByRole("button", { name: "Resolver caso" }).click();
+  await expect(admin.getByRole("article").filter({ hasText: detalle })).toHaveCount(0); // sale de los abiertos
+
+  // Ella ve la respuesta
+  await page.reload();
+  await expect(misCasos.getByText("Resuelto", { exact: true })).toBeVisible();
+  await expect(misCasos.getByText(respuesta)).toBeVisible();
+});
+
+test("31. el sitio abre en español y se puede cambiar a inglés; la elección se recuerda y se puede volver", async ({ browser }) => {
+  const page = await abrirSesion(browser);
+  await page.goto("/");
+  await expect(page.getByRole("link", { name: "Explorar Destinos" }).first()).toBeVisible(); // por defecto, español
+  expect(await page.evaluate(() => document.documentElement.lang)).toBe("es");
+
+  await page.getByRole("button", { name: "View in English" }).click();
+  await expect(page.getByRole("link", { name: "Explore Destinations" }).first()).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.lang)).toBe("en");
+
+  // Las pantallas del turista salen en inglés; lo que escribió el negocio (el nombre del servicio) queda como está
+  await page.goto(urlServicio);
+  await expect(page.getByRole("heading", { name: "About this place" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Cascada E2E");
+  await page.goto("/explorar");
+  await expect(page.getByText(/destination\(s\) found/)).toBeVisible();
+
+  // La elección se recuerda al recargar; las páginas que solo existen en español lo avisan
+  await page.reload();
+  await expect(page.getByRole("link", { name: "Explore Destinations" }).first()).toBeVisible();
+  await page.goto("/terminos");
+  await expect(page.getByText("This document is only available in Spanish, which is its official version.")).toBeVisible();
+
+  await page.getByRole("button", { name: "Ver en español" }).click();
+  await expect(page.getByRole("link", { name: "Explorar Destinos" }).first()).toBeVisible();
+  await expect(page.getByText("This document is only available in Spanish, which is its official version.")).toHaveCount(0);
 });

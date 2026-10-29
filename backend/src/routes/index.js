@@ -17,6 +17,7 @@ const adminRoutes = require("./adminRoutes");
 const paqueteRoutes = require("./paqueteRoutes");
 const configuracionRoutes = require("./configuracionRoutes");
 const conversacionRoutes = require("./conversacionRoutes");
+const casoRoutes = require("./casoRoutes");
 const { validarIds } = require("../middlewares/parametros");
 
 validarIds(router, "id"); // un id que no es entero positivo no existe: 404, no un error interno
@@ -34,6 +35,7 @@ router.use("/admin", adminRoutes);
 router.use("/paquetes", paqueteRoutes);
 router.use("/configuracion", configuracionRoutes);
 router.use("/conversaciones", conversacionRoutes);
+router.use("/casos", casoRoutes);
 router.put("/resenas/:id/respuesta", requireAuth, requireRole("prestador"), validate(schemas.respuestaResena), resenaController.responder);
 
 module.exports = router;

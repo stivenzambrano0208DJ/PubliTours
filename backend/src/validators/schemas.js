@@ -2,6 +2,7 @@ const { z } = require("zod");
 const { POLITICAS_CANCELACION } = require("../config/negocio");
 const { esFechaReal } = require("../utils/fechas");
 const { TEXTO_MAX, MOTIVOS_REPORTE } = require("../config/mensajeria");
+const { MOTIVOS_CASO, DETALLE_MIN, DETALLE_MAX, RESPUESTA_MAX } = require("../config/soporte");
 
 // Un precio mayor no cabe en las columnas numeric(10,2) de la base de datos (daba un error 500 en vez de un mensaje claro).
 const PRECIO_MAXIMO = 99999999;
@@ -199,4 +200,25 @@ const reporteMensaje = z.object({
 });
 const resolverReporteMensaje = z.object({ accion: z.enum(["descartar", "retirar"], { message: "Elige una acción válida." }) });
 
-module.exports = { mensajeNuevo, mensajeEnvio, reporteMensaje, resolverReporteMensaje, auth, prestador, sitio, reserva, edicionReserva, paquete, estadoPaquete, estadoUsuario, anuncio, moderarSitio, verificarPrestador, asistencia, rechazo, respuestaResena, fechaBloqueada, resena, interpretarViaje, itinerario };
+// Invitar a un negocio por correo
+const invitacion = z.object({
+  correo: z.string({ message: "Escribe el correo del negocio." }).trim().toLowerCase().email("Correo electrónico inválido.").max(150),
+  nombre_negocio: textoOpcional(150),
+  mensaje: textoOpcional(500),
+});
+
+// Casos de soporte sobre una reserva
+const casoNuevo = z.object({
+  reserva_id: z.coerce.number({ message: "Indica la reserva." }).int().positive("Indica la reserva."),
+  motivo: z.enum(MOTIVOS_CASO, { message: "Elige qué pasó." }),
+  detalle: z.string({ message: "Cuéntanos qué pasó." }).trim()
+    .min(DETALLE_MIN, `Cuéntanos qué pasó con al menos ${DETALLE_MIN} caracteres.`).max(DETALLE_MAX, `El detalle admite hasta ${DETALLE_MAX} caracteres.`),
+});
+const atenderCaso = z.object({
+  estado: z.enum(["en_revision", "resuelto"], { message: "Elige un estado válido." }),
+  respuesta: textoOpcional(RESPUESTA_MAX),
+}).refine((d) => d.estado !== "resuelto" || (d.respuesta && d.respuesta.length >= 5), {
+  message: "Para resolver el caso escribe la respuesta que recibirá la persona.", path: ["respuesta"],
+});
+
+module.exports = { invitacion, casoNuevo, atenderCaso, mensajeNuevo, mensajeEnvio, reporteMensaje, resolverReporteMensaje, auth, prestador, sitio, reserva, edicionReserva, paquete, estadoPaquete, estadoUsuario, anuncio, moderarSitio, verificarPrestador, asistencia, rechazo, respuestaResena, fechaBloqueada, resena, interpretarViaje, itinerario };

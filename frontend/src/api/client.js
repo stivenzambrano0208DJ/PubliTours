@@ -236,6 +236,12 @@ export const api = {
   reportarMensaje: (mensajeId, payload) => request(`/conversaciones/mensajes/${mensajeId}/reportar`, { method: "POST", body: payload, auth: true }),
   reportesMensajesAdmin: (estado = "pendiente") => request(`/admin/reportes-mensajes?estado=${estado}`, { auth: true }),
   resolverReporteMensajeAdmin: (id, accion) => request(`/admin/reportes-mensajes/${id}`, { method: "PATCH", body: { accion }, auth: true }),
+  invitacionesAdmin: () => request("/admin/invitaciones", { auth: true }),
+  invitarNegocioAdmin: (payload) => request("/admin/invitaciones", { method: "POST", body: payload, auth: true }),
+  abrirCaso: (payload) => request("/casos", { method: "POST", body: payload, auth: true }),
+  misCasos: () => request("/casos/mios", { auth: true }),
+  casosAdmin: (estado = "abierto") => request(`/admin/casos?estado=${estado}`, { auth: true }),
+  atenderCasoAdmin: (id, payload) => request(`/admin/casos/${id}`, { method: "PATCH", body: payload, auth: true }),
   itinerarioCompartido: (token) => request(`/itinerarios/compartido/${encodeURIComponent(token)}`),
 
   // Reservas (RF-11 a RF-14)

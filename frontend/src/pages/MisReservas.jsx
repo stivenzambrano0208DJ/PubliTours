@@ -8,14 +8,20 @@ import { ResumenViajero, ProximoViaje } from "../components/reservas/EncabezadoR
 import FiltrosReservas from "../components/reservas/FiltrosReservas";
 import TarjetaReserva from "../components/reservas/TarjetaReserva";
 import PanelAyudaReservas from "../components/reservas/PanelAyudaReservas";
+import ModalProblema from "../components/reservas/ModalProblema";
+import MisCasos from "../components/reservas/MisCasos";
+import { useIdioma } from "../context/idioma";
 
 // Las reservas del turista: estado real de cada solicitud y lo que puede hacer con ella. La lógica vive en useMisReservas.
 export default function MisReservas() {
+  const { t } = useIdioma();
   const { usuario } = useAuth();
   const navigate = useNavigate();
   const mis = useMisReservas();
   const [editando, setEditando] = useState(null);
   const [calificando, setCalificando] = useState(null);
+  const [problema, setProblema] = useState(null);
+  const [casos, setCasos] = useState(0); // cambia al abrir un caso, para recargar «Mis casos de soporte»
 
   return (
     <div className="w-full max-w-[1360px] mx-auto px-margin-mobile md:px-margin py-space-xl">
@@ -30,7 +36,7 @@ export default function MisReservas() {
         <FiltrosReservas filtro={mis.filtro} onFiltro={mis.setFiltro} conteos={mis.conteos} busqueda={mis.busqueda} onBusqueda={mis.setBusqueda} />
       </section>
 
-      {mis.cargando && <p className="font-body-md text-body-md text-on-surface-variant">Cargando...</p>}
+      {mis.cargando && <p className="font-body-md text-body-md text-on-surface-variant">{t("Cargando...")}</p>}
       {mis.error && <p className="text-error font-body-sm text-body-sm">{mis.error}</p>}
 
       {!mis.cargando && !mis.error && (
@@ -40,8 +46,8 @@ export default function MisReservas() {
               <div className="bg-surface-container-lowest rounded-3xl p-space-xl text-center">
                 <p className="font-body-md text-body-md text-on-surface-variant">
                   {mis.reservas.length === 0
-                    ? "Aún no tienes reservas. Genera un itinerario y reserva alguna experiencia."
-                    : "No hay reservas que coincidan con el filtro."}
+                    ? t("Aún no tienes reservas. Genera un itinerario y reserva alguna experiencia.")
+                    : t("No hay reservas que coincidan con el filtro.")}
                 </p>
                 {mis.reservas.length === 0 && (
                   <button
@@ -49,7 +55,7 @@ export default function MisReservas() {
                     className="mt-space-md inline-flex items-center gap-2 px-space-lg py-3 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-all"
                   >
                     <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
-                    <span>Generar itinerario</span>
+                    <span>{t("Generar itinerario")}</span>
                   </button>
                 )}
               </div>
@@ -64,8 +70,10 @@ export default function MisReservas() {
                 onEditar={setEditando}
                 onCancelar={mis.cancelar}
                 onCalificar={setCalificando}
+                onProblema={setProblema}
               />
             ))}
+            <MisCasos version={casos} />
           </div>
 
           <PanelAyudaReservas />
@@ -86,6 +94,7 @@ export default function MisReservas() {
           onGuardado={(resena) => { mis.actualizar(calificando.id, { resena }); setCalificando(null); }}
         />
       )}
+      {problema && <ModalProblema reserva={problema} onCerrar={() => setProblema(null)} onAbierto={() => setCasos((v) => v + 1)} />}
     </div>
   );
 }

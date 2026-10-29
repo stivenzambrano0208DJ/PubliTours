@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AvisosContext } from "./avisos";
 import Modal from "../components/Modal";
+import { useIdioma } from "./idioma";
 
 const MAX_AVISOS = 3; // si llegan más, se descartan los más antiguos
 const DURACION_MS = { error: 9000, ok: 5000, info: 6000 };
@@ -11,6 +12,7 @@ const ESTILO = {
 };
 
 function Aviso({ aviso, onCerrar }) {
+  const { t } = useIdioma();
   const estilo = ESTILO[aviso.tipo] || ESTILO.error;
   useEffect(() => {
     const t = setTimeout(() => onCerrar(aviso.id), DURACION_MS[aviso.tipo] || DURACION_MS.error);
@@ -20,25 +22,26 @@ function Aviso({ aviso, onCerrar }) {
     <div role={estilo.rol} className={`pointer-events-auto flex items-start gap-2.5 rounded-xl px-4 py-3 shadow-lg ${estilo.caja}`}>
       <span className="material-symbols-outlined text-[20px] shrink-0 mt-0.5" aria-hidden="true">{estilo.icono}</span>
       <p className="flex-1 font-body-sm text-body-sm">{aviso.mensaje}</p>
-      <button type="button" onClick={() => onCerrar(aviso.id)} aria-label="Cerrar aviso" className="shrink-0 -mr-1 p-0.5 rounded-lg opacity-80 hover:opacity-100">
+      <button type="button" onClick={() => onCerrar(aviso.id)} aria-label={t("Cerrar aviso")} className="shrink-0 -mr-1 p-0.5 rounded-lg opacity-80 hover:opacity-100">
         <span className="material-symbols-outlined text-[18px]" aria-hidden="true">close</span>
       </button>
     </div>
   );
 }
 
-// Ventana de confirmación: el foco empieza en "Cancelar" (el primer botón, lo más seguro si la acción es irreversible); Escape o tocar fuera
+// Ventana de confirmación: el foco empieza en t("Cancelar") (el primer botón, lo más seguro si la acción es irreversible); Escape o tocar fuera
 // cancelan, y el resto (Tab contenido, foco que vuelve a donde estaba) lo da el componente Modal.
 function Confirmacion({ pregunta, onResponder }) {
+  const { t } = useIdioma();
   const { mensaje, opciones } = pregunta;
 
   return (
     <Modal
       role="alertdialog" tituloId="confirmacion-titulo" aria-describedby="confirmacion-texto" onCerrar={() => onResponder(false)} fondo="z-[100] bg-black/40 items-center p-4"
-      className="w-full max-w-sm bg-surface-container-lowest rounded-2xl p-6 shadow-xl flex flex-col gap-4"
+      className="w-full max-w-sm max-h-[90vh] overflow-y-auto bg-surface-container-lowest rounded-2xl p-6 shadow-xl flex flex-col gap-4"
     >
       <div className="flex flex-col gap-2">
-        <h2 id="confirmacion-titulo" className="font-title-lg text-title-lg text-on-surface font-semibold">{opciones.titulo || "¿Confirmas?"}</h2>
+        <h2 id="confirmacion-titulo" className="font-title-lg text-title-lg text-on-surface font-semibold">{opciones.titulo || t("¿Confirmas?")}</h2>
         <p id="confirmacion-texto" className="font-body-md text-body-md text-on-surface-variant">{mensaje}</p>
       </div>
       <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
@@ -46,13 +49,13 @@ function Confirmacion({ pregunta, onResponder }) {
           type="button" onClick={() => onResponder(false)}
           className="px-4 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md font-semibold hover:bg-surface-container-high transition-colors"
         >
-          {opciones.cancelar || "Cancelar"}
+          {opciones.cancelar || t("Cancelar")}
         </button>
         <button
           type="button" onClick={() => onResponder(true)}
           className={`px-4 py-2.5 rounded-xl font-label-md text-label-md font-semibold transition-colors ${opciones.peligro ? "bg-error text-on-error hover:opacity-90" : "bg-primary text-on-primary hover:bg-primary-container"}`}
         >
-          {opciones.confirmar || "Confirmar"}
+          {opciones.confirmar || t("Confirmar")}
         </button>
       </div>
     </Modal>

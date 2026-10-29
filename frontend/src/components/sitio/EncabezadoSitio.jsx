@@ -1,27 +1,34 @@
 import BotonFavorito from "../BotonFavorito";
 import { Estrellas } from "../Estrellas";
 import { CATEGORIA_ICONOS } from "../../constants";
+import { useIdioma } from "../../context/idioma";
 
 const CHIP = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-label-xs text-label-xs font-semibold";
 
 // Lo primero que se ve del servicio: qué es, quién lo ofrece, su calificación y las acciones (favorito y compartir).
 export default function EncabezadoSitio({ sitio, onCompartir }) {
+  const { t, td } = useIdioma();
   const activo = sitio.estado === "activo";
   return (
     <header className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
         <span className={`${CHIP} bg-secondary-container text-on-secondary-container`}>
           <span className="material-symbols-outlined text-[15px]">{CATEGORIA_ICONOS[sitio.categoria] || "place"}</span>
-          {sitio.categoria}
+          {td(sitio.categoria)}
         </span>
         {sitio.Prestador?.estado_verificacion === "aprobado" && (
           <span className={`${CHIP} bg-surface-container text-on-surface`}>
-            <span className="material-symbols-outlined text-[15px] text-secondary">verified</span> Prestador verificado
+            <span className="material-symbols-outlined text-[15px] text-secondary">verified</span> {t("Prestador verificado")}
+          </span>
+        )}
+        {sitio.es_nuevo && (
+          <span className={`${CHIP} bg-tertiary-fixed text-on-tertiary-fixed-variant`}>
+            <span className="material-symbols-outlined text-[15px]">fiber_new</span> {t("Nuevo en PubliTours")}
           </span>
         )}
         <span className={`${CHIP} ${activo ? "bg-primary-fixed text-on-primary-fixed-variant" : "bg-surface-container text-on-surface-variant"}`}>
           <span className="material-symbols-outlined text-[15px]">{activo ? "check_circle" : "pause_circle"}</span>
-          {activo ? "Disponible" : "No disponible actualmente"}
+          {activo ? t("Disponible") : t("No disponible actualmente")}
         </span>
       </div>
 
@@ -31,7 +38,7 @@ export default function EncabezadoSitio({ sitio, onCompartir }) {
           <BotonFavorito sitioId={sitio.id} className="!w-10 !h-10" />
           <button onClick={onCompartir} className="px-4 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-primary font-label-md text-label-md flex items-center gap-1.5 transition-colors">
             <span className="material-symbols-outlined text-[18px]">share</span>
-            Compartir
+            {t("Compartir")}
           </button>
         </div>
       </div>

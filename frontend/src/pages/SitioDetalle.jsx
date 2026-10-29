@@ -14,6 +14,7 @@ import FichaTecnica from "../components/sitio/FichaTecnica";
 import TarjetaPrestador from "../components/sitio/TarjetaPrestador";
 import PanelReserva from "../components/sitio/PanelReserva";
 import { useAvisos } from "../context/avisos";
+import { useIdioma } from "../context/idioma";
 
 const MENSAJE_CARGANDO = "max-w-[1360px] mx-auto px-gutter py-space-xl font-body-md text-body-md text-on-surface-variant";
 
@@ -29,6 +30,7 @@ function Seccion({ titulo, children }) {
 
 // Detalle público de un servicio: portada, información real, ubicación, reseñas, prestador y reserva.
 export default function SitioDetalle() {
+  const { t } = useIdioma();
   const { avisar } = useAvisos();
   const { id } = useParams();
   const { usuario } = useAuth();
@@ -36,12 +38,12 @@ export default function SitioDetalle() {
   const esPropio = useEsServicioPropio(sitio);
   const [visorIndice, setVisorIndice] = useState(null);
 
-  if (cargando) return <p className={MENSAJE_CARGANDO}>Cargando...</p>;
+  if (cargando) return <p className={MENSAJE_CARGANDO}>{t("Cargando...")}</p>;
   if (error || !sitio) {
     return (
       <div className="max-w-[1360px] mx-auto px-gutter py-space-xl">
-        <p className="text-error font-body-md text-body-md">{error || "Sitio no encontrado."}</p>
-        <Link to="/explorar" className="text-secondary font-label-md text-label-md hover:underline">Volver a Explorar Destinos</Link>
+        <p className="text-error font-body-md text-body-md">{error || t("Sitio no encontrado.")}</p>
+        <Link to="/explorar" className="text-secondary font-label-md text-label-md hover:underline">{t("Volver a Explorar Destinos")}</Link>
       </div>
     );
   }
@@ -54,7 +56,7 @@ export default function SitioDetalle() {
       try { await navigator.share({ title: sitio.nombre, url }); } catch { /* el usuario canceló */ }
     } else {
       await navigator.clipboard.writeText(url);
-      avisar("Enlace copiado al portapapeles.", "ok");
+      avisar(t("Enlace copiado al portapapeles."), "ok");
     }
   };
 
@@ -63,10 +65,10 @@ export default function SitioDetalle() {
       <section className="max-w-[1360px] w-full mx-auto px-gutter pt-space-lg pb-space-sm">
         <nav className="flex items-center flex-wrap gap-2 font-label-md text-label-md text-on-surface-variant">
           <Link to="/" className="hover:text-primary transition-colors flex items-center gap-1">
-            <span className="material-symbols-outlined text-[18px]">home</span> Inicio
+            <span className="material-symbols-outlined text-[18px]">home</span> {t("Inicio")}
           </Link>
           <span className="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
-          <Link to="/explorar" className="hover:text-primary transition-colors">Explorar Destinos</Link>
+          <Link to="/explorar" className="hover:text-primary transition-colors">{t("Explorar Destinos")}</Link>
           <span className="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
           <span className="text-primary font-medium">{sitio.nombre}</span>
         </nav>
@@ -82,16 +84,16 @@ export default function SitioDetalle() {
               <VisorFotos fotos={fotos} indice={visorIndice} nombre={sitio.nombre} onCambiar={setVisorIndice} onCerrar={() => setVisorIndice(null)} />
             )}
 
-            <Seccion titulo="Acerca de este sitio">
+            <Seccion titulo={t("Acerca de este sitio")}>
               <p className="font-body-lg text-body-lg text-on-surface leading-relaxed">
-                {sitio.descripcion || "Este prestador aún no agregó una descripción detallada para este sitio."}
+                {sitio.descripcion || t("Este prestador aún no agregó una descripción detallada para este sitio.")}
               </p>
             </Seccion>
 
             {sitio.Prestador && <TarjetaPrestador prestador={sitio.Prestador} />}
 
             {sitio.latitud && sitio.longitud && (
-              <Seccion titulo="Ubicación">
+              <Seccion titulo={t("Ubicación")}>
                 <MapaVisor lat={sitio.latitud} lng={sitio.longitud} nombre={sitio.nombre} />
               </Seccion>
             )}

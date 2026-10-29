@@ -5,10 +5,12 @@ import BurbujaMensaje from "./BurbujaMensaje";
 import RedactorMensaje from "./RedactorMensaje";
 import VisorFoto from "./VisorFoto";
 import ModalReportar from "./ModalReportar";
+import { useIdioma } from "../../context/idioma";
 
 // Una conversación abierta: mensajes agrupados por día, caja para responder y las acciones de ver foto y reportar.
 // Se monta con key = id para que cada conversación empiece con su propio estado.
 export default function HiloConversacion({ id, onVolver }) {
+  const { t, idioma } = useIdioma();
   const { cargando, error, mensajes, enviar, cargarAnteriores, lado, contraparte, puedeEscribir, hayMas } = useHilo(id);
   const [foto, setFoto] = useState(null);
   const [reportando, setReportando] = useState(null);
@@ -33,12 +35,12 @@ export default function HiloConversacion({ id, onVolver }) {
     try { await cargarAnteriores(); } finally { setCargandoMas(false); }
   };
 
-  if (cargando) return <p role="status" className="p-space-lg text-on-surface-variant">Cargando conversación…</p>;
+  if (cargando) return <p role="status" className="p-space-lg text-on-surface-variant">{t("Cargando conversación…")}</p>;
   if (error) {
     return (
       <div className="p-space-lg flex flex-col gap-3 items-start">
         <p role="alert" className="text-error font-body-md text-body-md">{error}</p>
-        <button type="button" onClick={onVolver} className="px-4 py-2 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md">Volver a mis mensajes</button>
+        <button type="button" onClick={onVolver} className="px-4 py-2 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md">{t("Volver a mis mensajes")}</button>
       </div>
     );
   }
@@ -46,7 +48,7 @@ export default function HiloConversacion({ id, onVolver }) {
   return (
     <div className="flex flex-col h-full min-h-0">
       <header className="flex items-center gap-3 px-4 py-3 border-b border-surface-container-high">
-        <button type="button" onClick={onVolver} aria-label="Volver a mis mensajes" className="lg:hidden w-9 h-9 rounded-full hover:bg-surface-container flex items-center justify-center">
+        <button type="button" onClick={onVolver} aria-label={t("Volver a mis mensajes")} className="lg:hidden w-9 h-9 rounded-full hover:bg-surface-container flex items-center justify-center">
           <span className="material-symbols-outlined" aria-hidden="true">arrow_back</span>
         </button>
         <div className="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-bold shrink-0" aria-hidden="true">
@@ -54,20 +56,20 @@ export default function HiloConversacion({ id, onVolver }) {
         </div>
         <div className="min-w-0">
           <h2 className="font-title-sm text-title-sm text-on-surface font-semibold truncate">{contraparte.nombre}</h2>
-          <p className="font-label-xs text-label-xs text-on-surface-variant">{lado === "turista" ? "Negocio" : "Cliente"}</p>
+          <p className="font-label-xs text-label-xs text-on-surface-variant">{lado === "turista" ? t("Negocio") : t("Cliente")}</p>
         </div>
       </header>
 
-      <div ref={lista} className="flex-1 min-h-0 overflow-y-auto px-4 py-4 flex flex-col gap-2" aria-live="polite" aria-label="Mensajes">
+      <div ref={lista} className="flex-1 min-h-0 overflow-y-auto px-4 py-4 flex flex-col gap-2" aria-live="polite" aria-label={t("Mensajes")}>
         {hayMas && (
           <button type="button" onClick={verMas} disabled={cargandoMas} className="self-center px-3 py-1.5 rounded-full bg-surface-container text-on-surface-variant font-label-xs text-label-xs hover:bg-surface-container-high disabled:opacity-60">
-            {cargandoMas ? "Cargando…" : "Ver mensajes anteriores"}
+            {cargandoMas ? "Cargando…" : t("Ver mensajes anteriores")}
           </button>
         )}
         {mensajes.map((m, i) => (
           <Fragment key={m.id}>
             {(i === 0 || !mismoDia(mensajes[i - 1].creado_en, m.creado_en)) && (
-              <p className="self-center my-1 px-3 py-0.5 rounded-full bg-surface-container font-label-xs text-label-xs text-on-surface-variant">{etiquetaDia(m.creado_en)}</p>
+              <p className="self-center my-1 px-3 py-0.5 rounded-full bg-surface-container font-label-xs text-label-xs text-on-surface-variant">{etiquetaDia(m.creado_en, undefined, idioma)}</p>
             )}
             <BurbujaMensaje mensaje={m} lado={lado} onVerFoto={setFoto} onReportar={setReportando} />
           </Fragment>
@@ -76,9 +78,9 @@ export default function HiloConversacion({ id, onVolver }) {
 
       <footer className="px-4 py-3 border-t border-surface-container-high">
         {puedeEscribir ? (
-          <RedactorMensaje onEnviar={enviar} placeholder={lado === "negocio" ? "Escribe tu respuesta…" : "Escribe tu mensaje…"} />
+          <RedactorMensaje onEnviar={enviar} placeholder={lado === "negocio" ? t("Escribe tu respuesta…") : t("Escribe tu mensaje…")} />
         ) : (
-          <p role="status" className="font-body-sm text-body-sm text-on-surface-variant">Este negocio no está disponible por el momento, así que no se pueden enviar mensajes nuevos.</p>
+          <p role="status" className="font-body-sm text-body-sm text-on-surface-variant">{t("Este negocio no está disponible por el momento, así que no se pueden enviar mensajes nuevos.")}</p>
         )}
       </footer>
 

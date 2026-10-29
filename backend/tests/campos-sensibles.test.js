@@ -126,7 +126,7 @@ test("lista blanca: el itinerario compartido no incluye a su dueño, su presupue
 });
 
 test("lista blanca: la configuración pública y el perfil propio solo tienen los campos previstos", () => {
-  assert.deepEqual(exactos(buscar("anonima", "/configuracion").cuerpo), ["comision_pct", "dias_gracia_asistencia", "mensajeria", "politicas_cancelacion"]);
+  assert.deepEqual(exactos(buscar("anonima", "/configuracion").cuerpo), ["comision_pct", "dias_gracia_asistencia", "mensajeria", "politicas_cancelacion", "soporte"]);
   const yo = buscar("turista dueña", "/usuarios/me");
   assert.equal(yo.estado, 200);
   assert.deepEqual(exactos(yo.cuerpo), ["correo", "correo_verificado", "fecha_registro", "id", "nombre", "rol"]);

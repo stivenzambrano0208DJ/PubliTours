@@ -21,6 +21,8 @@ const Conversacion = require("./Conversacion");
 const Mensaje = require("./Mensaje");
 const MensajeImagen = require("./MensajeImagen");
 const ReporteMensaje = require("./ReporteMensaje");
+const CasoSoporte = require("./CasoSoporte");
+const Invitacion = require("./Invitacion");
 
 // Usuario 1-1 Prestador (RN-09: un usuario tiene un único rol)
 Usuario.hasOne(Prestador, { foreignKey: "usuario_id" });
@@ -124,4 +126,9 @@ Mensaje.hasMany(ReporteMensaje, { foreignKey: "mensaje_id", as: "reportes" });
 ReporteMensaje.belongsTo(Mensaje, { foreignKey: "mensaje_id", as: "mensaje" });
 ReporteMensaje.belongsTo(Usuario, { foreignKey: "reportado_por", as: "reportador" });
 
-module.exports = { sequelize, Usuario, Prestador, SitioTuristico, ImagenSitio, Itinerario, ItinerarioItem, Reserva, Notificacion, PasswordReset, Resena, Favorito, FechaBloqueada, Paquete, PaqueteItem, ImagenPaquete, CodigoVerificacion, TarifaTemporada, Auditoria, Conversacion, Mensaje, MensajeImagen, ReporteMensaje };
+// Casos de soporte sobre una reserva
+Reserva.hasMany(CasoSoporte, { foreignKey: "reserva_id", as: "casos" });
+CasoSoporte.belongsTo(Reserva, { foreignKey: "reserva_id", as: "reserva" });
+CasoSoporte.belongsTo(Usuario, { foreignKey: "abierto_por", as: "autor" });
+
+module.exports = { sequelize, Usuario, Prestador, SitioTuristico, ImagenSitio, Itinerario, ItinerarioItem, Reserva, Notificacion, PasswordReset, Resena, Favorito, FechaBloqueada, Paquete, PaqueteItem, ImagenPaquete, CodigoVerificacion, TarifaTemporada, Auditoria, Conversacion, Mensaje, MensajeImagen, ReporteMensaje, CasoSoporte, Invitacion };

@@ -1,11 +1,13 @@
+import { useIdioma } from "../../context/idioma";
 const BOTON_FLECHA = "w-10 h-10 rounded-xl bg-surface text-outline hover:text-on-surface flex items-center justify-center transition-colors disabled:opacity-40";
 
 // Navegación entre páginas de resultados.
 export default function Paginacion({ pagina, total, onIr }) {
+  const { t } = useIdioma();
   return (
     <div className="mt-space-xl pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-md bg-surface-container-lowest p-space-md rounded-2xl shadow-sm">
       <div className="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant">
-        <span>Página <strong className="text-on-surface">{pagina}</strong> de <strong className="text-on-surface">{total}</strong></span>
+        <span>{t("Página")} <strong className="text-on-surface">{pagina}</strong> {t("de")} <strong className="text-on-surface">{total}</strong></span>
       </div>
       <div className="flex items-center gap-1">
         <button disabled={pagina <= 1} onClick={() => onIr(pagina - 1)} className={BOTON_FLECHA}>

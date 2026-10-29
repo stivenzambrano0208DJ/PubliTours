@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useIdioma } from "../../context/idioma";
 
 const ETIQUETA = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/30 backdrop-blur-md border border-white/15 font-label-xs text-label-xs text-on-primary/90";
 
@@ -6,17 +7,18 @@ const ETIQUETA = "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-bla
 // (solo en pantallas grandes) y a la derecha el formulario, que es el contenido (`children`).
 // hero = { imagen, titulo: [primeraLinea, lineaResaltada], descripcion, etiquetas: [{ icono, texto }] }
 export default function LayoutAuth({ hero, children }) {
+  const { t } = useIdioma();
   return (
     <div className="relative h-dvh w-full flex flex-col lg:flex-row overflow-hidden">
       <section className="relative hidden lg:flex lg:w-1/2 flex-col justify-between p-10 xl:p-14 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img alt="Paisaje aéreo de la Amazonía del Caquetá" className="w-full h-full object-cover object-center" src={hero.imagen} />
+          <img alt={t("Paisaje aéreo de la Amazonía del Caquetá")} className="w-full h-full object-cover object-center" src={hero.imagen} />
           <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/50 to-primary/30" />
         </div>
 
         <Link to="/" className="relative z-10 inline-flex items-center gap-1.5 text-on-primary/90 hover:text-on-primary transition-colors font-label-md text-label-md w-fit">
           <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-          <span>Volver al inicio</span>
+          <span>{t("Volver al inicio")}</span>
         </Link>
 
         <div className="relative z-10 max-w-xl">
@@ -37,7 +39,7 @@ export default function LayoutAuth({ hero, children }) {
         </div>
 
         <p className="relative z-10 font-label-xs text-label-xs text-on-primary/60 tracking-wider uppercase">
-          Caquetá, Puerta de Oro de la Amazonía Colombiana
+          {t("Caquetá, Puerta de Oro de la Amazonía Colombiana")}
         </p>
       </section>
 
@@ -45,7 +47,7 @@ export default function LayoutAuth({ hero, children }) {
         <div className="w-full max-w-md mx-auto my-auto">
           <Link to="/" className="lg:hidden inline-flex items-center gap-1.5 mb-4 text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md">
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-            <span>Volver al inicio</span>
+            <span>{t("Volver al inicio")}</span>
           </Link>
           {children}
         </div>

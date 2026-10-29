@@ -5,6 +5,7 @@ import { useAuth } from "../context/auth";
 import { CATEGORIA_ICONOS } from "../constants";
 import MisDatos from "../components/perfil/MisDatos";
 import Favoritos from "../components/perfil/Favoritos";
+import { useIdioma } from "../context/idioma";
 
 const TIPO_NOTIFICACION_ICONO = {
   nueva_reserva: "confirmation_number",
@@ -25,6 +26,7 @@ const TIPO_NOTIFICACION_ICONO = {
 };
 
 export default function PerfilTurista() {
+  const { t, locale } = useIdioma();
   const { usuario } = useAuth();
   const navigate = useNavigate();
 
@@ -77,7 +79,7 @@ export default function PerfilTurista() {
   };
 
   if (cargando) {
-    return <p className="max-w-[1360px] mx-auto px-gutter py-space-xl font-body-md text-body-md text-on-surface-variant">Cargando perfil...</p>;
+    return <p className="max-w-[1360px] mx-auto px-gutter py-space-xl font-body-md text-body-md text-on-surface-variant">{t("Cargando perfil...")}</p>;
   }
 
   return (
@@ -90,16 +92,16 @@ export default function PerfilTurista() {
             {usuario?.nombre?.charAt(0).toUpperCase() || "?"}
           </div>
           <div className="space-y-space-xs">
-            <span className="font-headline-xl text-headline-xl text-on-surface font-bold block">¡Hola, {usuario?.nombre}!</span>
+            <span className="font-headline-xl text-headline-xl text-on-surface font-bold block">{t("¡Hola, {nombre}!", { nombre: usuario?.nombre })}</span>
             <div className="flex flex-wrap items-center gap-space-xs">
               <span className="inline-flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed font-label-xs text-label-xs font-semibold capitalize">
                 <span className="material-symbols-outlined text-[13px]">badge</span>
-                {usuario?.rol}
+                {{ turista: t("Turista"), prestador: t("Prestador"), administrador: t("Administrador") }[usuario?.rol] || usuario?.rol}
               </span>
               <span className="font-body-sm text-body-sm text-on-surface-variant">{usuario?.correo}</span>
               {usuario?.fecha_registro && (
                 <span className="font-body-sm text-body-sm text-on-surface-variant">
-                  · Miembro desde {new Date(usuario.fecha_registro).toLocaleDateString("es-CO")}
+                  · {t("Miembro desde {fecha}", { fecha: new Date(usuario.fecha_registro).toLocaleDateString(locale) })}
                 </span>
               )}
             </div>
@@ -115,7 +117,7 @@ export default function PerfilTurista() {
             }`}
           >
             <span className="material-symbols-outlined text-[18px]">person</span>
-            <span>Resumen</span>
+            <span>{t("Resumen")}</span>
           </button>
           <button
             onClick={() => setTab("notificaciones")}
@@ -124,7 +126,7 @@ export default function PerfilTurista() {
             }`}
           >
             <span className="material-symbols-outlined text-[18px]">notifications</span>
-            <span>Notificaciones</span>
+            <span>{t("Notificaciones")}</span>
             {noLeidas > 0 && <span className="w-2 h-2 rounded-full bg-error" />}
           </button>
           <button
@@ -134,7 +136,7 @@ export default function PerfilTurista() {
             }`}
           >
             <span className="material-symbols-outlined text-[18px]">favorite</span>
-            <span>Favoritos</span>
+            <span>{t("Favoritos")}</span>
           </button>
           <button
             onClick={() => setTab("datos")}
@@ -143,28 +145,28 @@ export default function PerfilTurista() {
             }`}
           >
             <span className="material-symbols-outlined text-[18px]">manage_accounts</span>
-            <span>Mis datos</span>
+            <span>{t("Mis datos")}</span>
           </button>
           <button
             onClick={() => navigate("/itinerario")}
             className="px-space-md py-space-xs rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md shrink-0 transition-colors flex items-center gap-space-xs"
           >
             <span className="material-symbols-outlined text-[18px] text-secondary">auto_awesome</span>
-            <span>Itinerario IA</span>
+            <span>{t("Itinerario IA")}</span>
           </button>
           <button
             onClick={() => navigate("/mis-reservas")}
             className="px-space-md py-space-xs rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md shrink-0 transition-colors flex items-center gap-space-xs"
           >
             <span className="material-symbols-outlined text-[18px]">confirmation_number</span>
-            <span>Mis Reservas</span>
+            <span>{t("Mis Reservas")}</span>
           </button>
           <button
             onClick={() => navigate("/explorar")}
             className="px-space-md py-space-xs rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md shrink-0 transition-colors flex items-center gap-space-xs"
           >
             <span className="material-symbols-outlined text-[18px]">travel_explore</span>
-            <span>Explorar Destinos</span>
+            <span>{t("Explorar Destinos")}</span>
           </button>
         </div>
       </div>
@@ -175,21 +177,21 @@ export default function PerfilTurista() {
           <section className="grid grid-cols-1 sm:grid-cols-3 gap-space-md">
             <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm">
               <div className="flex items-center justify-between">
-                <span className="font-label-xs text-label-xs uppercase tracking-wider text-outline font-semibold">Reservas totales</span>
+                <span className="font-label-xs text-label-xs uppercase tracking-wider text-outline font-semibold">{t("Reservas totales")}</span>
                 <span className="material-symbols-outlined text-[18px] text-primary">confirmation_number</span>
               </div>
               <span className="font-headline-xl text-headline-xl text-on-surface font-bold block mt-2">{kpis.total}</span>
             </div>
             <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm">
               <div className="flex items-center justify-between">
-                <span className="font-label-xs text-label-xs uppercase tracking-wider text-outline font-semibold">Confirmadas</span>
+                <span className="font-label-xs text-label-xs uppercase tracking-wider text-outline font-semibold">{t("Confirmadas")}</span>
                 <span className="material-symbols-outlined text-[18px] text-secondary">check_circle</span>
               </div>
               <span className="font-headline-xl text-headline-xl text-on-surface font-bold block mt-2">{kpis.confirmadas}</span>
             </div>
             <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm">
               <div className="flex items-center justify-between">
-                <span className="font-label-xs text-label-xs uppercase tracking-wider text-outline font-semibold">Pendientes</span>
+                <span className="font-label-xs text-label-xs uppercase tracking-wider text-outline font-semibold">{t("Pendientes")}</span>
                 <span className="material-symbols-outlined text-[18px] text-on-tertiary-container">hourglass_top</span>
               </div>
               <span className="font-headline-xl text-headline-xl text-on-surface font-bold block mt-2">{kpis.pendientes}</span>
@@ -206,7 +208,7 @@ export default function PerfilTurista() {
 )}
                 </div>
                 <div>
-                  <span className="font-label-xs text-label-xs uppercase tracking-widest text-tertiary-fixed font-semibold">Tu próximo viaje confirmado</span>
+                  <span className="font-label-xs text-label-xs uppercase tracking-widest text-tertiary-fixed font-semibold">{t("Tu próximo viaje confirmado")}</span>
                   <h2 className="font-title-lg text-title-lg font-bold">{proximaReserva.paquete?.nombre || proximaReserva.sitio?.nombre}</h2>
                   <div className="flex flex-wrap items-center gap-x-space-md gap-y-1 font-body-sm text-body-sm text-on-primary-container mt-1">
                     <span className="flex items-center gap-1">
@@ -224,17 +226,17 @@ export default function PerfilTurista() {
                 onClick={() => navigate("/mis-reservas")}
                 className="shrink-0 px-space-md py-space-sm rounded-xl bg-surface-container-lowest text-primary hover:bg-surface font-label-md text-label-md shadow-md transition-all"
               >
-                Ver detalle
+                {t("Ver detalle")}
               </button>
             </section>
           )}
 
           {/* Historial real de viajes ya realizados */}
           <section className="space-y-space-sm">
-            <h2 className="font-headline-md text-headline-md text-on-surface font-bold">Historial de viajes</h2>
+            <h2 className="font-headline-md text-headline-md text-on-surface font-bold">{t("Historial de viajes")}</h2>
             {historial.length === 0 ? (
               <div className="bg-surface-container-lowest rounded-2xl p-space-lg text-center">
-                <p className="font-body-sm text-body-sm text-on-surface-variant">Aún no tienes viajes confirmados en fechas pasadas.</p>
+                <p className="font-body-sm text-body-sm text-on-surface-variant">{t("Aún no tienes viajes confirmados en fechas pasadas.")}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
@@ -259,8 +261,8 @@ export default function PerfilTurista() {
             <div className="flex items-center gap-space-sm">
               <span className="material-symbols-outlined text-secondary text-[28px]">auto_awesome</span>
               <div>
-                <span className="font-title-sm text-title-sm text-on-surface font-bold">¿Quieres planear tu próxima experiencia?</span>
-                <p className="font-body-sm text-body-sm text-on-surface-variant">Genera un itinerario con el motor de scoring real de PubliTours.</p>
+                <span className="font-title-sm text-title-sm text-on-surface font-bold">{t("¿Quieres planear tu próxima experiencia?")}</span>
+                <p className="font-body-sm text-body-sm text-on-surface-variant">{t("Genera un itinerario con el motor de scoring real de PubliTours.")}</p>
               </div>
             </div>
             <button
@@ -268,7 +270,7 @@ export default function PerfilTurista() {
               className="shrink-0 inline-flex items-center gap-space-xs px-space-lg py-space-xs rounded-full bg-primary-container hover:bg-secondary text-on-primary font-label-md text-label-md transition-all"
             >
               <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
-              Generar itinerario
+              {t("Generar itinerario")}
             </button>
           </div>
         </>
@@ -279,10 +281,10 @@ export default function PerfilTurista() {
 
       {tab === "notificaciones" && (
         <section className="space-y-space-sm">
-          <h2 className="font-headline-md text-headline-md text-on-surface font-bold">Notificaciones</h2>
+          <h2 className="font-headline-md text-headline-md text-on-surface font-bold">{t("Notificaciones")}</h2>
           {notificaciones.length === 0 ? (
             <div className="bg-surface-container-lowest rounded-2xl p-space-lg text-center">
-              <p className="font-body-sm text-body-sm text-on-surface-variant">No tienes notificaciones todavía.</p>
+              <p className="font-body-sm text-body-sm text-on-surface-variant">{t("No tienes notificaciones todavía.")}</p>
             </div>
           ) : (
             <div className="flex flex-col gap-space-sm">
@@ -299,7 +301,7 @@ export default function PerfilTurista() {
                     </span>
                     <div>
                       <p className="font-body-sm text-body-sm text-on-surface">{n.mensaje}</p>
-                      <span className="font-label-xs text-label-xs text-outline">{new Date(n.fecha).toLocaleString("es-CO")}</span>
+                      <span className="font-label-xs text-label-xs text-outline">{new Date(n.fecha).toLocaleString(locale)}</span>
                     </div>
                   </div>
                   {!n.leido && (
@@ -308,7 +310,7 @@ export default function PerfilTurista() {
                       disabled={marcando === n.id}
                       className="shrink-0 px-3 py-1.5 rounded-lg bg-surface-container text-on-surface font-label-xs text-label-xs font-semibold hover:bg-surface-container-high transition-colors disabled:opacity-50"
                     >
-                      Marcar leída
+                      {t("Marcar leída")}
                     </button>
                   )}
                 </div>

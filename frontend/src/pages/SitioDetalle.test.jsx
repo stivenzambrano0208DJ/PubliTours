@@ -92,6 +92,16 @@ describe("SitioDetalle", () => {
     expect(screen.getByText("4.5 (12)")).toBeInTheDocument();
   });
 
+  it("destaca los servicios recién publicados", async () => {
+    await abrir({ es_nuevo: true });
+    expect(screen.getByText("Nuevo en PubliTours")).toBeInTheDocument();
+  });
+
+  it("no marca como nuevo un servicio que no lo es", async () => {
+    await abrir({ es_nuevo: false });
+    expect(screen.queryByText("Nuevo en PubliTours")).not.toBeInTheDocument();
+  });
+
   it("indica si el servicio está disponible y si el prestador está verificado", async () => {
     await abrir();
     expect(screen.getByText("Disponible")).toBeInTheDocument();

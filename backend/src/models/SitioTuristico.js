@@ -23,6 +23,8 @@ const SitioTuristico = sequelize.define("SitioTuristico", {
   grupo_descuento_pct: { type: DataTypes.INTEGER, allowNull: true }, // ...X % sobre el subtotal
   motivo_moderacion: { type: DataTypes.TEXT, allowNull: true }, // por qué el administrador lo ocultó
   estado: { type: DataTypes.ENUM("activo", "inactivo", "archivado", "oculto"), allowNull: false, defaultValue: "activo" },
+  // Cuándo se publicó. Vacío en los servicios anteriores a este dato: de ellos no se sabe y no se inventa.
+  fecha_creacion: { type: DataTypes.DATE, allowNull: true, defaultValue: DataTypes.NOW },
 }, {
   tableName: "sitios_turisticos",
   timestamps: false,

@@ -29,4 +29,14 @@ const esCancelacionTardia = (politica, fecha_servicio) =>
 // la reserva se cierra sola como completada, para que un descuido del prestador no le quite al turista la posibilidad de reseñar.
 const DIAS_GRACIA_ASISTENCIA = 3;
 
-module.exports = { DIAS_GRACIA_ASISTENCIA, comisionPorcentaje, calcularComision, POLITICAS_CANCELACION, esCancelacionTardia };
+// Más oferta y reseñas:
+//  - un servicio es «nuevo» durante sus primeros días en la plataforma (etiqueta y orden «Más recientes» en el catálogo);
+//  - si la turista no calificó, se le recuerda una sola vez unos días después del servicio, y solo para servicios recientes
+//    (así, al activarlo, nadie recibe recordatorios de viajes de hace meses);
+//  - la administración puede invitar negocios por correo, con un tope diario para no parecer correo masivo.
+const DIAS_NUEVO = 30;
+const DIAS_RECORDAR_RESENA = 3;
+const VENTANA_RECORDATORIO_RESENA = 30;
+const INVITACIONES_POR_DIA = 50;
+
+module.exports = { DIAS_NUEVO, DIAS_RECORDAR_RESENA, VENTANA_RECORDATORIO_RESENA, INVITACIONES_POR_DIA, DIAS_GRACIA_ASISTENCIA, comisionPorcentaje, calcularComision, POLITICAS_CANCELACION, esCancelacionTardia };

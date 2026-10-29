@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useConfiguracion } from "../hooks/useConfiguracion";
+import { AvisoSoloEspanol } from "../components/PaginaLegal";
 import { NOMBRES_POLITICA, textoDias } from "../utils/politicas";
 
 // Preguntas frecuentes. Todo lo que afirma coincide con lo que hace la plataforma; las cifras (plazos de cancelación, días de gracia,
@@ -78,6 +79,24 @@ function secciones(config) {
       ],
     },
     {
+      titulo: "Si tienes un problema con una reserva",
+      icono: "support_agent",
+      preguntas: [
+        {
+          p: "¿Cómo reporto un problema?",
+          r: <>En <Link to="/mis-reservas">Mis Reservas</Link> (o en tu Portal Prestador, si eres un negocio) pulsa «Tengo un problema con esta reserva», elige qué pasó y cuéntanos los detalles. Se abre un caso de soporte que la administración de PubliTours revisa en orden de llegada.</>,
+        },
+        {
+          p: "¿Cómo sé qué pasó con mi caso?",
+          r: "Te avisamos con una notificación cuando la administración lo pone en revisión y cuando lo resuelve, con su respuesta. También puedes ver el estado de tus casos en «Mis casos de soporte», debajo de tus reservas.",
+        },
+        {
+          p: "¿PubliTours me devuelve el dinero?",
+          r: "PubliTours no procesa pagos, así que no puede hacer devoluciones por su cuenta: el pago y cualquier devolución se acuerdan con el negocio. Abrir un caso deja constancia de lo ocurrido y permite que la administración lo revise.",
+        },
+      ],
+    },
+    {
       titulo: "Tu cuenta y tus datos",
       icono: "manage_accounts",
       preguntas: [
@@ -102,6 +121,7 @@ export default function Ayuda() {
   const config = useConfiguracion();
   return (
     <div className="max-w-3xl mx-auto px-gutter py-space-xl">
+      <AvisoSoloEspanol />
       <header className="text-center mb-space-lg">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container/40 text-secondary font-label-xs text-label-xs font-semibold mb-3">
           <span className="material-symbols-outlined text-[14px]" aria-hidden="true">help</span>

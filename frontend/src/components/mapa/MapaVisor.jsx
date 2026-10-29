@@ -1,8 +1,10 @@
 import { MapContainer, Marker } from "react-leaflet";
 import "./configurarLeaflet";
 import CapasBase from "./CapasBase";
+import { useIdioma } from "../../context/idioma";
 
 export default function MapaVisor({ lat, lng, nombre }) {
+  const { t } = useIdioma();
   const posicion = [Number(lat), Number(lng)];
   const urlIndicaciones = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 
@@ -21,7 +23,7 @@ export default function MapaVisor({ lat, lng, nombre }) {
         className="inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-surface-container text-primary hover:bg-surface-container-high font-label-md text-label-md font-semibold transition-colors"
       >
         <span className="material-symbols-outlined text-[18px]">directions</span>
-        Cómo llegar a {nombre}
+        {t("Cómo llegar a {nombre}", { nombre })}
       </a>
     </div>
   );

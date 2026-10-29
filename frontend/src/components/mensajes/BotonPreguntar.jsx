@@ -5,9 +5,11 @@ import { useAuth } from "../../context/auth";
 import { avisarCambioMensajes } from "../../hooks/useMensajesSinLeer";
 import RedactorMensaje from "./RedactorMensaje";
 import Modal from "../Modal";
+import { useIdioma } from "../../context/idioma";
 
 // Ventana para escribirle al negocio sobre un servicio, un paquete o una reserva. Al enviar lleva a la conversación.
 function ModalPreguntar({ tema, titulo, ayuda, onCerrar }) {
+  const { t } = useIdioma();
   const navigate = useNavigate();
   const alEnviar = async (texto, fotos) => {
     const { conversacion_id: id } = await api.iniciarConversacion({ ...tema, texto }, fotos);
@@ -17,22 +19,24 @@ function ModalPreguntar({ tema, titulo, ayuda, onCerrar }) {
   };
 
   return (
-    <Modal tituloId="titulo-preguntar" onCerrar={onCerrar} fondo="bg-black/40 z-[60] items-end sm:items-center p-0 sm:p-4" className="w-full sm:max-w-lg bg-surface-container-lowest rounded-t-3xl sm:rounded-2xl p-6 shadow-xl flex flex-col gap-3">
+    <Modal tituloId="titulo-preguntar" onCerrar={onCerrar} fondo="bg-black/40 z-[60] items-end sm:items-center p-0 sm:p-4" className="w-full sm:max-w-lg max-h-[90vh] overflow-y-auto bg-surface-container-lowest rounded-t-3xl sm:rounded-2xl p-6 shadow-xl flex flex-col gap-3">
       <div className="flex items-start justify-between gap-3">
         <h3 id="titulo-preguntar" className="font-headline-md text-headline-md text-primary">{titulo}</h3>
-        <button type="button" onClick={onCerrar} aria-label="Cerrar" className="w-9 h-9 rounded-full hover:bg-surface-container flex items-center justify-center shrink-0">
+        <button type="button" onClick={onCerrar} aria-label={t("Cerrar")} className="w-9 h-9 rounded-full hover:bg-surface-container flex items-center justify-center shrink-0">
           <span className="material-symbols-outlined" aria-hidden="true">close</span>
         </button>
       </div>
       <p className="font-body-sm text-body-sm text-on-surface-variant">{ayuda}</p>
-      <RedactorMensaje onEnviar={alEnviar} placeholder="Escribe tu pregunta…" textoBoton="Enviar" autoFocus />
+      <RedactorMensaje onEnviar={alEnviar} placeholder={t("Escribe tu pregunta…")} textoBoton={t("Enviar")} autoFocus />
     </Modal>
   );
 }
 
-// Botón "Preguntar al negocio". Sin sesión invita a iniciarla; para la administración no se muestra (no participa en conversaciones).
+// Botón t("Preguntar al negocio"). Sin sesión invita a iniciarla; para la administración no se muestra (no participa en conversaciones).
 // Uso: <BotonPreguntar tema={{ sitio_id: 3 }} nombre="Cascada La Diabla" />  ·  tema = { sitio_id } | { paquete_id } | { reserva_id }
-export default function BotonPreguntar({ tema, nombre, etiqueta = "Preguntar al negocio", className = "" }) {
+export default function BotonPreguntar({ tema, nombre, etiqueta: etiquetaPropia, className = "" }) {
+  const { t } = useIdioma();
+  const etiqueta = etiquetaPropia || t("Preguntar al negocio");
   const { usuario } = useAuth();
   const [abierto, setAbierto] = useState(false);
   if (usuario?.rol === "administrador") return null;
@@ -41,7 +45,7 @@ export default function BotonPreguntar({ tema, nombre, etiqueta = "Preguntar al 
   if (!usuario) {
     return (
       <Link to="/login" className={`${base} bg-surface-container text-on-surface hover:bg-surface-container-high`}>
-        <span className="material-symbols-outlined text-[18px]" aria-hidden="true">chat</span>Inicia sesión para preguntar
+        <span className="material-symbols-outlined text-[18px]" aria-hidden="true">chat</span>{t("Inicia sesión para preguntar")}
       </Link>
     );
   }
@@ -53,7 +57,9 @@ export default function BotonPreguntar({ tema, nombre, etiqueta = "Preguntar al 
       {abierto && (
         <ModalPreguntar
           tema={tema} titulo={etiqueta}
-          ayuda={`Tu mensaje le llega al negocio${nombre ? ` sobre «${nombre}»` : ""}. Puedes adjuntar fotos. Nunca compartas contraseñas ni datos de tu tarjeta por mensaje.`}
+          ayuda={nombre
+            ? t("Tu mensaje le llega al negocio sobre «{nombre}». Puedes adjuntar fotos. Nunca compartas contraseñas ni datos de tu tarjeta por mensaje.", { nombre })
+            : t("Tu mensaje le llega al negocio. Puedes adjuntar fotos. Nunca compartas contraseñas ni datos de tu tarjeta por mensaje.")}
           onCerrar={() => setAbierto(false)}
         />
       )}

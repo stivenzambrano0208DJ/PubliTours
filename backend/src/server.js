@@ -10,7 +10,7 @@ if (problemas.length > 0) {
 
 const app = require("./app");
 const { sequelize } = require("./models");
-const { cerrarReservasVencidas, enviarRecordatorios } = require("./services/reservas");
+const { cerrarReservasVencidas, enviarRecordatorios, recordarCalificar } = require("./services/reservas");
 
 const PORT = process.env.PORT || 4000;
 
@@ -20,10 +20,11 @@ async function iniciar() {
     // El esquema se gestiona con migraciones: npm run migrate
     logger.info("Conexión a la base de datos establecida.");
 
-    // Cierre de reservas vencidas: recordatorio al prestador y cierre automático tras el plazo de gracia (al iniciar y cada hora).
+    // Tareas programadas (al iniciar y cada hora): cierre de reservas vencidas, recordatorio previo al servicio y recordatorio para calificar.
     const tarea = () => {
       cerrarReservasVencidas().catch((e) => logger.error("Error al cerrar reservas vencidas", e));
       enviarRecordatorios().catch((e) => logger.error("Error al enviar recordatorios", e));
+      recordarCalificar().catch((e) => logger.error("Error al recordar calificaciones", e));
     };
     tarea();
     const temporizador = setInterval(tarea, 60 * 60 * 1000);

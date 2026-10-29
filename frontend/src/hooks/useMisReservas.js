@@ -3,11 +3,13 @@ import { api } from "../api/client";
 import { useConfiguracion } from "./useConfiguracion";
 import { FILTROS_RESERVA } from "../utils/estadosReserva";
 import { hoyISO } from "../utils/fechas";
-import { NOMBRES_POLITICA, seriaTardia, textoDias } from "../utils/politicas";
+import { NOMBRES_POLITICA, seriaTardia } from "../utils/politicas";
 import { useAvisos } from "../context/avisos";
+import { useIdioma } from "../context/idioma";
 
 // Las reservas del turista: lista, filtros, búsqueda, cifras del encabezado y cancelación.
 export function useMisReservas() {
+  const { t, td } = useIdioma();
   const { avisar, confirmar } = useAvisos();
   const configuracion = useConfiguracion();
   const [reservas, setReservas] = useState([]);
@@ -54,10 +56,12 @@ export function useMisReservas() {
   const cancelar = async (r) => {
     const plazos = configuracion?.politicas_cancelacion;
     const tardia = r.estado === "confirmada" && seriaTardia(plazos, r.politica_cancelacion, r.fecha_servicio);
-    const aviso = tardia
-      ? ` Su política de cancelación (${NOMBRES_POLITICA[r.politica_cancelacion].toLowerCase()}) pide ${textoDias(plazos[r.politica_cancelacion])} de antelación: se registrará como cancelación tardía.`
-      : "";
-    if (!(await confirmar(`¿Cancelar tu reserva en "${r.paquete?.nombre || r.sitio?.nombre}" del ${r.fecha_servicio}?${aviso} Esta acción no se puede deshacer.`, { titulo: "Cancelar reserva", confirmar: "Sí, cancelar", cancelar: "No, volver", peligro: true }))) return;
+    const dias = plazos?.[r.politica_cancelacion];
+    const aviso = !tardia ? "" : ` ${dias === 1
+      ? t("Su política de cancelación ({politica}) pide 1 día de antelación: se registrará como cancelación tardía.", { politica: td(NOMBRES_POLITICA[r.politica_cancelacion]).toLowerCase() })
+      : t("Su política de cancelación ({politica}) pide {n} días de antelación: se registrará como cancelación tardía.", { politica: td(NOMBRES_POLITICA[r.politica_cancelacion]).toLowerCase(), n: dias })}`;
+    const pregunta = t("¿Cancelar tu reserva en \"{nombre}\" del {fecha}?", { nombre: r.paquete?.nombre || r.sitio?.nombre, fecha: r.fecha_servicio });
+    if (!(await confirmar(`${pregunta}${aviso} ${t("Esta acción no se puede deshacer.")}`, { titulo: t("Cancelar reserva"), confirmar: t("Sí, cancelar"), cancelar: t("No, volver"), peligro: true }))) return;
     setCancelando(r.id);
     try {
       const { estado, cancelacion_tardia } = await api.cancelarReserva(r.id);

@@ -1,4 +1,5 @@
 import { pesos } from "../../utils/moneda";
+import { useIdioma } from "../../context/idioma";
 
 function Dato({ icono, etiqueta, valor, destacado = false }) {
   return (
@@ -16,14 +17,15 @@ function Dato({ icono, etiqueta, valor, destacado = false }) {
 
 // Cuatro cifras reales del plan: duración, actividades, presupuesto usado y municipios.
 export default function ResumenRapido({ itinerario, municipios, presupuestoUsado }) {
+  const { t } = useIdioma();
   return (
     <section className="w-full -mt-6">
       <div className="max-w-[1360px] mx-auto px-gutter">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-space-md rounded-2xl bg-surface-container-lowest shadow-xl">
-          <Dato icono="calendar_today" etiqueta="Duración" valor={`${itinerario.dias} día(s)`} />
-          <Dato icono="route" etiqueta="Actividades" valor={`${itinerario.items.length} incluidas`} />
-          <Dato icono="payments" etiqueta="Presupuesto usado" valor={`${pesos(presupuestoUsado)} / ${pesos(itinerario.presupuesto)}`} destacado />
-          <Dato icono="location_on" etiqueta="Municipios" valor={municipios.length} />
+          <Dato icono="calendar_today" etiqueta={t("Duración")} valor={t("{n} día(s)", { n: itinerario.dias })} />
+          <Dato icono="route" etiqueta={t("Actividades")} valor={t("{n} incluidas", { n: itinerario.items.length })} />
+          <Dato icono="payments" etiqueta={t("Presupuesto usado")} valor={`${pesos(presupuestoUsado)} / ${pesos(itinerario.presupuesto)}`} destacado />
+          <Dato icono="location_on" etiqueta={t("Municipios")} valor={municipios.length} />
         </div>
       </div>
     </section>

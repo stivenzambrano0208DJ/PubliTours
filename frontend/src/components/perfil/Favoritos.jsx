@@ -5,8 +5,10 @@ import { CATEGORIA_ICONOS } from "../../constants";
 import { useFavoritos } from "../../context/favoritos";
 import BotonFavorito from "../BotonFavorito";
 import { Estrellas } from "../Estrellas";
+import { useIdioma } from "../../context/idioma";
 
 export default function Favoritos() {
+  const { t } = useIdioma();
   const { ids } = useFavoritos();
   const [sitios, setSitios] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -18,16 +20,16 @@ export default function Favoritos() {
   // Si se quita un corazón desde esta lista, la tarjeta desaparece.
   const visibles = sitios.filter((s) => ids.has(s.id));
 
-  if (cargando) return <p className="font-body-md text-body-md text-on-surface-variant">Cargando favoritos...</p>;
+  if (cargando) return <p className="font-body-md text-body-md text-on-surface-variant">{t("Cargando favoritos...")}</p>;
 
   return (
     <section className="space-y-space-sm">
-      <h2 className="font-headline-md text-headline-md text-on-surface font-bold">Mis favoritos</h2>
+      <h2 className="font-headline-md text-headline-md text-on-surface font-bold">{t("Mis favoritos")}</h2>
       {visibles.length === 0 ? (
         <div className="bg-surface-container-lowest rounded-2xl p-space-lg text-center">
-          <p className="font-body-sm text-body-sm text-on-surface-variant">Aún no tienes favoritos. Toca el corazón en cualquier sitio para guardarlo aquí.</p>
+          <p className="font-body-sm text-body-sm text-on-surface-variant">{t("Aún no tienes favoritos. Toca el corazón en cualquier sitio para guardarlo aquí.")}</p>
           <Link to="/explorar" className="inline-block mt-3 px-5 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors">
-            Explorar destinos
+            {t("Explorar destinos")}
           </Link>
         </div>
       ) : (

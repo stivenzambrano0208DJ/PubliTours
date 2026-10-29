@@ -21,6 +21,7 @@ const CORREO_POR_TIPO = {
   prestador_aprobado: { asunto: "¡Tu negocio fue aprobado en PubliTours!", titulo: "¡Tu negocio fue aprobado!", ruta: "/mi-negocio", texto: "Ir a mi negocio" },
   prestador_rechazado: { asunto: "Tu negocio necesita cambios para ser aprobado", titulo: "Tu negocio no fue aprobado todavía", ruta: "/mi-negocio", texto: "Corregir mi perfil" },
   reserva_completada: { asunto: "¿Cómo te fue? Califica tu experiencia", titulo: "Cuéntanos tu experiencia", ruta: "/mis-reservas", texto: "Calificar ahora" },
+  resena_recordatorio: { asunto: "Aún puedes calificar tu experiencia", titulo: "¿Cómo te fue?", ruta: "/mis-reservas", texto: "Calificar mi experiencia" },
 };
 
 // Crea la notificación dentro de la plataforma y, si el tipo tiene plantilla, envía además el correo.

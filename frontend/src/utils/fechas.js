@@ -9,9 +9,9 @@ export function fechaDelDia(inicio, dia) {
 export const sumarDias = (fecha, dias) => fechaDelDia(fecha, dias + 1);
 
 // "2030-11-12" -> "mié 12 nov" (sin desfase de zona horaria).
-export function fechaCorta(fecha) {
+export function fechaCorta(fecha, locale = "es-CO") {
   const [a, m, d] = fecha.split("-").map(Number);
-  return new Date(a, m - 1, d).toLocaleDateString("es-CO", { weekday: "short", day: "numeric", month: "short" });
+  return new Date(a, m - 1, d).toLocaleDateString(locale, { weekday: "short", day: "numeric", month: "short" });
 }
 
 // Hoy como AAAA-MM-DD en la zona horaria del navegador.

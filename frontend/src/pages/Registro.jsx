@@ -8,13 +8,10 @@ import MarcaAuth from "../components/auth/MarcaAuth";
 import BotonAuth from "../components/auth/BotonAuth";
 import CampoAuth from "../components/auth/CampoAuth";
 import { CAMPO_AUTH_ICONO } from "../estilos";
+import { useIdioma } from "../context/idioma";
 
 const NEGOCIO_VACIO = { nombre_negocio: "", categoria: "", municipio: "" };
 
-const ROLES = [
-  { valor: "turista", icono: "hiking", titulo: "Turista", detalle: "Planifica tu viaje y reserva" },
-  { valor: "prestador", icono: "storefront", titulo: "Prestador", detalle: "Publica tu negocio" },
-];
 
 
 function Seccion({ icono, titulo, separada = false, children }) {
@@ -29,19 +26,24 @@ function Seccion({ icono, titulo, separada = false, children }) {
   );
 }
 
-// Imagen y mensaje del panel lateral (solo en pantallas grandes).
-const HERO = {
-  imagen: "https://lh3.googleusercontent.com/aida-public/AB6AXuBkGr2bWtTZzvslrq7Wa9uv71bO_ElwXLal1lIBWmY8B04Bex_Rgo0V_PnAlsFUhPyj8kaHBw28X9NgESMzzhjXZqJXDqvBxWMvh5WWDFPNVP8LTqB66hDgAYrFpBPIXBuxnP_pz175kfz6AmKTAle2LT5qBpfaLVifZ6Cxf7cb-sBSpllNSX09oTre-AVo3Ub1r115inPKvchTgrj1TAbS_hQS29mR9KCYYk0GKO8lb_S16aMDZl5xIQ",
-  titulo: ["Únete a la", "comunidad del Caquetá."],
-  descripcion: "Crea tu cuenta para planificar tu viaje con IA, o publica tu negocio y gana visibilidad ante turistas reales.",
-  etiquetas: [
-    { icono: "hiking", texto: "Para turistas" },
-    { icono: "storefront", texto: "Para prestadores" },
-    { icono: "verified", texto: "Verificación real" },
-  ],
-};
 
 export default function Registro() {
+  const { t } = useIdioma();
+  const ROLES = [
+    { valor: "turista", icono: "hiking", titulo: t("Turista"), detalle: t("Planifica tu viaje y reserva") },
+    { valor: "prestador", icono: "storefront", titulo: t("Prestador"), detalle: t("Publica tu negocio") },
+  ];
+  // Imagen y mensaje del panel lateral (solo en pantallas grandes).
+  const HERO = {
+    imagen: "https://lh3.googleusercontent.com/aida-public/AB6AXuBkGr2bWtTZzvslrq7Wa9uv71bO_ElwXLal1lIBWmY8B04Bex_Rgo0V_PnAlsFUhPyj8kaHBw28X9NgESMzzhjXZqJXDqvBxWMvh5WWDFPNVP8LTqB66hDgAYrFpBPIXBuxnP_pz175kfz6AmKTAle2LT5qBpfaLVifZ6Cxf7cb-sBSpllNSX09oTre-AVo3Ub1r115inPKvchTgrj1TAbS_hQS29mR9KCYYk0GKO8lb_S16aMDZl5xIQ",
+    titulo: [t("Únete a la"), t("comunidad del Caquetá.")],
+    descripcion: t("Crea tu cuenta para planificar tu viaje con IA, o publica tu negocio y gana visibilidad ante turistas reales."),
+    etiquetas: [
+      { icono: "hiking", texto: t("Para turistas") },
+      { icono: "storefront", texto: t("Para prestadores") },
+      { icono: "verified", texto: t("Verificación real") },
+    ],
+  };
   const [searchParams] = useSearchParams();
   const rolInicial = searchParams.get("rol") === "prestador" ? "prestador" : "turista";
   const [form, setForm] = useState({ nombre: "", correo: "", password: "", rol: rolInicial });
@@ -74,21 +76,21 @@ export default function Registro() {
       <MarcaAuth className="mb-5" />
 
       <span className="block font-label-xs text-label-xs font-bold uppercase tracking-wider text-secondary mb-1.5">
-        Crear cuenta
+        {t("Crear cuenta")}
       </span>
       <h1 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-1.5">
-        Empieza tu experiencia
+        {t("Empieza tu experiencia")}
       </h1>
       <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed mb-4">
         {form.rol === "prestador"
-          ? "Crea tu cuenta y registra tu negocio: te pediremos algunos datos más."
-          : "Regístrate como turista o como prestador de servicios turísticos."}
+          ? t("Crea tu cuenta y registra tu negocio: te pediremos algunos datos más.")
+          : t("Regístrate como turista o como prestador de servicios turísticos.")}
       </p>
 
       <div className="bg-surface border border-surface-container-high rounded-3xl p-5 sm:p-6 shadow-[0_10px_35px_-8px_rgba(0,0,0,0.06)] mb-4">
         <form className="space-y-5" onSubmit={handleSubmit}>
           <fieldset>
-            <legend className="font-label-md text-label-md text-on-surface mb-2">¿Cómo quieres usar PubliTours?</legend>
+            <legend className="font-label-md text-label-md text-on-surface mb-2">{t("¿Cómo quieres usar PubliTours?")}</legend>
             <div className="grid grid-cols-2 gap-2.5">
               {ROLES.map((r) => {
                 const activo = form.rol === r.valor;
@@ -116,12 +118,12 @@ export default function Registro() {
           </fieldset>
 
           <Seccion icono="person" titulo="Tu cuenta">
-            <CampoAuth id="nombre" etiqueta="Nombre completo" icono="person">
+            <CampoAuth id="nombre" etiqueta={t("Nombre completo")} icono="person">
               <input
                 id="nombre"
                 autoComplete="name"
                 className={CAMPO_AUTH_ICONO}
-                placeholder="Tu nombre completo"
+                placeholder={t("Tu nombre completo")}
                 type="text"
                 required
                 value={form.nombre}
@@ -129,12 +131,12 @@ export default function Registro() {
               />
             </CampoAuth>
 
-            <CampoAuth id="email" etiqueta="Correo electrónico" icono="mail">
+            <CampoAuth id="email" etiqueta={t("Correo electrónico")} icono="mail">
               <input
                 id="email"
                 autoComplete="email"
                 className={CAMPO_AUTH_ICONO}
-                placeholder="correo@dominio.com"
+                placeholder={t("correo@dominio.com")}
                 type="email"
                 required
                 value={form.correo}
@@ -142,12 +144,12 @@ export default function Registro() {
               />
             </CampoAuth>
 
-            <CampoAuth id="password" etiqueta="Contraseña" icono="lock">
+            <CampoAuth id="password" etiqueta={t("Contraseña")} icono="lock">
               <input
                 id="password"
                 autoComplete="new-password"
                 className={`${CAMPO_AUTH_ICONO} pr-11`}
-                placeholder="Mínimo 8 caracteres"
+                placeholder={t("Mínimo 8 caracteres")}
                 type={mostrarPassword ? "text" : "password"}
                 required
                 minLength={8}
@@ -156,7 +158,7 @@ export default function Registro() {
               />
               <button
                 type="button"
-                aria-label="Mostrar u ocultar contraseña"
+                aria-label={t("Mostrar u ocultar contraseña")}
                 className="absolute right-3.5 text-outline hover:text-on-surface transition-colors"
                 onClick={() => setMostrarPassword((v) => !v)}
               >
@@ -186,24 +188,24 @@ export default function Registro() {
                 className="mt-1 w-4 h-4 accent-[var(--color-secondary)] shrink-0"
               />
               <span className="font-body-sm text-body-sm text-on-surface-variant">
-                Acepto los{" "}
-                <Link to="/terminos" target="_blank" className="font-semibold text-secondary hover:underline">Términos y Condiciones</Link>{" "}
+                {t("Acepto los")}{" "}
+                <Link to="/terminos" target="_blank" className="font-semibold text-secondary hover:underline">{t("Términos y Condiciones")}</Link>{" "}
                 y la{" "}
-                <Link to="/privacidad" target="_blank" className="font-semibold text-secondary hover:underline">Política de Privacidad</Link>.
+                <Link to="/privacidad" target="_blank" className="font-semibold text-secondary hover:underline">{t("Política de Privacidad")}</Link>.
               </span>
             </label>
 
             {error && <p className="text-error font-body-sm text-body-sm" role="alert">{error}</p>}
 
-            <BotonAuth cargando={cargando} textoCargando="Creando cuenta..." texto={form.rol === "prestador" ? "Registrar mi negocio" : "Registrarme"} />
+            <BotonAuth cargando={cargando} textoCargando={t("Creando cuenta...")} texto={form.rol === "prestador" ? t("Registrar mi negocio") : t("Registrarme")} />
           </div>
         </form>
       </div>
 
       <p className="font-body-sm text-body-sm text-on-surface-variant text-center">
-        ¿Ya tienes cuenta?{" "}
+        {t("¿Ya tienes cuenta?")}{" "}
         <Link to="/login" className="font-bold text-secondary hover:text-primary transition-colors">
-          Inicia sesión
+          {t("Inicia sesión")}
         </Link>
       </p>
     </LayoutAuth>

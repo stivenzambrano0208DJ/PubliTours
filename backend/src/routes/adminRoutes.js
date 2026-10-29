@@ -3,6 +3,7 @@ const validate = require("../middlewares/validate");
 const schemas = require("../validators/schemas");
 const router = express.Router();
 const adminController = require("../controllers/adminController");
+const casoController = require("../controllers/casoController");
 const { requireAuth, requireRole } = require("../middlewares/auth");
 const { validarIds } = require("../middlewares/parametros");
 
@@ -21,7 +22,11 @@ router.get("/tendencias", adminController.tendencias);
 router.get("/tendencias.csv", adminController.descargarTendencias);
 router.get("/auditoria", adminController.historial);
 router.post("/anuncios", validate(schemas.anuncio), adminController.anunciar);
+router.get("/invitaciones", adminController.listarInvitaciones);
+router.post("/invitaciones", validate(schemas.invitacion), adminController.invitarNegocio);
 router.get("/reportes-mensajes", adminController.listarReportesMensajes);
 router.patch("/reportes-mensajes/:id", validate(schemas.resolverReporteMensaje), adminController.resolverReporteMensaje);
+router.get("/casos", casoController.listar);
+router.patch("/casos/:id", validate(schemas.atenderCaso), casoController.atender);
 
 module.exports = router;

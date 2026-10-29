@@ -1,4 +1,5 @@
 import { fechaDelDia, fechaCorta } from "./fechas";
+import { traducir, LOCALES } from "../context/idioma";
 import { pesos } from "./moneda";
 
 
@@ -13,21 +14,23 @@ export function itemsPorDia(items) {
 export const totalEstimado = (items, personas) => items.reduce((suma, i) => suma + Number(i.sitio.precio), 0) * personas;
 
 // El itinerario como texto plano para compartir por WhatsApp, correo o donde sea. Solo datos reales del plan.
-export function textoItinerario({ itinerario, fechaInicio, personas }) {
+export function textoItinerario({ itinerario, fechaInicio, personas }, idioma = "es") {
+  const t = (texto, valores) => traducir(idioma, texto, valores);
+  const locale = LOCALES[idioma];
   const lineas = [
-    "Mi itinerario en el Caquetá (PubliTours)",
-    `${itinerario.dias} día(s) · ${personas} persona${personas === 1 ? "" : "s"} · desde el ${fechaCorta(fechaInicio)}`,
+    t("Mi itinerario en el Caquetá (PubliTours)"),
+    `${t("{n} día(s)", { n: itinerario.dias })} · ${personas === 1 ? t("1 persona") : t("{n} personas", { n: personas })} · ${t("desde el {fecha}", { fecha: fechaCorta(fechaInicio, locale) })}`,
     "",
   ];
   for (const { dia, items } of itemsPorDia(itinerario.items)) {
-    lineas.push(`Día ${dia} · ${fechaCorta(fechaDelDia(fechaInicio, dia))}`);
+    lineas.push(`${t("Día {n}", { n: dia })} · ${fechaCorta(fechaDelDia(fechaInicio, dia), locale)}`);
     for (const { sitio } of items) {
-      const precio = Number(sitio.precio) === 0 ? "gratis" : `${pesos(Number(sitio.precio) * personas)}`;
+      const precio = Number(sitio.precio) === 0 ? t("gratis") : `${pesos(Number(sitio.precio) * personas)}`;
       lineas.push(`- ${sitio.nombre} (${sitio.municipio}) — ${precio}`);
     }
     lineas.push("");
   }
-  lineas.push(`Total estimado: ${pesos(totalEstimado(itinerario.items, personas))} COP`);
+  lineas.push(t("Total estimado: {valor} COP", { valor: pesos(totalEstimado(itinerario.items, personas)) }));
   return lineas.join("\n");
 }
 

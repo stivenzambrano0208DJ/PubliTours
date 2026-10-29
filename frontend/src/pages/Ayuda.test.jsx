@@ -48,8 +48,8 @@ describe("Ayuda", () => {
   it("aclara que la plataforma no procesa pagos y enlaza a las secciones que menciona", async () => {
     api.configuracion.mockResolvedValue(CONFIG);
     montar();
-    expect(screen.getByText(/no procesa pagos/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Mis Reservas" })).toHaveAttribute("href", "/mis-reservas");
+    expect(screen.getAllByText(/no procesa pagos/).length).toBeGreaterThanOrEqual(1); // al pagar y al pedir una devolución
+    for (const enlace of screen.getAllByRole("link", { name: "Mis Reservas" })) expect(enlace).toHaveAttribute("href", "/mis-reservas");
     expect(screen.getByRole("link", { name: "política de privacidad" })).toHaveAttribute("href", "/privacidad");
   });
 });

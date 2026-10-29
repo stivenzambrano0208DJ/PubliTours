@@ -4,8 +4,10 @@ import { api } from "../api/client";
 import MarcaAuth from "../components/auth/MarcaAuth";
 import BotonAuth from "../components/auth/BotonAuth";
 import CampoAuth from "../components/auth/CampoAuth";
+import { useIdioma } from "../context/idioma";
 
 export default function OlvideContrasena() {
+  const { t } = useIdioma();
   const navigate = useNavigate();
   const [paso, setPaso] = useState("correo"); // correo -> codigo -> listo
   const [correo, setCorreo] = useState("");
@@ -34,7 +36,7 @@ export default function OlvideContrasena() {
     e.preventDefault();
     setError("");
     if (password !== confirmar) {
-      setError("Las contraseñas no coinciden.");
+      setError(t("Las contraseñas no coinciden."));
       return;
     }
     setCargando(true);
@@ -53,7 +55,7 @@ export default function OlvideContrasena() {
       <div className="w-full max-w-md">
         <Link to="/login" className="inline-flex items-center gap-1.5 mb-5 text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md">
           <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-          <span>Volver a iniciar sesión</span>
+          <span>{t("Volver a iniciar sesión")}</span>
         </Link>
 
         <MarcaAuth className="mb-6" />
@@ -62,22 +64,22 @@ export default function OlvideContrasena() {
           {paso === "correo" && (
             <>
               <span className="block font-label-xs text-label-xs font-bold uppercase tracking-wider text-secondary mb-1.5">
-                Recuperar acceso
+                {t("Recuperar acceso")}
               </span>
               <h1 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-1.5">
-                ¿Olvidaste tu contraseña?
+                {t("¿Olvidaste tu contraseña?")}
               </h1>
               <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed mb-5">
-                Ingresa tu correo y te enviamos un código real de 6 dígitos para crear una contraseña nueva.
+                {t("Ingresa tu correo y te enviamos un código real de 6 dígitos para crear una contraseña nueva.")}
               </p>
 
               <form className="space-y-4" onSubmit={handleSolicitarCodigo}>
-                <CampoAuth id="email" etiqueta="Correo electrónico" icono="mail">
+                <CampoAuth id="email" etiqueta={t("Correo electrónico")} icono="mail">
                   <input
                     id="email"
                     autoComplete="email"
                     className="w-full pl-11 pr-4 py-3 bg-surface-container-low border border-surface-container-high rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:bg-surface-container-lowest focus:border-secondary transition-all outline-none"
-                    placeholder="correo@dominio.com"
+                    placeholder={t("correo@dominio.com")}
                     type="email"
                     required
                     value={correo}
@@ -87,7 +89,7 @@ export default function OlvideContrasena() {
 
                 {error && <p className="text-error font-body-sm text-body-sm">{error}</p>}
 
-                <BotonAuth cargando={cargando} texto="Enviar código" textoCargando="Enviando..." />
+                <BotonAuth cargando={cargando} texto={t("Enviar código")} textoCargando={t("Enviando...")} />
               </form>
             </>
           )}
@@ -95,17 +97,17 @@ export default function OlvideContrasena() {
           {paso === "codigo" && (
             <>
               <span className="block font-label-xs text-label-xs font-bold uppercase tracking-wider text-secondary mb-1.5">
-                Revisa tu correo
+                {t("Revisa tu correo")}
               </span>
               <h1 className="font-headline-md text-headline-md text-on-surface tracking-tight mb-1.5">
-                Ingresa el código y tu nueva contraseña
+                {t("Ingresa el código y tu nueva contraseña")}
               </h1>
               <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed mb-5">
-                Enviamos un código de 6 dígitos a <strong className="text-on-surface">{correo}</strong>. Expira en 15 minutos.
+                {t("Enviamos un código de 6 dígitos a")} <strong className="text-on-surface">{correo}</strong>. {t("Expira en 15 minutos.")}
               </p>
 
               <form className="space-y-4" onSubmit={handleRestablecer}>
-                <CampoAuth id="codigo" etiqueta="Código de verificación" icono="pin">
+                <CampoAuth id="codigo" etiqueta={t("Código de verificación")} icono="pin">
                   <input
                     id="codigo"
                     inputMode="numeric"
@@ -118,12 +120,12 @@ export default function OlvideContrasena() {
                   />
                 </CampoAuth>
 
-                <CampoAuth id="password" etiqueta="Contraseña nueva" icono="lock">
+                <CampoAuth id="password" etiqueta={t("Contraseña nueva")} icono="lock">
                   <input
                     id="password"
                     autoComplete="new-password"
                     className="w-full pl-11 pr-11 py-3 bg-surface-container-low border border-surface-container-high rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:bg-surface-container-lowest focus:border-secondary transition-all outline-none tracking-widest"
-                    placeholder="Mínimo 8 caracteres"
+                    placeholder={t("Mínimo 8 caracteres")}
                     type={mostrarPassword ? "text" : "password"}
                     required
                     minLength={8}
@@ -132,7 +134,7 @@ export default function OlvideContrasena() {
                   />
                   <button
                     type="button"
-                    aria-label="Mostrar u ocultar contraseña"
+                    aria-label={t("Mostrar u ocultar contraseña")}
                     className="absolute right-3.5 text-outline hover:text-on-surface transition-colors"
                     onClick={() => setMostrarPassword((v) => !v)}
                   >
@@ -140,12 +142,12 @@ export default function OlvideContrasena() {
                   </button>
                 </CampoAuth>
 
-                <CampoAuth id="confirmar" etiqueta="Confirmar contraseña" icono="lock_reset">
+                <CampoAuth id="confirmar" etiqueta={t("Confirmar contraseña")} icono="lock_reset">
                   <input
                     id="confirmar"
                     autoComplete="new-password"
                     className="w-full pl-11 pr-4 py-3 bg-surface-container-low border border-surface-container-high rounded-xl text-on-surface font-body-md text-body-md placeholder:text-outline focus:bg-surface-container-lowest focus:border-secondary transition-all outline-none tracking-widest"
-                    placeholder="Repite la contraseña"
+                    placeholder={t("Repite la contraseña")}
                     type={mostrarPassword ? "text" : "password"}
                     required
                     minLength={8}
@@ -156,14 +158,14 @@ export default function OlvideContrasena() {
 
                 {error && <p className="text-error font-body-sm text-body-sm">{error}</p>}
 
-                <BotonAuth cargando={cargando} texto="Restablecer contraseña" textoCargando="Guardando..." />
+                <BotonAuth cargando={cargando} texto={t("Restablecer contraseña")} textoCargando={t("Guardando...")} />
 
                 <button
                   type="button"
                   onClick={() => { setPaso("correo"); setCodigo(""); setError(""); }}
                   className="w-full text-center font-label-xs text-label-xs text-on-surface-variant hover:text-primary transition-colors"
                 >
-                  ¿No te llegó? Volver a intentar con otro correo
+                  {t("¿No te llegó? Volver a intentar con otro correo")}
                 </button>
               </form>
             </>
@@ -172,15 +174,15 @@ export default function OlvideContrasena() {
           {paso === "listo" && (
             <div className="flex flex-col items-center text-center gap-2 py-2">
               <span className="material-symbols-outlined text-secondary text-[40px]">check_circle</span>
-              <h1 className="font-headline-md text-headline-md text-on-surface">Contraseña actualizada</h1>
+              <h1 className="font-headline-md text-headline-md text-on-surface">{t("Contraseña actualizada")}</h1>
               <p className="font-body-sm text-body-sm text-on-surface-variant">
-                Ya puedes iniciar sesión con tu nueva contraseña.
+                {t("Ya puedes iniciar sesión con tu nueva contraseña.")}
               </p>
               <button
                 onClick={() => navigate("/login")}
                 className="mt-3 w-full py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors"
               >
-                Ir a iniciar sesión
+                {t("Ir a iniciar sesión")}
               </button>
             </div>
           )}

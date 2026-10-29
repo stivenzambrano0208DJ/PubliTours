@@ -5,9 +5,11 @@ import { CATEGORIA_ICONOS } from "../constants";
 import { Estrellas } from "../components/Estrellas";
 import { portadaDelPaquete } from "../utils/catalogo";
 import { pesos } from "../utils/moneda";
+import { useIdioma } from "../context/idioma";
 
 
 export default function Paquetes() {
+  const { t } = useIdioma();
   const [paquetes, setPaquetes] = useState([]);
   const [texto, setTexto] = useState("");
   const [cargando, setCargando] = useState(true);
@@ -25,18 +27,18 @@ export default function Paquetes() {
         <div className="max-w-2xl">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container/40 text-secondary font-label-xs text-label-xs font-semibold mb-3">
             <span className="material-symbols-outlined text-[14px]">inventory_2</span>
-            Paquetes turísticos
+            {t("Paquetes turísticos")}
           </span>
-          <h1 className="font-headline-xl text-headline-xl text-primary tracking-tight">Todo en una sola reserva</h1>
+          <h1 className="font-headline-xl text-headline-xl text-primary tracking-tight">{t("Todo en una sola reserva")}</h1>
           <p className="font-body-md text-body-md text-on-surface-variant mt-2">
-            Combinaciones de experiencias de un mismo prestador, con precio especial por persona. Reservas una vez y el prestador organiza todo.
+            {t("Combinaciones de experiencias de un mismo prestador, con precio especial por persona. Reservas una vez y el prestador organiza todo.")}
           </p>
         </div>
         <div className="relative w-full md:w-72">
           <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
           <input
             className="w-full pl-9 pr-3 py-2.5 bg-surface-container rounded-xl font-body-sm text-body-sm focus:outline-none focus:bg-surface-container-low"
-            placeholder="Buscar paquetes..."
+            placeholder={t("Buscar paquetes...")}
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
           />
@@ -44,14 +46,14 @@ export default function Paquetes() {
       </section>
 
       {cargando ? (
-        <p className="font-body-md text-body-md text-on-surface-variant">Cargando...</p>
+        <p className="font-body-md text-body-md text-on-surface-variant">{t("Cargando...")}</p>
       ) : paquetes.length === 0 ? (
         <div className="bg-surface-container-lowest rounded-3xl p-space-xl text-center">
           <span className="material-symbols-outlined text-outline text-[40px]">inventory_2</span>
           <p className="font-body-md text-body-md text-on-surface-variant mt-2">
-            {texto ? "No encontramos paquetes con esa búsqueda." : "Aún no hay paquetes publicados. Mientras tanto, explora los servicios por separado."}
+            {texto ? t("No encontramos paquetes con esa búsqueda.") : t("Aún no hay paquetes publicados. Mientras tanto, explora los servicios por separado.")}
           </p>
-          <Link to="/explorar" className="inline-block mt-4 px-5 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors">Explorar destinos</Link>
+          <Link to="/explorar" className="inline-block mt-4 px-5 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors">{t("Explorar destinos")}</Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-space-lg">
@@ -73,7 +75,7 @@ export default function Paquetes() {
                   </span>
                   {p.ahorro > 0 && (
                     <span className="absolute top-3 right-3 px-3 py-1 rounded-full bg-tertiary-container text-on-tertiary-container font-label-xs text-label-xs font-bold">
-                      Ahorras {pesos(p.ahorro)}
+                      {t("Ahorras {valor}", { valor: pesos(p.ahorro) })}
                     </span>
                   )}
                 </div>
@@ -99,13 +101,13 @@ export default function Paquetes() {
                   </div>
                   <div className="mt-auto pt-3 flex items-end justify-between">
                     <div className="flex flex-col">
-                      <span className="font-label-xs text-label-xs text-on-surface-variant uppercase">Por persona</span>
+                      <span className="font-label-xs text-label-xs text-on-surface-variant uppercase">{t("Por persona")}</span>
                       <div className="flex items-baseline gap-2">
-                        <span className="font-title-lg text-title-lg font-bold text-primary">{Number(p.precio) === 0 ? "Gratuito" : pesos(p.precio)}</span>
+                        <span className="font-title-lg text-title-lg font-bold text-primary">{Number(p.precio) === 0 ? t("Gratuito") : pesos(p.precio)}</span>
                         {p.ahorro > 0 && <span className="font-body-sm text-body-sm text-outline line-through">{pesos(p.precio_suelto)}</span>}
                       </div>
                     </div>
-                    <span className="px-4 py-2 rounded-xl bg-surface-container text-primary font-label-md text-label-md group-hover:bg-primary-container group-hover:text-on-primary transition-colors">Ver paquete</span>
+                    <span className="px-4 py-2 rounded-xl bg-surface-container text-primary font-label-md text-label-md group-hover:bg-primary-container group-hover:text-on-primary transition-colors">{t("Ver paquete")}</span>
                   </div>
                 </div>
               </Link>

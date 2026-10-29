@@ -3,14 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth";
 import NotificacionesCampana from "./NotificacionesCampana";
 import IndicadorMensajes from "./mensajes/IndicadorMensajes";
-
-const NAV_BASE = [
-  { to: "/", label: "Inicio" },
-  { to: "/explorar", label: "Explorar Destinos" },
-  { to: "/paquetes", label: "Paquetes" },
-];
+import { useIdioma } from "../context/idioma";
 
 export default function Header() {
+  const { t, idioma, cambiarIdioma } = useIdioma();
   const { usuario, logout } = useAuth();
   const navigate = useNavigate();
   const [menuAbierto, setMenuAbierto] = useState(false);
@@ -36,19 +32,24 @@ export default function Header() {
 
   const cerrarMenu = () => setMenuAbierto(false);
 
+  const rolVisible = { turista: t("Turista"), prestador: t("Prestador"), administrador: t("Administrador") }[usuario?.rol] || usuario?.rol;
+  const otroIdioma = idioma === "es" ? "en" : "es";
+
   const navLinks = [
-    ...NAV_BASE,
+    { to: "/", label: t("Inicio") },
+    { to: "/explorar", label: t("Explorar Destinos") },
+    { to: "/paquetes", label: t("Paquetes") },
     ...((!usuario || usuario.rol === "turista")
-      ? [{ to: "/conviertete-en-prestador", label: "Conviértete en Prestador" }]
+      ? [{ to: "/conviertete-en-prestador", label: t("Conviértete en Prestador") }]
       : []),
     ...((usuario?.rol === "turista" || usuario?.rol === "prestador")
       ? [
-          { to: "/itinerario", label: "Itinerario IA", icono: "auto_awesome" },
-          { to: "/mis-reservas", label: "Mis Reservas" },
+          { to: "/itinerario", label: t("Itinerario IA"), icono: "auto_awesome" },
+          { to: "/mis-reservas", label: t("Mis Reservas") },
         ]
       : []),
-    ...(usuario?.rol === "prestador" ? [{ to: "/mi-negocio", label: "Portal Prestador" }] : []),
-    ...(usuario?.rol === "administrador" ? [{ to: "/admin", label: "Panel Admin" }] : []),
+    ...(usuario?.rol === "prestador" ? [{ to: "/mi-negocio", label: t("Portal Prestador") }] : []),
+    ...(usuario?.rol === "administrador" ? [{ to: "/admin", label: t("Panel Admin") }] : []),
   ];
 
   return (
@@ -76,7 +77,7 @@ export default function Header() {
               className="flex items-center gap-1.5 px-2.5 h-9 whitespace-nowrap rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors font-label-md text-label-md"
             >
               {l.icono && <span className="material-symbols-outlined text-[16px] text-secondary">{l.icono}</span>}
-              {l.label}
+              {t(l.label)}
             </Link>
           ))}
         </nav>
@@ -88,9 +89,22 @@ export default function Header() {
               className="relative hidden sm:inline-flex items-center gap-space-xs px-4 py-2 whitespace-nowrap rounded-xl bg-gradient-to-r from-primary-container to-secondary text-on-primary font-label-md text-label-md shadow-[0_4px_20px_-2px_rgba(6,78,59,0.2)] hover:opacity-95 transition-all"
             >
               <span className="material-symbols-outlined text-[18px] text-tertiary-fixed">auto_awesome</span>
-              <span>Crear con IA</span>
+              <span>{t("Crear con IA")}</span>
             </Link>
           )}
+
+          {/* Idioma: el botón dice a cuál se cambia, en ese idioma */}
+          <button
+            type="button"
+            onClick={() => cambiarIdioma(otroIdioma)}
+            lang={otroIdioma}
+            aria-label={otroIdioma === "en" ? "View in English" : "Ver en español"}
+            title={otroIdioma === "en" ? "View in English" : "Ver en español"}
+            className="h-9 px-2.5 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors font-label-md text-label-md font-bold flex items-center gap-1"
+          >
+            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">translate</span>
+            {otroIdioma.toUpperCase()}
+          </button>
 
           {(usuario?.rol === "turista" || usuario?.rol === "prestador") && <IndicadorMensajes />}
           {usuario && <NotificacionesCampana />}
@@ -109,7 +123,7 @@ export default function Header() {
                 </span>
                 <span className="hidden md:flex flex-col text-left min-w-0 max-w-[150px]">
                   <span className="font-label-md text-label-md text-on-surface leading-tight truncate">{usuario.nombre}</span>
-                  <span className="font-label-xs text-label-xs text-on-surface-variant capitalize truncate">{usuario.rol}</span>
+                  <span className="font-label-xs text-label-xs text-on-surface-variant truncate">{rolVisible}</span>
                 </span>
                 <span className={`material-symbols-outlined text-on-surface-variant text-[18px] transition-transform ${perfilAbierto ? "rotate-180" : ""}`}>expand_more</span>
               </button>
@@ -118,7 +132,7 @@ export default function Header() {
                 className={`absolute right-0 top-full mt-2 w-56 py-space-sm px-space-xs rounded-xl bg-surface-container-lowest shadow-[0_20px_30px_-6px_rgba(6,78,59,0.08)] transition-all flex flex-col gap-1 z-50 ${perfilAbierto ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
               >
                 <div className="px-3 py-2">
-                  <p className="font-title-sm text-title-sm text-on-surface">Hola, {usuario.nombre}</p>
+                  <p className="font-title-sm text-title-sm text-on-surface">{t("Hola, {nombre}", { nombre: usuario.nombre })}</p>
                   <p className="font-label-xs text-label-xs text-on-surface-variant">{usuario.correo}</p>
                 </div>
                 <div className="h-px bg-surface-container-high my-1" />
@@ -130,7 +144,7 @@ export default function Header() {
                   <span className="material-symbols-outlined text-[18px]">
                     {usuario.rol === "administrador" ? "admin_panel_settings" : "person"}
                   </span>
-                  {usuario.rol === "administrador" ? "Panel Admin" : "Mi Perfil"}
+                  {usuario.rol === "administrador" ? t("Panel Admin") : t("Mi Perfil")}
                 </Link>
                 <div className="h-px bg-surface-container-high my-1" />
                 <button
@@ -138,24 +152,24 @@ export default function Header() {
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-label-md text-label-md text-left"
                 >
                   <span className="material-symbols-outlined text-[18px]">logout</span>
-                  Cerrar sesión
+                  {t("Cerrar sesión")}
                 </button>
               </div>
             </div>
           ) : (
             <div className="hidden xl:flex items-center gap-space-sm">
               <Link to="/login" className="px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors font-label-md text-label-md">
-                Iniciar sesión
+                {t("Iniciar sesión")}
               </Link>
               <Link to="/registro" className="px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors">
-                Registrarme
+                {t("Registrarme")}
               </Link>
             </div>
           )}
 
           {/* Botón hamburguesa: visible por debajo de xl */}
           <button
-            aria-label="Abrir menú"
+            aria-label={t("Abrir menú")}
             onClick={() => setMenuAbierto((v) => !v)}
             className="xl:hidden p-2 rounded-lg text-on-surface hover:bg-surface-container transition-colors"
           >
@@ -176,7 +190,7 @@ export default function Header() {
                 className="flex items-center gap-2 px-3 py-3 rounded-lg text-on-surface hover:bg-surface-container transition-colors font-label-md text-label-md"
               >
                 {l.icono && <span className="material-symbols-outlined text-[18px] text-secondary">{l.icono}</span>}
-                {l.label}
+                {t(l.label)}
               </Link>
             ))}
 
@@ -185,7 +199,7 @@ export default function Header() {
             {usuario ? (
               <>
                 <div className="px-3 py-2">
-                  <p className="font-title-sm text-title-sm text-on-surface">Hola, {usuario.nombre}</p>
+                  <p className="font-title-sm text-title-sm text-on-surface">{t("Hola, {nombre}", { nombre: usuario.nombre })}</p>
                   <p className="font-label-xs text-label-xs text-on-surface-variant">{usuario.correo}</p>
                 </div>
                 <Link
@@ -196,14 +210,14 @@ export default function Header() {
                   <span className="material-symbols-outlined text-[18px]">
                     {usuario.rol === "administrador" ? "admin_panel_settings" : "person"}
                   </span>
-                  {usuario.rol === "administrador" ? "Panel Admin" : "Mi Perfil"}
+                  {usuario.rol === "administrador" ? t("Panel Admin") : t("Mi Perfil")}
                 </Link>
                 <button
                   onClick={handleLogout}
                   className="flex items-center gap-2 px-3 py-3 rounded-lg text-on-surface hover:bg-surface-container font-label-md text-label-md text-left"
                 >
                   <span className="material-symbols-outlined text-[18px]">logout</span>
-                  Cerrar sesión
+                  {t("Cerrar sesión")}
                 </button>
               </>
             ) : (
@@ -213,14 +227,14 @@ export default function Header() {
                   onClick={cerrarMenu}
                   className="px-3 py-3 rounded-lg text-on-surface hover:bg-surface-container transition-colors font-label-md text-label-md text-center"
                 >
-                  Iniciar sesión
+                  {t("Iniciar sesión")}
                 </Link>
                 <Link
                   to="/registro"
                   onClick={cerrarMenu}
                   className="px-4 py-3 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors text-center"
                 >
-                  Registrarme
+                  {t("Registrarme")}
                 </Link>
               </div>
             )}

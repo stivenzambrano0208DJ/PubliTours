@@ -9,6 +9,7 @@ const { sitioVisibleSql, prestadorOperativo } = require("./visibilidad");
 const { hoyLocal, esFechaReal, mesValidoOActual } = require("../utils/fechas");
 const { prestadorDeUsuario } = require("./negocioPropio");
 const politicas = require("../politicas");
+const { DIAS_NUEVO } = require("../config/negocio");
 
 
 // Promedio de calificaciones de un servicio como subconsulta (los servicios sin reseñas cuentan 0).
@@ -28,6 +29,9 @@ const disponibleEn = (f) => `
 const distanciaSql = (lat, lng) =>
   `CASE WHEN "SitioTuristico"."latitud" IS NULL OR "SitioTuristico"."longitud" IS NULL THEN NULL ELSE 6371 * acos(LEAST(1, cos(radians(${lat})) * cos(radians("SitioTuristico"."latitud")) * cos(radians("SitioTuristico"."longitud") - radians(${lng})) + sin(radians(${lat})) * sin(radians("SitioTuristico"."latitud")))) END`;
 
+// ¿Es nuevo? Publicado hace menos de DIAS_NUEVO días. Los servicios sin fecha (anteriores a este dato) no lo son.
+const ES_NUEVO_SQL = `COALESCE("SitioTuristico"."fecha_creacion" >= NOW() - INTERVAL '${DIAS_NUEVO} days', false)`;
+
 // Tope de personas por consulta de precio: coincide con el máximo que acepta una reserva.
 const LIMITE_PERSONAS = 500;
 
@@ -36,6 +40,7 @@ const ORDEN_PERMITIDO = {
   precio_asc: [["precio", "ASC"]],
   precio_desc: [["precio", "DESC"]],
   nombre: [["nombre", "ASC"]],
+  recientes: [[literal(`"SitioTuristico"."fecha_creacion" DESC NULLS LAST, "SitioTuristico"."nombre"`), "ASC"]],
 };
 
 // RF-04/RF-05/RF-06: búsqueda por texto, filtros avanzados, orden y paginación.
@@ -78,6 +83,7 @@ async function buscar({ texto, municipio, categoria, presupuesto_max, tipo_viaje
     attributes: {
       include: [
         [literal(`EXISTS (SELECT 1 FROM tarifas_temporada t WHERE t.sitio_id = "SitioTuristico"."id")`), "tiene_temporadas"],
+        [literal(ES_NUEVO_SQL), "es_nuevo"],
         ...(conUbicacion ? [[literal(distancia), "distancia_km"]] : []),
       ],
     },
@@ -98,7 +104,7 @@ async function buscar({ texto, municipio, categoria, presupuesto_max, tipo_viaje
 // para el público; el motivo de moderación es interno y nunca se devuelve.
 async function obtenerDetalle(id) {
   const sitio = await SitioTuristico.findByPk(id, {
-    attributes: { exclude: ["motivo_moderacion"] },
+    attributes: { exclude: ["motivo_moderacion"], include: [[literal(ES_NUEVO_SQL), "es_nuevo"]] },
     include: [
       { model: Prestador, attributes: ["id", "nombre_negocio", "municipio", "estado_verificacion", "telefono"] },
       { model: ImagenSitio, as: "imagenes", attributes: ["id", "imagen_url", "orden"], separate: true, order: [["orden", "ASC"]] },

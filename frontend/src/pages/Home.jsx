@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { api, urlImagen } from "../api/client";
 import Carrusel from "../components/Carrusel";
 import heroCaqueta from "../assets/hero-caqueta.webp";
+import { useIdioma } from "../context/idioma";
 
 export default function Home() {
+  const { t, locale } = useIdioma();
   const [texto, setTexto] = useState("");
   const [destacados, setDestacados] = useState([]);
   const [totalSitios, setTotalSitios] = useState(null);
@@ -41,21 +43,20 @@ export default function Home() {
             <span className="flex h-2 w-2 rounded-full bg-secondary-fixed animate-ping" />
             <span className="material-symbols-outlined text-[18px] text-tertiary-fixed">auto_awesome</span>
             <span className="font-label-md text-label-md text-primary-fixed tracking-wide">
-              Plataforma de Inteligencia Turística del Caquetá
+              {t("Plataforma de Inteligencia Turística del Caquetá")}
             </span>
           </div>
 
           <h1 className="font-display-lg text-display-lg max-w-4xl text-on-primary tracking-tight leading-none mb-6">
-            Descubre el{" "}
+            {t("Descubre el")}{" "}
             <span className="bg-gradient-to-r from-secondary-fixed via-secondary-container to-primary-fixed bg-clip-text text-transparent">
               Caquetá
             </span>{" "}
-            de una nueva manera
+            {t("de una nueva manera")}
           </h1>
 
           <p className="font-body-lg text-body-lg text-primary-fixed-dim/90 max-w-2xl mx-auto mb-10 leading-relaxed">
-            La puerta de la Amazonía colombiana, organizada, verificada y a tu medida. Encuentra sitios, negocios
-            locales y construye tu itinerario con ayuda de inteligencia artificial.
+            {t("La puerta de la Amazonía colombiana, organizada, verificada y a tu medida. Encuentra sitios, negocios locales y construye tu itinerario con ayuda de inteligencia artificial.")}
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 mb-16">
@@ -63,7 +64,7 @@ export default function Home() {
               onClick={() => navigate("/explorar")}
               className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-secondary text-on-secondary font-title-sm text-title-sm hover:bg-secondary-container hover:text-on-secondary-container shadow-xl shadow-secondary/20 transition-all hover:-translate-y-0.5"
             >
-              <span>Explorar destinos</span>
+              <span>{t("Explorar destinos")}</span>
               <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
             </button>
             <button
@@ -71,7 +72,7 @@ export default function Home() {
               className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 backdrop-blur-md text-tertiary-fixed font-title-sm text-title-sm shadow-lg shadow-black/10 transition-all hover:-translate-y-0.5"
             >
               <span className="material-symbols-outlined text-tertiary-fixed-dim text-[20px]">psychology</span>
-              <span>Crear mi itinerario con IA</span>
+              <span>{t("Crear mi itinerario con IA")}</span>
             </button>
           </div>
 
@@ -81,11 +82,11 @@ export default function Home() {
               <div className="flex-1 p-3 rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors flex flex-col justify-center">
                 <span className="font-label-xs text-label-xs text-on-surface-variant flex items-center gap-1.5 uppercase">
                   <span className="material-symbols-outlined text-[16px] text-secondary">explore</span>
-                  ¿Qué lugar quieres descubrir?
+                  {t("¿Qué lugar quieres descubrir?")}
                 </span>
                 <input
                   className="w-full bg-transparent font-title-sm text-title-sm text-on-surface placeholder:text-outline focus:outline-none pt-1"
-                  placeholder="Ej: cascadas, fincas, gastronomía..."
+                  placeholder={t("Ej: cascadas, fincas, gastronomía...")}
                   type="text"
                   value={texto}
                   onChange={(e) => setTexto(e.target.value)}
@@ -96,7 +97,7 @@ export default function Home() {
                 type="submit"
               >
                 <span className="material-symbols-outlined text-[20px]">search</span>
-                <span>Buscar</span>
+                <span>{t("Buscar")}</span>
               </button>
             </form>
           </div>
@@ -113,7 +114,7 @@ export default function Home() {
               </div>
               <div>
                 <p className="font-headline-md text-headline-md text-on-surface">100%</p>
-                <p className="font-body-sm text-body-sm text-on-surface-variant">Prestadores verificados por un administrador</p>
+                <p className="font-body-sm text-body-sm text-on-surface-variant">{t("Prestadores verificados por un administrador")}</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -122,7 +123,7 @@ export default function Home() {
               </div>
               <div>
                 <p className="font-headline-md text-headline-md text-on-surface">{totalSitios ?? "—"}</p>
-                <p className="font-body-sm text-body-sm text-on-surface-variant">Sitios activos en el catálogo</p>
+                <p className="font-body-sm text-body-sm text-on-surface-variant">{t("Sitios activos en el catálogo")}</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -130,8 +131,8 @@ export default function Home() {
                 <span className="material-symbols-outlined text-[28px]">smart_toy</span>
               </div>
               <div>
-                <p className="font-headline-md text-headline-md text-on-surface">IA</p>
-                <p className="font-body-sm text-body-sm text-on-surface-variant">Itinerarios generados solo con datos reales</p>
+                <p className="font-headline-md text-headline-md text-on-surface">{t("IA")}</p>
+                <p className="font-body-sm text-body-sm text-on-surface-variant">{t("Itinerarios generados solo con datos reales")}</p>
               </div>
             </div>
           </div>
@@ -145,31 +146,31 @@ export default function Home() {
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-container/30 text-secondary font-label-xs text-label-xs mb-3">
                 <span className="material-symbols-outlined text-[16px]">location_on</span>
-                <span>Catálogo verificado</span>
+                <span>{t("Catálogo verificado")}</span>
               </div>
               <h2 className="font-headline-xl text-headline-xl text-on-surface tracking-tight">
-                Destinos destacados en Caquetá
+                {t("Destinos destacados en Caquetá")}
               </h2>
               <p className="font-body-md text-body-md text-on-surface-variant mt-2 max-w-xl">
-                Sitios y servicios reales cargados por prestadores verificados del departamento.
+                {t("Sitios y servicios reales cargados por prestadores verificados del departamento.")}
               </p>
             </div>
             <button
               onClick={() => navigate("/explorar")}
               className="inline-flex items-center gap-2 text-secondary font-title-sm text-title-sm hover:text-primary transition-colors"
             >
-              <span>Ver catálogo completo</span>
+              <span>{t("Ver catálogo completo")}</span>
               <span className="material-symbols-outlined text-[20px]">north_east</span>
             </button>
           </div>
 
           {destacados.length === 0 && (
             <p className="font-body-md text-body-md text-on-surface-variant">
-              Aún no hay sitios publicados en el catálogo.
+              {t("Aún no hay sitios publicados en el catálogo.")}
             </p>
           )}
 
-          <Carrusel etiqueta="Destinos destacados">
+          <Carrusel etiqueta={t("Destinos destacados")}>
             {destacados.map((sitio) => (
               <div
                 key={sitio.id}
@@ -193,13 +194,13 @@ export default function Home() {
                 </div>
                 <div className="p-5 flex flex-col justify-between flex-1">
                   <p className="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-4">
-                    {sitio.descripcion || "Sin descripción disponible."}
+                    {sitio.descripcion || t("Sin descripción disponible.")}
                   </p>
                   <div className="flex items-center justify-between pt-4 mt-auto bg-surface-container-low/50 -mx-5 -mb-5 px-5 py-3">
                     <div>
-                      <span className="font-label-xs text-label-xs text-on-surface-variant">Desde</span>
+                      <span className="font-label-xs text-label-xs text-on-surface-variant">{t("Desde")}</span>
                       <p className="font-title-sm text-title-sm text-primary font-bold">
-                        {Number(sitio.precio) === 0 ? "Gratuito" : `$${Number(sitio.precio).toLocaleString("es-CO")}`}
+                        {Number(sitio.precio) === 0 ? t("Gratuito") : `$${Number(sitio.precio).toLocaleString(locale)}`}
                       </p>
                     </div>
                     <span className="w-10 h-10 rounded-xl bg-surface-container group-hover:bg-secondary group-hover:text-on-secondary text-primary flex items-center justify-center transition-colors">
@@ -219,10 +220,10 @@ export default function Home() {
           <div className="text-center max-w-2xl mx-auto mb-16">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-container/30 text-secondary font-label-xs text-label-xs mb-3">
               <span className="material-symbols-outlined text-[16px]">touch_app</span>
-              <span>Simple, verificado, personalizado</span>
+              <span>{t("Simple, verificado, personalizado")}</span>
             </div>
             <h2 className="font-headline-xl text-headline-xl text-on-surface tracking-tight">
-              ¿Cómo funciona PubliTours?
+              {t("¿Cómo funciona PubliTours?")}
             </h2>
           </div>
 
@@ -231,32 +232,30 @@ export default function Home() {
               <div className="w-14 h-14 rounded-2xl bg-secondary-container/40 text-secondary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <span className="material-symbols-outlined text-[32px]">checklist</span>
               </div>
-              <span className="font-label-xs text-label-xs uppercase tracking-widest text-secondary font-bold mb-2">Paso 01</span>
-              <h3 className="font-title-lg text-title-lg text-on-surface mb-3">Indica tus preferencias</h3>
+              <span className="font-label-xs text-label-xs uppercase tracking-widest text-secondary font-bold mb-2">{t("Paso 01")}</span>
+              <h3 className="font-title-lg text-title-lg text-on-surface mb-3">{t("Indica tus preferencias")}</h3>
               <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-                Dinos tu presupuesto, los días que tienes disponibles y qué tipo de experiencia buscas.
+                {t("Dinos tu presupuesto, los días que tienes disponibles y qué tipo de experiencia buscas.")}
               </p>
             </div>
             <div className="flex flex-col p-8 rounded-2xl bg-surface-container-lowest shadow-md hover:shadow-xl transition-all duration-300 group">
               <div className="w-14 h-14 rounded-2xl bg-primary-container text-on-primary flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <span className="material-symbols-outlined text-[32px] text-tertiary-fixed">smart_toy</span>
               </div>
-              <span className="font-label-xs text-label-xs uppercase tracking-widest text-primary font-bold mb-2">Paso 02</span>
-              <h3 className="font-title-lg text-title-lg text-on-surface mb-3">El sistema arma tu itinerario</h3>
+              <span className="font-label-xs text-label-xs uppercase tracking-widest text-primary font-bold mb-2">{t("Paso 02")}</span>
+              <h3 className="font-title-lg text-title-lg text-on-surface mb-3">{t("El sistema arma tu itinerario")}</h3>
               <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-                Un motor de puntuación ordena las mejores opciones del catálogo verificado, día por día, con una
-                justificación de por qué se incluyó cada una.
+                {t("Un motor de puntuación ordena las mejores opciones del catálogo verificado, día por día, con una justificación de por qué se incluyó cada una.")}
               </p>
             </div>
             <div className="flex flex-col p-8 rounded-2xl bg-surface-container-lowest shadow-md hover:shadow-xl transition-all duration-300 group">
               <div className="w-14 h-14 rounded-2xl bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <span className="material-symbols-outlined text-[32px]">confirmation_number</span>
               </div>
-              <span className="font-label-xs text-label-xs uppercase tracking-widest text-tertiary font-bold mb-2">Paso 03</span>
-              <h3 className="font-title-lg text-title-lg text-on-surface mb-3">Reserva directamente</h3>
+              <span className="font-label-xs text-label-xs uppercase tracking-widest text-tertiary font-bold mb-2">{t("Paso 03")}</span>
+              <h3 className="font-title-lg text-title-lg text-on-surface mb-3">{t("Reserva directamente")}</h3>
               <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-                Solicita tu reserva con un clic; el prestador la confirma y tú haces seguimiento del estado en
-                tiempo real.
+                {t("Solicita tu reserva con un clic; el prestador la confirma y tú haces seguimiento del estado en tiempo real.")}
               </p>
             </div>
           </div>
@@ -270,10 +269,10 @@ export default function Home() {
             <div className="absolute -bottom-20 -right-20 w-80 h-80 rounded-full bg-secondary-fixed/20 blur-3xl pointer-events-none" />
             <div className="relative z-10 max-w-2xl flex flex-col items-center">
               <h2 className="font-headline-xl text-headline-xl text-on-primary mb-4">
-                ¿Listo para descubrir el Caquetá?
+                {t("¿Listo para descubrir el Caquetá?")}
               </h2>
               <p className="font-body-lg text-body-lg text-primary-fixed-dim mb-8">
-                Crea tu cuenta y genera tu primer itinerario personalizado en minutos.
+                {t("Crea tu cuenta y genera tu primer itinerario personalizado en minutos.")}
               </p>
               <div className="flex flex-wrap items-center justify-center gap-4">
                 <button
@@ -281,13 +280,13 @@ export default function Home() {
                   className="inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-gradient-to-r from-secondary to-secondary-container text-primary font-title-sm text-title-sm hover:opacity-95 shadow-xl transition-all transform hover:-translate-y-0.5"
                 >
                   <span className="material-symbols-outlined text-[20px] text-tertiary">auto_awesome</span>
-                  <span className="font-bold">Crear cuenta gratis</span>
+                  <span className="font-bold">{t("Crear cuenta gratis")}</span>
                 </button>
                 <button
                   onClick={() => navigate("/explorar")}
                   className="inline-flex items-center gap-2 px-6 py-4 rounded-xl bg-surface-container-lowest/15 hover:bg-surface-container-lowest/25 backdrop-blur-md text-on-primary font-title-sm text-title-sm transition-all"
                 >
-                  <span>Ver catálogo completo</span>
+                  <span>{t("Ver catálogo completo")}</span>
                 </button>
               </div>
             </div>

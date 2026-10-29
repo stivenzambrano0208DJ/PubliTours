@@ -1,7 +1,9 @@
 import { TIPOS_VIAJE } from "../../constants";
+import { useIdioma } from "../../context/idioma";
 
 // Encabezado de Explorar: título, buscador por texto y filtro rápido por interés.
 export default function CabeceraBusqueda({ filtros, totalCatalogo, onEditar, onAplicar }) {
+  const { t, td } = useIdioma();
   const buscar = (e) => {
     e.preventDefault();
     onAplicar({});
@@ -16,19 +18,19 @@ export default function CabeceraBusqueda({ filtros, totalCatalogo, onEditar, onA
         <div className="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
           <span className="text-secondary font-semibold">Caquetá Vive IA</span>
           <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-          <span>Explorador de Destinos</span>
+          <span>{t("Explorador de Destinos")}</span>
         </div>
 
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest text-secondary font-label-xs text-label-xs font-semibold shadow-sm mb-3">
             <span className="material-symbols-outlined text-[16px] text-tertiary-fixed-dim">verified</span>
-            <span>{totalCatalogo} destinos verificados en el catálogo</span>
+            <span>{t("{n} destinos verificados en el catálogo", { n: totalCatalogo })}</span>
           </div>
           <h1 className="font-headline-xl text-headline-xl tracking-tight text-primary font-bold">
-            Explora los Tesoros del Caquetá
+            {t("Explora los Tesoros del Caquetá")}
           </h1>
           <p className="font-body-lg text-body-lg text-on-surface-variant mt-2 max-w-2xl">
-            Catálogo real de sitios y servicios turísticos, cargados y verificados por prestadores locales.
+            {t("Catálogo real de sitios y servicios turísticos, cargados y verificados por prestadores locales.")}
           </p>
         </div>
 
@@ -38,7 +40,7 @@ export default function CabeceraBusqueda({ filtros, totalCatalogo, onEditar, onA
               <span className="material-symbols-outlined text-secondary text-[22px]">travel_explore</span>
               <input
                 className="w-full bg-transparent text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none"
-                placeholder="¿Qué experiencia buscas? Ej: cascadas, fincas, gastronomía..."
+                placeholder={t("¿Qué experiencia buscas? Ej: cascadas, fincas, gastronomía...")}
                 type="text"
                 value={filtros.texto}
                 onChange={(e) => onEditar({ texto: e.target.value })}
@@ -51,24 +53,24 @@ export default function CabeceraBusqueda({ filtros, totalCatalogo, onEditar, onA
             </div>
             <button type="submit" className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container shadow-sm transition-all">
               <span className="material-symbols-outlined text-[18px]">search</span>
-              <span>Explorar</span>
+              <span>{t("Explorar")}</span>
             </button>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 pt-3 px-3">
-            <span className="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider">Filtrar por interés:</span>
-            {TIPOS_VIAJE.filter((t) => t.value).map((t) => (
+            <span className="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider">{t("Filtrar por interés:")}</span>
+            {TIPOS_VIAJE.filter((tv) => tv.value).map((tv) => (
               <button
-                key={t.value}
+                key={tv.value}
                 type="button"
-                onClick={() => onAplicar({ tipo_viaje: filtros.tipo_viaje === t.value ? "" : t.value })}
+                onClick={() => onAplicar({ tipo_viaje: filtros.tipo_viaje === tv.value ? "" : tv.value })}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded-full font-label-xs text-label-xs transition-all ${
-                  filtros.tipo_viaje === t.value
+                  filtros.tipo_viaje === tv.value
                     ? "bg-secondary text-on-secondary"
                     : "bg-surface-container-high text-on-surface hover:bg-secondary-container/40 hover:text-secondary"
                 }`}
               >
-                {t.label}
+                {td(tv.label)}
               </button>
             ))}
           </div>

@@ -11,6 +11,8 @@ import ReservasRecibidas from "../components/prestador/ReservasRecibidas";
 import ModalServicio from "../components/prestador/ModalServicio";
 import ResenasRecibidas from "../components/prestador/ResenasRecibidas";
 import PaquetesPrestador from "../components/prestador/PaquetesPrestador";
+import ModalProblema from "../components/reservas/ModalProblema";
+import MisCasos from "../components/reservas/MisCasos";
 import { useAvisos } from "../context/avisos";
 
 const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -24,6 +26,8 @@ export default function PanelPrestador() {
   const [resumen, setResumen] = useState({});
   const [cargandoDatos, setCargandoDatos] = useState(true);
   const [accionando, setAccionando] = useState(null);
+  const [problema, setProblema] = useState(null);
+  const [casos, setCasos] = useState(0); // cambia al abrir un caso, para recargar «Mis casos de soporte»
   // undefined = modal cerrado, null = nuevo servicio, objeto = editando ese servicio
   const [sitioModal, setSitioModal] = useState(undefined);
 
@@ -132,7 +136,8 @@ export default function PanelPrestador() {
         onEliminar={eliminarServicio}
       />
       <PaquetesPrestador sitios={sitios} />
-      <ReservasRecibidas reservas={reservas} cargando={cargandoDatos} accionando={accionando} onAccion={handleAccionReserva} />
+      <ReservasRecibidas reservas={reservas} cargando={cargandoDatos} accionando={accionando} onAccion={handleAccionReserva} onProblema={setProblema} />
+      <MisCasos version={casos} />
       <EstadisticasPrestador />
       <ResenasRecibidas />
 
@@ -145,6 +150,7 @@ export default function PanelPrestador() {
           onGuardado={() => { setSitioModal(undefined); cargarDatos(); }}
         />
       )}
+      {problema && <ModalProblema reserva={problema} onCerrar={() => setProblema(null)} onAbierto={() => setCasos((v) => v + 1)} />}
     </div>
   );
 }

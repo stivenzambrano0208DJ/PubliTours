@@ -17,7 +17,7 @@ export default function ModalMotivo({ titulo, descripcion, etiqueta, placeholder
   };
 
   return (
-    <Modal as="form" etiqueta={titulo} onCerrar={onCerrar} onSubmit={enviar} className="w-full max-w-md bg-surface-container-lowest rounded-2xl p-6 shadow-xl flex flex-col gap-3">
+    <Modal as="form" etiqueta={titulo} onCerrar={onCerrar} onSubmit={enviar} className="w-full max-w-md max-h-[90vh] overflow-y-auto bg-surface-container-lowest rounded-2xl p-6 shadow-xl flex flex-col gap-3">
       <h3 className="font-headline-md text-headline-md text-primary">{titulo}</h3>
       {descripcion && <p className="font-body-sm text-body-sm text-on-surface-variant">{descripcion}</p>}
       <label className="flex flex-col gap-1.5">
