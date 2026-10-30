@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/client";
 import { useAuth } from "../context/auth";
+import Modal from "./Modal";
 import { useIdioma } from "../context/idioma";
 
 const ESPERA_REENVIO = 60;
 
-// Franja bajo el encabezado para quien aún no confirmó su correo: pide el código de 6 dígitos y permite reenviarlo.
+// Ventana que bloquea la aplicación mientras el correo no esté confirmado: pide el código de 6 dígitos y permite reenviarlo o cerrar sesión.
+// No se puede cerrar (ni con Escape ni tocando fuera): hasta verificar, no se usa PubliTours. El administrador queda fuera de esta regla.
 export default function AvisoVerificarCorreo() {
   const { t } = useIdioma();
-  const { usuario, actualizarUsuario } = useAuth();
+  const { usuario, actualizarUsuario, logout } = useAuth();
   const [codigo, setCodigo] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [mensaje, setMensaje] = useState(null);
@@ -48,37 +50,45 @@ export default function AvisoVerificarCorreo() {
   };
 
   return (
-    <div role="region" aria-label={t("Verifica tu correo")} className="print:hidden w-full bg-tertiary-fixed/60 border-b border-tertiary-fixed-dim text-on-surface">
-      <div className="max-w-[1360px] mx-auto px-gutter py-3 flex flex-col lg:flex-row lg:items-center gap-3">
-        <div className="flex items-start gap-2 flex-1 min-w-0">
-          <span className="material-symbols-outlined text-on-tertiary-container text-[22px] shrink-0">mark_email_unread</span>
-          <p className="font-body-sm text-body-sm">
-            <strong>{t("Verifica tu correo.")}</strong> {t("Te enviamos un código de 6 dígitos a")} <strong>{usuario.correo}</strong>.{" "}
-            {t("Mientras tanto puedes explorar, pero para reservar o enviar tu negocio a revisión necesitas confirmarlo.")}
-          </p>
-        </div>
-        <form onSubmit={verificar} className="flex flex-wrap items-center gap-2">
-          <input
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            maxLength={6}
-            placeholder={t("Código de 6 dígitos")}
-            aria-label={t("Código de verificación")}
-            value={codigo}
-            onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ""))}
-            className="w-44 px-3 py-2 rounded-xl bg-surface-container-lowest border border-surface-container-high outline-none focus:border-secondary tracking-widest text-center"
-          />
-          <button type="submit" disabled={enviando || codigo.length !== 6} className="px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors disabled:opacity-50">
-            {enviando ? t("Verificando...") : t("Verificar")}
-          </button>
-          <button type="button" onClick={reenviar} disabled={espera > 0} className="px-3 py-2 rounded-xl text-secondary font-label-md text-label-md hover:bg-surface-container-lowest transition-colors disabled:opacity-50">
+    <Modal
+      tituloId="titulo-verificar-correo" onCerrar={() => {}} cerrarConEscape={false} cerrarAlPulsarFondo={false} fondo="bg-black/60 z-[80] items-center p-4"
+      className="w-full max-w-md max-h-[92vh] overflow-y-auto bg-surface-container-lowest rounded-2xl p-6 shadow-2xl flex flex-col gap-4"
+    >
+      <div className="flex flex-col items-center text-center gap-2">
+        <span className="w-14 h-14 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant flex items-center justify-center">
+          <span className="material-symbols-outlined text-[30px]" aria-hidden="true">mark_email_unread</span>
+        </span>
+        <h2 id="titulo-verificar-correo" className="font-headline-md text-headline-md text-primary">{t("Verifica tu correo para continuar")}</h2>
+        <p className="font-body-sm text-body-sm text-on-surface-variant">
+          {t("Te enviamos un código de 6 dígitos a")} <strong className="text-on-surface break-all">{usuario.correo}</strong>.{" "}
+          {t("Para usar PubliTours necesitas confirmarlo. Si no lo ves, revisa también la carpeta de spam.")}
+        </p>
+      </div>
+
+      <form onSubmit={verificar} className="flex flex-col gap-3">
+        <input
+          inputMode="numeric"
+          autoComplete="one-time-code"
+          maxLength={6}
+          placeholder={t("Código de 6 dígitos")}
+          aria-label={t("Código de verificación")}
+          value={codigo}
+          onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ""))}
+          className="w-full px-3 py-3 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary tracking-[0.4em] text-center font-title-lg text-title-lg"
+        />
+        {mensaje && <p role="status" className={`font-label-md text-label-md text-center ${mensaje.ok ? "text-secondary" : "text-error"}`}>{mensaje.texto}</p>}
+        <button type="submit" disabled={enviando || codigo.length !== 6} className="w-full py-3 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary-container transition-colors disabled:opacity-50">
+          {enviando ? t("Verificando...") : t("Verificar")}
+        </button>
+        <div className="flex items-center justify-between gap-2">
+          <button type="button" onClick={reenviar} disabled={espera > 0} className="px-3 py-2 rounded-xl text-secondary font-label-md text-label-md hover:bg-surface-container transition-colors disabled:opacity-50">
             {espera > 0 ? t("Reenviar en {n} s", { n: espera }) : t("Reenviar código")}
           </button>
-        </form>
-      </div>
-      {mensaje && (
-        <p role="status" className={`max-w-[1360px] mx-auto px-gutter pb-2 font-label-md text-label-md ${mensaje.ok ? "text-secondary" : "text-error"}`}>{mensaje.texto}</p>
-      )}
-    </div>
+          <button type="button" onClick={logout} className="px-3 py-2 rounded-xl text-on-surface-variant font-label-md text-label-md hover:bg-surface-container transition-colors">
+            {t("Cerrar sesión")}
+          </button>
+        </div>
+      </form>
+    </Modal>
   );
 }

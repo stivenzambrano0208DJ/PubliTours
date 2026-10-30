@@ -300,12 +300,9 @@ export default {
   "Caquetá, Puerta de Oro de la Amazonía Colombiana": "Caquetá, Golden Gateway to the Colombian Amazon",
   "Paisaje aéreo de la Amazonía del Caquetá": "Aerial view of the Caquetá Amazon",
   "Te enviamos un código nuevo a {correo}.": "We sent a new code to {correo}.",
-  "Verifica tu correo.": "Verify your email.",
   "Te enviamos un código de 6 dígitos a": "We sent a 6-digit code to",
-  "Mientras tanto puedes explorar, pero para reservar o enviar tu negocio a revisión necesitas confirmarlo.": "Meanwhile you can explore, but you need to confirm it to book or send your business for review.",
   "Reenviar en {n} s": "Resend in {n} s",
   "Reenviar código": "Resend code",
-  "Verifica tu correo": "Verify your email",
   "Código de 6 dígitos": "6-digit code",
   "Verificando...": "Verifying...",
   "Verificar": "Verify",
@@ -602,6 +599,8 @@ export default {
   "Este documento solo está disponible en español, que es su versión oficial.": "This document is only available in Spanish, which is its official version.",
   "Esta página solo está disponible en español.": "This page is only available in Spanish.",
   "{n} destinos verificados en el catálogo": "{n} verified destinations in the catalog",
+  "Verifica tu correo para continuar": "Verify your email to continue",
+  "Para usar PubliTours necesitas confirmarlo. Si no lo ves, revisa también la carpeta de spam.": "To use PubliTours you need to confirm it. If you can't see it, check your spam folder too.",
 };
 
 // Valores que llegan de la base de datos (categorías y tipos de viaje). Se traducen al mostrarlos con td(valor).

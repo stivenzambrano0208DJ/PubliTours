@@ -4,8 +4,9 @@ import userEvent from "@testing-library/user-event";
 import AvisoVerificarCorreo from "./AvisoVerificarCorreo";
 
 const actualizarUsuario = vi.fn();
+const logout = vi.fn();
 let usuario;
-vi.mock("../context/auth", () => ({ useAuth: () => ({ usuario, actualizarUsuario }) }));
+vi.mock("../context/auth", () => ({ useAuth: () => ({ usuario, actualizarUsuario, logout }) }));
 vi.mock("../api/client", () => ({ api: { verificarCorreo: vi.fn(), reenviarVerificacion: vi.fn() } }));
 import { api } from "../api/client";
 
@@ -13,6 +14,7 @@ describe("AvisoVerificarCorreo", () => {
   beforeEach(() => {
     usuario = { id: 1, rol: "turista", correo: "ana@test.com", correo_verificado: false };
     actualizarUsuario.mockReset();
+    logout.mockReset();
     api.verificarCorreo.mockReset();
     api.reenviarVerificacion.mockReset();
   });
@@ -27,9 +29,25 @@ describe("AvisoVerificarCorreo", () => {
     }
   });
 
-  it("aparece con el correo al que se envió el código", () => {
+  it("es una ventana que bloquea, con el correo al que se envió el código", () => {
     render(<AvisoVerificarCorreo />);
-    expect(screen.getByRole("region", { name: "Verifica tu correo" })).toHaveTextContent("ana@test.com");
+    const ventana = screen.getByRole("dialog", { name: "Verifica tu correo para continuar" });
+    expect(ventana).toHaveAttribute("aria-modal", "true");
+    expect(ventana).toHaveTextContent("ana@test.com");
+  });
+
+  it("no se puede cerrar: ni con Escape ni tocando fuera; solo verificando o cerrando sesión", async () => {
+    render(<AvisoVerificarCorreo />);
+    await userEvent.keyboard("{Escape}");
+    await userEvent.click(screen.getByRole("dialog").parentElement); // el fondo
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Cerrar$|Close/ })).not.toBeInTheDocument();
+  });
+
+  it("deja salir cerrando sesión (por si el correo escrito era otro)", async () => {
+    render(<AvisoVerificarCorreo />);
+    await userEvent.click(screen.getByRole("button", { name: "Cerrar sesión" }));
+    expect(logout).toHaveBeenCalledTimes(1);
   });
 
   it("el botón Verificar solo se habilita con 6 dígitos y el campo ignora letras", async () => {

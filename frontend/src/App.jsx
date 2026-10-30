@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from "react";
 import { IdiomaProvider } from "./context/IdiomaContext";
+import AvisoVerificarCorreo from "./components/AvisoVerificarCorreo";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -93,6 +94,7 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
+      <AvisoVerificarCorreo />
       </Suspense>
       </FavoritosProvider>
     </AuthProvider>

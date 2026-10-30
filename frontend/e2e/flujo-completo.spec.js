@@ -472,15 +472,19 @@ test("15. un correo sin verificar no puede reservar; con el código de verificac
   await page.getByRole("button", { name: "Registrarme" }).click();
   await expect(page).toHaveURL("/");
 
-  // Aparece el aviso para verificar el correo, con la dirección a la que se envió el código
-  const aviso = page.getByRole("region", { name: "Verifica tu correo" });
+  // Aparece una ventana que bloquea todo hasta verificar, con la dirección a la que se envió el código
+  const aviso = page.getByRole("dialog", { name: "Verifica tu correo para continuar" });
+  await expect(aviso).toBeVisible();
   await expect(aviso).toContainText(nuevo.correo);
 
-  // Puede navegar, pero no reservar
+  // No deja seguir: ni con Escape, ni navegando a otra página, ni tocando fuera
+  await page.keyboard.press("Escape");
+  await expect(aviso).toBeVisible();
   await page.goto(urlServicio);
-  await page.getByRole("button", { name: "Reservar" }).click();
-  await expect(page.getByText(/Verifica tu correo para continuar/).first()).toBeVisible();
-  await expect(page.getByText("Solicitud enviada")).toHaveCount(0);
+  await expect(aviso).toBeVisible();
+  await page.mouse.click(5, 300);
+  await expect(aviso).toBeVisible();
+  await expect(page.getByRole("button", { name: "Reservar" }).click({ timeout: 2000 })).rejects.toThrow(/intercepts pointer events/); // lo de atrás no se puede usar
 
   // Un código incorrecto no sirve
   await aviso.getByLabel("Código de verificación").fill("000000");
@@ -495,7 +499,7 @@ test("15. un correo sin verificar no puede reservar; con el código de verificac
   );
   await aviso.getByLabel("Código de verificación").fill(codigo);
   await aviso.getByRole("button", { name: "Verificar" }).click();
-  await expect(aviso).toHaveCount(0); // el aviso desaparece
+  await expect(aviso).toHaveCount(0); // la ventana desaparece y se puede usar el sitio
 
   // Ahora sí puede reservar
   await page.getByRole("button", { name: "Reservar" }).click();
