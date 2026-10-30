@@ -4,6 +4,8 @@ import { useConsulta } from "../../hooks/useConsulta";
 import { MOTIVOS_CASO, ESTADOS_CASO } from "../../utils/soporte";
 import ModalMotivo from "../ModalMotivo";
 import { useAvisos } from "../../context/avisos";
+import Tarjeta from "../ui/Tarjeta";
+import Aviso from "../ui/Aviso";
 
 const ROL = { turista: "la turista", prestador: "el negocio" };
 const fecha = (iso) => new Date(iso).toLocaleString("es-CO", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
@@ -28,7 +30,7 @@ export default function CasosAdmin() {
   };
 
   return (
-    <section className="bg-surface-container-lowest rounded-2xl shadow-sm p-5">
+    <Tarjeta as="section" className="p-5">
       <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">Casos de soporte</h2>
       <p className="font-body-sm text-body-sm text-on-surface-variant mb-4">Problemas que una turista o un negocio reportaron sobre una reserva. Quien abrió el caso recibe tu respuesta.</p>
 
@@ -46,7 +48,7 @@ export default function CasosAdmin() {
       {cargando ? (
         <p role="status" className="font-body-sm text-body-sm text-on-surface-variant">Cargando…</p>
       ) : error ? (
-        <p role="alert" className="font-body-sm text-body-sm text-error">{error}</p>
+        <Aviso>{error}</Aviso>
       ) : casos.length === 0 ? (
         <p className="font-body-sm text-body-sm text-on-surface-variant">{estado === "abierto" ? "No hay casos nuevos por atender." : "No hay casos en este estado."}</p>
       ) : (
@@ -99,6 +101,6 @@ export default function CasosAdmin() {
           onCerrar={() => setAccion(null)}
         />
       )}
-    </section>
+    </Tarjeta>
   );
 }

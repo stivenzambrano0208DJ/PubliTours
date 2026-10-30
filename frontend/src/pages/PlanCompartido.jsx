@@ -6,6 +6,7 @@ import { fechaCorta, fechaDelDia } from "../utils/fechas";
 import { itemsPorDia, totalEstimado } from "../utils/itinerario";
 import { pesos } from "../utils/moneda";
 import { useIdioma } from "../context/idioma";
+import Tarjeta from "../components/ui/Tarjeta";
 
 // Itinerario que alguien compartió con un enlace: solo lectura, sin sesión y sin datos de quien lo armó.
 export default function PlanCompartido() {
@@ -60,7 +61,7 @@ export default function PlanCompartido() {
             {conFecha && <span className="font-body-md text-body-md text-on-surface-variant font-normal capitalize">· {fechaCorta(fechaDelDia(plan.fecha_inicio, dia), locale)}</span>}
           </h2>
           {items.map(({ id, sitio, justificacion }) => (
-            <article key={id} className="flex flex-col sm:flex-row gap-4 p-space-md rounded-2xl bg-surface-container-lowest shadow-sm">
+            <Tarjeta as="article" key={id} className="flex flex-col sm:flex-row gap-4 p-space-md">
               <div className="w-full sm:w-36 h-28 rounded-xl overflow-hidden shrink-0 bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center">
                 {sitio.imagen_url
                   ? <img loading="lazy" decoding="async" src={urlImagen(sitio.imagen_url)} alt="" className="w-full h-full object-cover" />
@@ -77,7 +78,7 @@ export default function PlanCompartido() {
                   <Link to={`/sitios/${sitio.id}`} className="font-label-md text-label-md text-secondary font-semibold hover:underline">{t("Ver servicio")}</Link>
                 </div>
               </div>
-            </article>
+            </Tarjeta>
           ))}
         </section>
       ))}

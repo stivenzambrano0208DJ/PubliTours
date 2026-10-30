@@ -12,7 +12,7 @@ export default function LayoutAuth({ hero, children }) {
     <div className="relative h-dvh w-full flex flex-col lg:flex-row overflow-hidden">
       <section className="relative hidden lg:flex lg:w-1/2 flex-col justify-between p-10 xl:p-14 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img alt={t("Paisaje aéreo de la Amazonía del Caquetá")} className="w-full h-full object-cover object-center" src={hero.imagen} />
+          <img loading="lazy" decoding="async" alt={t("Paisaje aéreo de la Amazonía del Caquetá")} className="w-full h-full object-cover object-center" src={hero.imagen} />
           <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/50 to-primary/30" />
         </div>
 
@@ -43,7 +43,7 @@ export default function LayoutAuth({ hero, children }) {
         </p>
       </section>
 
-      <section className="relative flex-1 flex p-6 sm:p-10 bg-surface-container-lowest overflow-y-auto">
+      <main className="relative flex-1 flex p-6 sm:p-10 bg-surface-container-lowest overflow-y-auto">
         <div className="w-full max-w-md mx-auto my-auto">
           <Link to="/" className="lg:hidden inline-flex items-center gap-1.5 mb-4 text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md">
             <span className="material-symbols-outlined text-[18px]">arrow_back</span>
@@ -51,7 +51,7 @@ export default function LayoutAuth({ hero, children }) {
           </Link>
           {children}
         </div>
-      </section>
+      </main>
     </div>
   );
 }

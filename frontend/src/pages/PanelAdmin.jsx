@@ -13,6 +13,7 @@ import ReportesMensajesAdmin from "../components/admin/ReportesMensajesAdmin";
 import CasosAdmin from "../components/admin/CasosAdmin";
 import InvitacionesAdmin from "../components/admin/InvitacionesAdmin";
 import { useAvisos } from "../context/avisos";
+import Tarjeta from "../components/ui/Tarjeta";
 
 const TABS = [
   { id: "resumen", label: "Resumen y prestadores", icono: "dashboard" },
@@ -129,30 +130,30 @@ export default function PanelAdmin() {
       {/* KPIs reales */}
       {resumen && (
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm">
+          <Tarjeta className="p-5">
             <div className="flex items-center justify-between">
               <span className="font-label-xs text-label-xs uppercase tracking-wider text-outline font-semibold">Usuarios registrados</span>
               <span className="material-symbols-outlined text-[18px] text-primary">group</span>
             </div>
             <span className="font-headline-xl text-headline-xl text-on-surface font-bold block mt-2">{resumen.totalUsuarios}</span>
             <span className="font-label-xs text-label-xs text-outline">turistas, prestadores y administradores</span>
-          </div>
-          <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm">
+          </Tarjeta>
+          <Tarjeta className="p-5">
             <div className="flex items-center justify-between">
               <span className="font-label-xs text-label-xs uppercase tracking-wider text-outline font-semibold">Prestadores aprobados</span>
               <span className="material-symbols-outlined text-[18px] text-secondary">verified</span>
             </div>
             <span className="font-headline-xl text-headline-xl text-on-surface font-bold block mt-2">{resumen.prestadoresAprobados}</span>
             <span className="font-label-xs text-label-xs text-outline">{resumen.prestadoresPendientes} pendiente(s) por revisar</span>
-          </div>
-          <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm">
+          </Tarjeta>
+          <Tarjeta className="p-5">
             <div className="flex items-center justify-between">
               <span className="font-label-xs text-label-xs uppercase tracking-wider text-outline font-semibold">Sitios activos</span>
               <span className="material-symbols-outlined text-[18px] text-primary">map</span>
             </div>
             <span className="font-headline-xl text-headline-xl text-on-surface font-bold block mt-2">{stats.sitios_activos_en_catalogo}</span>
             <span className="font-label-xs text-label-xs text-outline">publicados en el catálogo</span>
-          </div>
+          </Tarjeta>
           <div className="bg-primary-container text-on-primary-container rounded-2xl p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <span className="font-label-xs text-label-xs uppercase tracking-wider text-primary-fixed-dim font-bold">Reservas totales</span>
@@ -167,7 +168,7 @@ export default function PanelAdmin() {
       {/* Reservas por estado + Destinos con mayor interés */}
       {stats && (
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
-          <div className="lg:col-span-7 bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm flex flex-col">
+          <Tarjeta className="lg:col-span-7 p-space-lg flex flex-col">
             <h2 className="font-title-lg text-title-lg text-on-surface font-semibold mb-1">Reservas por estado</h2>
             <p className="font-body-sm text-body-sm text-on-surface-variant mb-4">Distribución real de solicitudes en toda la plataforma</p>
             {stats.reservas.por_estado.length === 0 && (
@@ -192,9 +193,9 @@ export default function PanelAdmin() {
                 );
               })}
             </div>
-          </div>
+          </Tarjeta>
 
-          <div className="lg:col-span-5 bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm flex flex-col">
+          <Tarjeta className="lg:col-span-5 p-space-lg flex flex-col">
             <div className="flex items-center gap-2 mb-1">
               <span className="material-symbols-outlined text-primary text-[20px]">auto_awesome</span>
               <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">Destinos con mayor interés</h2>
@@ -217,13 +218,13 @@ export default function PanelAdmin() {
                 </div>
               ))}
             </div>
-          </div>
+          </Tarjeta>
         </section>
       )}
 
       {/* Prestadores pendientes + Destinos más reservados */}
       <section className="grid grid-cols-1 xl:grid-cols-12 gap-space-lg">
-        <div className="xl:col-span-8 bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm flex flex-col">
+        <Tarjeta className="xl:col-span-8 p-space-lg flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">Prestadores pendientes de verificación</h2>
@@ -269,9 +270,9 @@ export default function PanelAdmin() {
               </div>
             ))}
           </div>
-        </div>
+        </Tarjeta>
 
-        <div className="xl:col-span-4 bg-surface-container-lowest p-space-lg rounded-2xl shadow-sm flex flex-col">
+        <Tarjeta className="xl:col-span-4 p-space-lg flex flex-col">
           <div className="flex items-center gap-2 mb-1">
             <span className="material-symbols-outlined text-secondary text-[20px]">bookmark_added</span>
             <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">Destinos más reservados</h2>
@@ -294,7 +295,7 @@ export default function PanelAdmin() {
               </div>
             ))}
           </div>
-        </div>
+        </Tarjeta>
       </section>
       </>}
 

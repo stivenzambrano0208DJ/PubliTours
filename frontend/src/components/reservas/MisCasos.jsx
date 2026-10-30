@@ -2,6 +2,7 @@ import { api } from "../../api/client";
 import { useConsulta } from "../../hooks/useConsulta";
 import { MOTIVOS_CASO, ESTADOS_CASO } from "../../utils/soporte";
 import { useIdioma } from "../../context/idioma";
+import Tarjeta from "../ui/Tarjeta";
 
 const fecha = (iso, locale) => new Date(iso).toLocaleDateString(locale, { day: "numeric", month: "short", year: "numeric" });
 
@@ -13,7 +14,7 @@ export default function MisCasos({ version = 0 }) {
   if (!casos?.length) return null;
 
   return (
-    <section aria-labelledby="titulo-mis-casos" className="bg-surface-container-lowest rounded-2xl shadow-sm p-5 flex flex-col gap-3">
+    <Tarjeta as="section" aria-labelledby="titulo-mis-casos" className="p-5 flex flex-col gap-3">
       <h2 id="titulo-mis-casos" className="font-title-lg text-title-lg text-on-surface font-semibold flex items-center gap-2">
         <span className="material-symbols-outlined text-secondary" aria-hidden="true">support_agent</span>
         {t("Mis casos de soporte")}
@@ -36,6 +37,6 @@ export default function MisCasos({ version = 0 }) {
           )}
         </article>
       ))}
-    </section>
+    </Tarjeta>
   );
 }

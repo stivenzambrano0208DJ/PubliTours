@@ -2,7 +2,9 @@ import { useState } from "react";
 import { api } from "../../api/client";
 import { CATEGORIAS_NEGOCIO, MUNICIPIOS_CAQUETA } from "../../constants";
 import { requisitos } from "./requisitos";
-import { CAMPO_ANCHO } from "../../estilos";
+import Boton from "../ui/Boton";
+import Insignia from "../ui/Insignia";
+import Campo, { Selector, AreaTexto } from "../ui/Campo";
 
 
 const desde = (p) => ({
@@ -60,10 +62,10 @@ export default function CompletarPerfil({ perfil, onActualizado }) {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         <form onSubmit={guardarBorrador} className="lg:col-span-8 bg-surface-container-lowest rounded-3xl p-6 sm:p-8 shadow-[0_10px_35px_-8px_rgba(0,0,0,0.08)] flex flex-col gap-5">
           <div>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container/40 text-secondary font-label-xs text-label-xs font-semibold mb-3">
+            <Insignia tono="etiqueta" className="mb-3">
               <span className="material-symbols-outlined text-[14px]">edit_note</span>
               {rechazado ? "Corrige tu perfil" : "Paso 2 de 2"}
-            </span>
+            </Insignia>
             <h1 className="font-headline-md text-headline-md text-primary tracking-tight">
               {rechazado ? "Corrige y vuelve a enviar tu negocio" : "Completa el perfil de tu negocio"}
             </h1>
@@ -82,32 +84,32 @@ export default function CompletarPerfil({ perfil, onActualizado }) {
 
           <label className="flex flex-col gap-1.5">
             <span className="font-label-md text-label-md text-on-surface font-semibold">Nombre del negocio</span>
-            <input className={CAMPO_ANCHO} required maxLength={150} value={form.nombre_negocio} onChange={(e) => cambiar("nombre_negocio", e.target.value)} />
+            <Campo required maxLength={150} value={form.nombre_negocio} onChange={(e) => cambiar("nombre_negocio", e.target.value)} />
           </label>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <label className="flex flex-col gap-1.5">
               <span className="font-label-md text-label-md text-on-surface font-semibold">Categoría principal</span>
-              <select className={CAMPO_ANCHO} required value={form.categoria} onChange={(e) => cambiar("categoria", e.target.value)}>
+              <Selector required value={form.categoria} onChange={(e) => cambiar("categoria", e.target.value)}>
                 <option value="" disabled>Selecciona...</option>
                 {CATEGORIAS_NEGOCIO.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
-              </select>
+              </Selector>
             </label>
             <label className="flex flex-col gap-1.5">
               <span className="font-label-md text-label-md text-on-surface font-semibold">Municipio de operación</span>
-              <select className={CAMPO_ANCHO} required value={form.municipio} onChange={(e) => cambiar("municipio", e.target.value)}>
+              <Selector required value={form.municipio} onChange={(e) => cambiar("municipio", e.target.value)}>
                 <option value="" disabled>Selecciona...</option>
                 {MUNICIPIOS_CAQUETA.map((m) => <option key={m} value={m}>{m}</option>)}
-              </select>
+              </Selector>
             </label>
           </div>
 
           <label className="flex flex-col gap-1.5">
             <span className="font-label-md text-label-md text-on-surface font-semibold">Descripción de tu negocio y experiencias</span>
-            <textarea
+            <AreaTexto
               rows={4}
               maxLength={2000}
-              className={`${CAMPO_ANCHO} resize-none`}
+              className="resize-none"
               placeholder="Cuéntale al turista sobre tus senderos, tu gastronomía, tu hospedaje..."
               value={form.descripcion}
               onChange={(e) => cambiar("descripcion", e.target.value)}
@@ -118,10 +120,9 @@ export default function CompletarPerfil({ perfil, onActualizado }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <label className="flex flex-col gap-1.5">
               <span className="font-label-md text-label-md text-on-surface font-semibold">WhatsApp de contacto</span>
-              <input
+              <Campo
                 type="tel"
                 inputMode="numeric"
-                className={CAMPO_ANCHO}
                 placeholder="Ej. 3001234567"
                 value={form.telefono}
                 onChange={(e) => cambiar("telefono", e.target.value.replace(/\D/g, ""))}
@@ -129,21 +130,21 @@ export default function CompletarPerfil({ perfil, onActualizado }) {
             </label>
             <label className="flex flex-col gap-1.5">
               <span className="font-label-md text-label-md text-on-surface font-semibold">Redes o sitio web <span className="font-normal text-on-surface-variant">(opcional)</span></span>
-              <input className={CAMPO_ANCHO} maxLength={200} placeholder="Ej. instagram.com/mifinca" value={form.redes} onChange={(e) => cambiar("redes", e.target.value)} />
+              <Campo maxLength={200} placeholder="Ej. instagram.com/mifinca" value={form.redes} onChange={(e) => cambiar("redes", e.target.value)} />
             </label>
           </div>
 
           <label className="flex flex-col gap-1.5">
             <span className="font-label-md text-label-md text-on-surface font-semibold">Dirección o cómo llegar</span>
-            <input className={CAMPO_ANCHO} maxLength={200} placeholder="Ej. Vereda El Caraño, km 4 vía a Morelia" value={form.direccion} onChange={(e) => cambiar("direccion", e.target.value)} />
+            <Campo maxLength={200} placeholder="Ej. Vereda El Caraño, km 4 vía a Morelia" value={form.direccion} onChange={(e) => cambiar("direccion", e.target.value)} />
           </label>
 
           {mensaje && <p className={`font-body-sm text-body-sm ${mensaje.ok ? "text-secondary" : "text-error"}`}>{mensaje.texto}</p>}
 
           <div className="flex flex-col-reverse sm:flex-row gap-3">
-            <button type="submit" disabled={guardando || enviando} className="px-5 py-3 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors disabled:opacity-60">
+            <Boton variante="secundario" type="submit" disabled={guardando || enviando} className="px-5 py-3">
               {guardando ? "Guardando..." : "Guardar borrador"}
-            </button>
+            </Boton>
             <button
               type="button"
               onClick={enviar}

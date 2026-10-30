@@ -4,6 +4,8 @@ import { api } from "../../api/client";
 import ModalPaquete from "./ModalPaquete";
 import { pesos } from "../../utils/moneda";
 import { useAvisos } from "../../context/avisos";
+import Tarjeta from "../ui/Tarjeta";
+import Insignia from "../ui/Insignia";
 
 
 // Sección del Portal del Prestador para armar paquetes con sus propios servicios.
@@ -28,7 +30,7 @@ export default function PaquetesPrestador({ sitios }) {
   };
 
   return (
-    <section id="paquetes" className="w-full bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden scroll-mt-24">
+    <Tarjeta as="section" id="paquetes" className="w-full overflow-hidden scroll-mt-24">
       <div className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">Mis paquetes</h2>
@@ -53,9 +55,9 @@ export default function PaquetesPrestador({ sitios }) {
               <div className="flex flex-col gap-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <Link to={`/paquetes/${p.id}`} className="font-title-sm text-title-sm text-on-surface font-semibold hover:text-secondary transition-colors">{p.nombre}</Link>
-                  <span className={`px-2.5 py-0.5 rounded-full font-label-xs text-label-xs font-semibold ${p.estado === "activo" ? "bg-secondary-container/50 text-on-secondary-container" : "bg-surface-container-high text-on-surface-variant"}`}>
+                  <Insignia tono={p.estado === "activo" ? "activo" : "inactivo"}>
                     {p.estado === "activo" ? "Publicado" : p.estado === "oculto" ? "Oculto por el administrador" : "Pausado"}
-                  </span>
+                  </Insignia>
                 </div>
                 {p.estado === "oculto" && p.motivo_moderacion && (
                   <p className="font-label-xs text-label-xs text-error">Motivo: {p.motivo_moderacion}</p>
@@ -98,6 +100,6 @@ export default function PaquetesPrestador({ sitios }) {
           onGuardado={() => { setModal(undefined); cargar(); }}
         />
       )}
-    </section>
+    </Tarjeta>
   );
 }

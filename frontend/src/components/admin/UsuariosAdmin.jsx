@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api/client";
 import { useAvisos } from "../../context/avisos";
+import Tarjeta from "../ui/Tarjeta";
+import Insignia from "../ui/Insignia";
 
 const ROLES = [
   { value: "", label: "Todos" },
@@ -39,7 +41,7 @@ export default function UsuariosAdmin({ usuarioActualId }) {
   };
 
   return (
-    <section className="bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden">
+    <Tarjeta as="section" className="overflow-hidden">
       <div className="p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
         <div>
           <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">Usuarios</h2>
@@ -92,10 +94,9 @@ export default function UsuariosAdmin({ usuarioActualId }) {
                   <td className="py-3 px-3 capitalize">{u.rol}</td>
                   <td className="py-3 px-3 text-on-surface-variant">{new Date(u.fecha_registro).toLocaleDateString("es-CO")}</td>
                   <td className="py-3 px-3">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-label-xs text-label-xs font-semibold ${u.activo ? "bg-secondary-container/50 text-on-secondary-container" : "bg-error-container text-error"}`}>
-                      <span className={`w-2 h-2 rounded-full ${u.activo ? "bg-secondary" : "bg-error"}`} />
+                    <Insignia tono={u.activo ? "activo" : "error"} punto>
                       {u.activo ? "Activa" : "Suspendida"}
-                    </span>
+                    </Insignia>
                   </td>
                   <td className="py-3 px-5 text-right">
                     {u.rol === "administrador" || u.id === usuarioActualId ? (
@@ -116,6 +117,6 @@ export default function UsuariosAdmin({ usuarioActualId }) {
           </table>
         </div>
       )}
-    </section>
+    </Tarjeta>
   );
 }

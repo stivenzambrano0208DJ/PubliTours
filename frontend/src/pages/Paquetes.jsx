@@ -6,6 +6,7 @@ import { Estrellas } from "../components/Estrellas";
 import { portadaDelPaquete } from "../utils/catalogo";
 import { pesos } from "../utils/moneda";
 import { useIdioma } from "../context/idioma";
+import Insignia from "../components/ui/Insignia";
 
 
 export default function Paquetes() {
@@ -25,10 +26,10 @@ export default function Paquetes() {
     <div className="max-w-[1360px] mx-auto px-gutter py-space-xl flex flex-col gap-space-lg">
       <section className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="max-w-2xl">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container/40 text-secondary font-label-xs text-label-xs font-semibold mb-3">
+          <Insignia tono="etiqueta" className="mb-3">
             <span className="material-symbols-outlined text-[14px]">inventory_2</span>
             {t("Paquetes turísticos")}
-          </span>
+          </Insignia>
           <h1 className="font-headline-xl text-headline-xl text-primary tracking-tight">{t("Todo en una sola reserva")}</h1>
           <p className="font-body-md text-body-md text-on-surface-variant mt-2">
             {t("Combinaciones de experiencias de un mismo prestador, con precio especial por persona. Reservas una vez y el prestador organiza todo.")}
@@ -38,6 +39,7 @@ export default function Paquetes() {
           <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
           <input
             className="w-full pl-9 pr-3 py-2.5 bg-surface-container rounded-xl font-body-sm text-body-sm focus:outline-none focus:bg-surface-container-low"
+            aria-label={t("Buscar paquetes...")}
             placeholder={t("Buscar paquetes...")}
             value={texto}
             onChange={(e) => setTexto(e.target.value)}

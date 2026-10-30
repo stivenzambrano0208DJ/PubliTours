@@ -5,6 +5,7 @@ import { api } from "../api/client";
 import { fechaCorta } from "../utils/fechas";
 import PoliticaCancelacion from "../components/sitio/PoliticaCancelacion";
 import { useIdioma } from "../context/idioma";
+import Boton from "../components/ui/Boton";
 
 const ESTADOS = {
   confirmada: { texto: "Confirmada", clase: "bg-secondary-container text-on-secondary-container" },
@@ -48,9 +49,9 @@ export default function Comprobante() {
         <Link to="/mis-reservas" className="inline-flex items-center gap-1 text-secondary font-label-md text-label-md hover:underline">
           <span className="material-symbols-outlined text-[18px]">arrow_back</span> {t("Mis reservas")}
         </Link>
-        <button onClick={() => window.print()} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors">
+        <Boton onClick={() => window.print()} className="inline-flex items-center gap-2 px-4 py-2">
           <span className="material-symbols-outlined text-[18px]">print</span> {t("Imprimir o guardar PDF")}
-        </button>
+        </Boton>
       </div>
 
       <article className="rounded-3xl bg-surface-container-lowest p-6 sm:p-8 shadow-[0_10px_35px_-8px_rgba(0,0,0,0.12)] border border-surface-container-high print:shadow-none print:border-outline">

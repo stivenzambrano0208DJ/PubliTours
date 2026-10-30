@@ -64,11 +64,11 @@ export default function SitioDetalle() {
     <div className="flex flex-col w-full">
       <section className="max-w-[1360px] w-full mx-auto px-gutter pt-space-lg pb-space-sm">
         <nav className="flex items-center flex-wrap gap-2 font-label-md text-label-md text-on-surface-variant">
-          <Link to="/" className="hover:text-primary transition-colors flex items-center gap-1">
+          <Link to="/" className="hover:text-primary transition-colors flex items-center gap-1 py-1">
             <span className="material-symbols-outlined text-[18px]">home</span> {t("Inicio")}
           </Link>
           <span className="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
-          <Link to="/explorar" className="hover:text-primary transition-colors">{t("Explorar Destinos")}</Link>
+          <Link to="/explorar" className="hover:text-primary transition-colors py-1">{t("Explorar Destinos")}</Link>
           <span className="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
           <span className="text-primary font-medium">{sitio.nombre}</span>
         </nav>

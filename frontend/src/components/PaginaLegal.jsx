@@ -1,4 +1,5 @@
 import { useIdioma } from "../context/idioma";
+import Insignia from "./ui/Insignia";
 
 // Páginas que solo existen en español (los documentos legales, la ayuda y la guía para negocios). En inglés se avisa arriba,
 // para que nadie crea que el cambio de idioma falló. En los legales, además, la versión en español es la que vale.
@@ -19,10 +20,10 @@ export default function PaginaLegal({ titulo, version, children }) {
     <article className="max-w-3xl mx-auto px-gutter py-space-xl">
       <AvisoSoloEspanol legal />
       <header className="mb-space-lg">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container/40 text-secondary font-label-xs text-label-xs font-semibold mb-3">
+        <Insignia tono="etiqueta" className="mb-3">
           <span className="material-symbols-outlined text-[14px]">gavel</span>
           Documento legal
-        </span>
+        </Insignia>
         <h1 className="font-headline-xl text-headline-xl text-primary tracking-tight">{titulo}</h1>
         <p className="font-label-md text-label-md text-on-surface-variant mt-2">Versión {version}</p>
       </header>

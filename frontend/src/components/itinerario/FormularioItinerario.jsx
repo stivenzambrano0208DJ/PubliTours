@@ -2,6 +2,7 @@ import InterpretarViaje from "./InterpretarViaje";
 import { fechaMinima } from "../../constants";
 import { pesos } from "../../utils/moneda";
 import { useIdioma } from "../../context/idioma";
+import Aviso from "../ui/Aviso";
 
 const OPCIONES_INTERES = [
   { valor: "pareja", icono: "favorite" },
@@ -129,7 +130,7 @@ export default function FormularioItinerario({ form, setForm, onToggleInteres, o
           </div>
         )}
 
-        {error && <p role="alert" className="p-3 rounded-xl bg-error-container text-on-error-container font-body-sm text-body-sm">{error}</p>}
+        {error && <Aviso forma="caja">{error}</Aviso>}
         <button type="submit" disabled={cargando} className="py-3.5 rounded-xl bg-primary text-on-primary font-title-sm text-title-sm hover:bg-primary-container transition-all disabled:opacity-60">
           <span className="inline-flex items-center justify-center gap-2">
             <span className="material-symbols-outlined text-[20px]" aria-hidden="true">{cargando ? "hourglass_top" : "route"}</span>

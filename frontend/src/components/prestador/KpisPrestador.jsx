@@ -1,14 +1,15 @@
 import { useMemo } from "react";
+import Tarjeta from "../ui/Tarjeta";
 
 function Kpi({ etiqueta, icono, colorIcono, valor }) {
   return (
-    <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm">
+    <Tarjeta className="p-5">
       <div className="flex items-center justify-between">
         <span className="font-label-xs text-label-xs uppercase tracking-wider text-outline font-semibold">{etiqueta}</span>
         <span className={`material-symbols-outlined text-[18px] ${colorIcono}`}>{icono}</span>
       </div>
       <span className="font-headline-xl text-headline-xl text-on-surface font-bold block mt-2">{valor}</span>
-    </div>
+    </Tarjeta>
   );
 }
 

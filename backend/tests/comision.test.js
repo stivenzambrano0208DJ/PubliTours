@@ -115,10 +115,12 @@ test("la plataforma ve la comisión estimada total en las tendencias", async () 
 
   const admin = await registrar("turista");
   await Usuario.update({ rol: "administrador" }, { where: { id: admin.usuario.id } });
-  const mes = new Date().toLocaleDateString("en-CA").slice(0, 7);
-  const { body } = await api("get", `/admin/tendencias?desde=${mes}-01&hasta=${enDias(0)}`).set(auth(admin.token));
+  // La base guarda la fecha de solicitud en UTC y esta prueba usa la fecha local: de noche en Colombia (después de las 7 p. m.) ya es «mañana»
+  // en UTC. El rango va desde el mes pasado hasta mañana para que incluya la reserva sin importar la hora ni el cambio de mes.
+  const desde = enDias(-31).slice(0, 8) + "01";
+  const { body } = await api("get", `/admin/tendencias?desde=${desde}&hasta=${enDias(1)}`).set(auth(admin.token));
   assert.ok(body.totales.comision_estimada >= 10000);
-  assert.ok(body.por_mes.find((m) => m.mes === mes).comision_estimada >= 10000);
+  assert.ok(body.por_mes.some((m) => m.comision_estimada >= 10000));
 });
 
 test("la configuración pública expone el porcentaje vigente sin pedir sesión", async () => {

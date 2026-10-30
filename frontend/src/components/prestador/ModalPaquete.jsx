@@ -6,6 +6,7 @@ import { pesos } from "../../utils/moneda";
 import { useAvisos } from "../../context/avisos";
 import { CAMPO } from "../../estilos";
 import Modal from "../Modal";
+import Boton from "../ui/Boton";
 
 
 // Crear o editar un paquete: se eligen servicios propios activos (con el día en que se hacen) y se fija un precio por persona.
@@ -218,10 +219,10 @@ export default function ModalPaquete({ paquete, sitios, onCerrar, onGuardado }) 
 
       {error && <p className="text-error font-body-sm text-body-sm">{error}</p>}
       <div className="flex items-center gap-2 mt-1">
-        <button type="button" onClick={onCerrar} className="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">Cancelar</button>
-        <button type="submit" disabled={guardando} className="flex-1 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors disabled:opacity-60">
+        <Boton variante="secundario" type="button" onClick={onCerrar} className="flex-1 py-2.5">Cancelar</Boton>
+        <Boton type="submit" disabled={guardando} className="flex-1 py-2.5">
           {guardando ? "Guardando..." : paquete ? "Guardar cambios" : "Crear paquete"}
-        </button>
+        </Boton>
       </div>
     </Modal>
   );

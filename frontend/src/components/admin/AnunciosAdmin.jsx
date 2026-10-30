@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { api } from "../../api/client";
+import Boton from "../ui/Boton";
+import Tarjeta from "../ui/Tarjeta";
 
 const MAX = 500;
 
@@ -26,7 +28,7 @@ export default function AnunciosAdmin() {
   };
 
   return (
-    <section className="bg-surface-container-lowest rounded-2xl shadow-sm p-5 max-w-2xl">
+    <Tarjeta as="section" className="p-5 max-w-2xl">
       <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">Anuncios a prestadores</h2>
       <p className="font-body-sm text-body-sm text-on-surface-variant mb-4">Avisos generales (mantenimiento, cambios de reglas, novedades). Aparecen en la campana de notificaciones de cada negocio.</p>
       <form onSubmit={enviar} className="flex flex-col gap-4">
@@ -49,11 +51,11 @@ export default function AnunciosAdmin() {
           <span className="font-label-xs text-label-xs text-outline self-end">{mensaje.length}/{MAX}</span>
         </label>
         {estado && <p role={estado.ok ? "status" : "alert"} className={`font-body-sm text-body-sm ${estado.ok ? "text-secondary" : "text-error"}`}>{estado.texto}</p>}
-        <button type="submit" disabled={enviando || mensaje.trim().length < 10} className="self-start inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors disabled:opacity-60">
+        <Boton type="submit" disabled={enviando || mensaje.trim().length < 10} className="self-start inline-flex items-center gap-2 px-5 py-2.5">
           <span className="material-symbols-outlined text-[18px]">campaign</span>
           {enviando ? "Enviando..." : "Enviar anuncio"}
-        </button>
+        </Boton>
       </form>
-    </section>
+    </Tarjeta>
   );
 }

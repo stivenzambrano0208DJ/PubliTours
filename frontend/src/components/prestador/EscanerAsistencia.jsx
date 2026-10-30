@@ -4,6 +4,8 @@ import { extraerCodigo } from "../../utils/qr";
 import { hoyISO } from "../../utils/fechas";
 import { useAvisos } from "../../context/avisos";
 import Modal from "../Modal";
+import Boton from "../ui/Boton";
+import Aviso from "../ui/Aviso";
 
 const ANCHO_MAX = 640; // se reduce el cuadro antes de analizarlo: basta para un QR y no pesa en celulares modestos
 
@@ -82,7 +84,7 @@ function Camara({ onCodigo }) {
   }, [onCodigo, sinCamara]);
 
   if (estado === "error") {
-    return <p role="alert" className="p-3 rounded-xl bg-error-container text-on-error-container font-body-sm text-body-sm">{mensaje}</p>;
+    return <Aviso forma="caja">{mensaje}</Aviso>;
   }
   return (
     <div className="flex flex-col gap-2">
@@ -137,9 +139,9 @@ function Resultado({ reserva, accionando, onAsistio, onNoAsistio }) {
           <button type="button" onClick={onAsistio} disabled={accionando} className="flex-1 py-3 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-secondary transition-colors disabled:opacity-50">
             {accionando ? "Guardando…" : "Asistió"}
           </button>
-          <button type="button" onClick={onNoAsistio} disabled={accionando} className="flex-1 py-3 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md font-semibold hover:bg-surface-container-high transition-colors disabled:opacity-50">
+          <Boton variante="secundario" type="button" onClick={onNoAsistio} disabled={accionando} className="flex-1 py-3 font-semibold">
             No asistió
-          </button>
+          </Boton>
         </div>
       )}
     </div>
@@ -194,16 +196,16 @@ export default function EscanerAsistencia({ reservas, accionando, onAccion, onCe
               />
               <button type="submit" disabled={!manual.trim()} className="px-4 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold disabled:opacity-50">Buscar</button>
             </div>
-            {errorManual && <p role="alert" className="font-label-xs text-label-xs text-error">{errorManual}</p>}
+            {errorManual && <Aviso forma="pequeno">{errorManual}</Aviso>}
           </form>
         </>
       )}
 
       {codigo && !reserva && (
         <>
-          <p role="alert" className="p-3 rounded-xl bg-error-container text-on-error-container font-body-sm text-body-sm">
+          <Aviso forma="caja">
             No encontramos la reserva <strong className="font-mono">{codigo}</strong> en tu negocio. Puede ser de otro prestador o no existir.
-          </p>
+          </Aviso>
           <button type="button" onClick={otra} className="py-3 rounded-xl bg-surface-container font-label-md text-label-md font-semibold hover:bg-surface-container-high">Escanear otra</button>
         </>
       )}

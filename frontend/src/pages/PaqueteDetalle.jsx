@@ -11,6 +11,8 @@ import { Estrellas } from "../components/Estrellas";
 import { useConsulta } from "../hooks/useConsulta";
 import { pesos } from "../utils/moneda";
 import { useIdioma } from "../context/idioma";
+import VisorFotos from "../components/sitio/VisorFotos";
+import Boton from "../components/ui/Boton";
 
 
 export default function PaqueteDetalle() {
@@ -93,7 +95,7 @@ export default function PaqueteDetalle() {
                   aria-label={i === 0 ? t("Ver fotos de {nombre}", { nombre: paquete.nombre }) : t("Ver foto {n}", { n: i + 1 })}
                   className={`relative w-full h-full overflow-hidden ${fotos.length === 1 ? "" : i === 0 ? "col-span-2 row-span-2" : ""}`}
                 >
-                  <img src={urlImagen(f)} alt={i === 0 ? paquete.nombre : ""} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+                  <img src={urlImagen(f)} alt={i === 0 ? paquete.nombre : ""} loading={i === 0 ? "eager" : "lazy"} decoding="async" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                   {i === 4 && fotos.length > 5 && (
                     <span className="absolute inset-0 bg-black/55 text-white font-title-lg text-title-lg font-bold flex items-center justify-center">+{fotos.length - 5}</span>
                   )}
@@ -186,7 +188,7 @@ export default function PaqueteDetalle() {
                 <span className="material-symbols-outlined text-secondary text-[40px]">check_circle</span>
                 <h3 className="font-title-lg text-title-lg text-primary">{t("Solicitud enviada")}</h3>
                 <p className="font-body-sm text-body-sm text-on-surface-variant">{t("Tu solicitud del paquete quedó pendiente de confirmación del prestador.")}</p>
-                <button onClick={() => navigate("/mis-reservas")} className="mt-2 w-full py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors">{t("Ver mis reservas")}</button>
+                <Boton onClick={() => navigate("/mis-reservas")} className="mt-2 w-full py-2.5">{t("Ver mis reservas")}</Boton>
               </div>
             )}
             {!esPropio && (
@@ -200,36 +202,7 @@ export default function PaqueteDetalle() {
       </div>
 
       {visorIndice !== null && (
-        <div className="fixed inset-0 bg-black/90 z-[70] flex items-center justify-center p-4" onClick={() => setVisorIndice(null)}>
-          <button onClick={() => setVisorIndice(null)} aria-label={t("Cerrar visor")} className="absolute top-4 right-4 text-white p-2 rounded-full hover:bg-white/10">
-            <span className="material-symbols-outlined text-[28px]">close</span>
-          </button>
-          {fotos.length > 1 && (
-            <button
-              onClick={(e) => { e.stopPropagation(); setVisorIndice((visorIndice - 1 + fotos.length) % fotos.length); }}
-              aria-label={t("Foto anterior")}
-              className="absolute left-4 text-white p-2 rounded-full hover:bg-white/10"
-            >
-              <span className="material-symbols-outlined text-[32px]">chevron_left</span>
-            </button>
-          )}
-          <img
-            src={urlImagen(fotos[visorIndice])}
-            alt={`${paquete.nombre} ${visorIndice + 1}`}
-            className="max-w-full max-h-[85vh] object-contain rounded-xl"
-            onClick={(e) => e.stopPropagation()}
-          />
-          {fotos.length > 1 && (
-            <button
-              onClick={(e) => { e.stopPropagation(); setVisorIndice((visorIndice + 1) % fotos.length); }}
-              aria-label={t("Foto siguiente")}
-              className="absolute right-4 text-white p-2 rounded-full hover:bg-white/10"
-            >
-              <span className="material-symbols-outlined text-[32px]">chevron_right</span>
-            </button>
-          )}
-          <span className="absolute bottom-4 text-white/80 font-label-md text-label-md">{visorIndice + 1} / {fotos.length}</span>
-        </div>
+        <VisorFotos fotos={fotos} indice={visorIndice} nombre={paquete.nombre} onCambiar={setVisorIndice} onCerrar={() => setVisorIndice(null)} />
       )}
     </div>
   );

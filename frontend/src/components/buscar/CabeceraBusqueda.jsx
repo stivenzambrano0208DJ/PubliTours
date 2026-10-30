@@ -40,6 +40,7 @@ export default function CabeceraBusqueda({ filtros, totalCatalogo, onEditar, onA
               <span className="material-symbols-outlined text-secondary text-[22px]">travel_explore</span>
               <input
                 className="w-full bg-transparent text-on-surface font-body-md text-body-md placeholder:text-outline focus:outline-none"
+                aria-label={t("Buscar destinos")}
                 placeholder={t("¿Qué experiencia buscas? Ej: cascadas, fincas, gastronomía...")}
                 type="text"
                 value={filtros.texto}

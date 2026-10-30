@@ -5,6 +5,7 @@ import MarcaAuth from "../components/auth/MarcaAuth";
 import BotonAuth from "../components/auth/BotonAuth";
 import CampoAuth from "../components/auth/CampoAuth";
 import { useIdioma } from "../context/idioma";
+import Boton from "../components/ui/Boton";
 
 export default function OlvideContrasena() {
   const { t } = useIdioma();
@@ -178,12 +179,12 @@ export default function OlvideContrasena() {
               <p className="font-body-sm text-body-sm text-on-surface-variant">
                 {t("Ya puedes iniciar sesión con tu nueva contraseña.")}
               </p>
-              <button
+              <Boton
                 onClick={() => navigate("/login")}
-                className="mt-3 w-full py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors"
+                className="mt-3 w-full py-2.5"
               >
                 {t("Ir a iniciar sesión")}
-              </button>
+              </Boton>
             </div>
           )}
         </div>

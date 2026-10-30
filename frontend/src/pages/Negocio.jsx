@@ -6,6 +6,7 @@ import { portadaDelPaquete } from "../utils/catalogo";
 import { enlaceExterno, enlaceWhatsApp } from "../utils/enlaces";
 import { useConsulta } from "../hooks/useConsulta";
 import { useIdioma } from "../context/idioma";
+import Tarjeta from "../components/ui/Tarjeta";
 
 // Página pública de un negocio: quién es, cómo contactarlo y todo lo que ofrece.
 export default function Negocio() {
@@ -69,10 +70,10 @@ export default function Negocio() {
       {(negocio.descripcion || negocio.direccion || (negocio.redes && !redes)) && (
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-space-lg">
           {negocio.descripcion && (
-            <div className="lg:col-span-2 rounded-2xl bg-surface-container-lowest p-6 shadow-sm">
+            <Tarjeta className="lg:col-span-2 p-6">
               <h2 className="font-title-lg text-title-lg text-primary font-bold mb-2">{t("Sobre el negocio")}</h2>
               <p className="font-body-md text-body-md text-on-surface-variant whitespace-pre-line">{negocio.descripcion}</p>
-            </div>
+            </Tarjeta>
           )}
           <div className="rounded-2xl bg-surface-container-low p-6 flex flex-col gap-3">
             {negocio.direccion && (

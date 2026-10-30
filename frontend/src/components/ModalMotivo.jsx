@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Modal from "./Modal";
+import Boton from "./ui/Boton";
 
 // Ventana genérica para pedir un motivo antes de una acción (rechazar, ocultar…).
 export default function ModalMotivo({ titulo, descripcion, etiqueta, placeholder, textoConfirmar, obligatorio = false, peligro = false, onConfirmar, onCerrar }) {
@@ -34,9 +35,9 @@ export default function ModalMotivo({ titulo, descripcion, etiqueta, placeholder
         />
       </label>
       <div className="flex items-center gap-2">
-        <button type="button" onClick={onCerrar} className="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">
+        <Boton variante="secundario" type="button" onClick={onCerrar} className="flex-1 py-2.5">
           Volver
-        </button>
+        </Boton>
         <button
           type="submit"
           disabled={enviando}

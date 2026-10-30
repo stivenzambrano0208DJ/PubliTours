@@ -1,12 +1,16 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import CalendarioReservas from "./CalendarioReservas";
-import EscanerAsistencia from "./EscanerAsistencia";
 import { useConfiguracion } from "../../hooks/useConfiguracion";
 import { sumarDias, hoyISO } from "../../utils/fechas";
 import { useAvisos } from "../../context/avisos";
 import Modal from "../Modal";
+import Boton from "../ui/Boton";
+import Tarjeta from "../ui/Tarjeta";
 
 
+
+// El escáner trae su lector de códigos QR (unos 130 KB) y casi nunca se abre: se descarga solo cuando el negocio lo pide.
+const EscanerAsistencia = lazy(() => import("./EscanerAsistencia"));
 
 export default function ReservasRecibidas({ reservas, cargando, accionando, onAccion, onProblema }) {
   const { confirmar } = useAvisos();
@@ -29,7 +33,7 @@ export default function ReservasRecibidas({ reservas, cargando, accionando, onAc
   };
 
   return (
-    <section id="reservas" className="w-full bg-surface-container-lowest rounded-2xl p-5 shadow-sm scroll-mt-24">
+    <Tarjeta as="section" id="reservas" className="w-full p-5 scroll-mt-24">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">Reservas recibidas</h2>
@@ -56,7 +60,11 @@ export default function ReservasRecibidas({ reservas, cargando, accionando, onAc
         </div>
       </div>
 
-      {escaneando && <EscanerAsistencia reservas={reservas} accionando={accionando} onAccion={onAccion} onCerrar={() => setEscaneando(false)} />}
+      {escaneando && (
+        <Suspense fallback={null}>
+          <EscanerAsistencia reservas={reservas} accionando={accionando} onAccion={onAccion} onCerrar={() => setEscaneando(false)} />
+        </Suspense>
+      )}
 
       {vista === "calendario" && <CalendarioReservas reservas={reservas} />}
 
@@ -169,11 +177,11 @@ export default function ReservasRecibidas({ reservas, cargando, accionando, onAc
             />
           </label>
           <div className="flex items-center gap-2">
-            <button type="button" onClick={() => setRechazando(null)} className="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">Volver</button>
-            <button type="submit" disabled={accionando === rechazando.id} className="flex-1 py-2.5 rounded-xl bg-error text-on-error font-label-md text-label-md hover:opacity-90 transition-colors disabled:opacity-60">Rechazar reserva</button>
+            <Boton variante="secundario" type="button" onClick={() => setRechazando(null)} className="flex-1 py-2.5">Volver</Boton>
+            <Boton variante="peligro" type="submit" disabled={accionando === rechazando.id} className="flex-1 py-2.5">Rechazar reserva</Boton>
           </div>
         </Modal>
       )}
-    </section>
+    </Tarjeta>
   );
 }

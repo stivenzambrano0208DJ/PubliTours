@@ -4,6 +4,8 @@ import { useConfiguracion } from "../../hooks/useConfiguracion";
 import { MOTIVOS_REPORTE } from "../../utils/mensajes";
 import Modal from "../Modal";
 import { useIdioma } from "../../context/idioma";
+import Boton from "../ui/Boton";
+import Aviso from "../ui/Aviso";
 
 // Reportar un mensaje de la otra persona. La administración revisa solo ese mensaje (con sus fotos) y decide si lo retira.
 export default function ModalReportar({ mensaje, onCerrar }) {
@@ -51,12 +53,12 @@ export default function ModalReportar({ mensaje, onCerrar }) {
             <span className="font-label-md text-label-md text-on-surface font-semibold">{t("Detalle (opcional)")}</span>
             <textarea rows={3} maxLength={300} value={detalle} onChange={(e) => setDetalle(e.target.value)} className="px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary resize-none" />
           </label>
-          {error && <p role="alert" className="font-label-xs text-label-xs text-error">{error}</p>}
+          {error && <Aviso forma="pequeno">{error}</Aviso>}
           <div className="flex items-center gap-2">
             <button type="button" onClick={onCerrar} className="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high">{t("Cancelar")}</button>
-            <button type="submit" disabled={!motivo || enviando} className="flex-1 py-2.5 rounded-xl bg-error text-on-error font-label-md text-label-md hover:opacity-90 disabled:opacity-60">
+            <Boton variante="peligro" type="submit" disabled={!motivo || enviando} className="flex-1 py-2.5">
               {enviando ? t("Enviando…") : t("Enviar reporte")}
-            </button>
+            </Boton>
           </div>
         </form>
       )}

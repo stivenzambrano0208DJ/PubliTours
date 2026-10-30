@@ -3,6 +3,7 @@ import { api } from "../../api/client";
 import { SelectorEstrellas } from "../Estrellas";
 import Modal from "../Modal";
 import { useIdioma } from "../../context/idioma";
+import Boton from "../ui/Boton";
 
 const ETIQUETAS = ["", "Muy malo", "Malo", "Regular", "Bueno", "Excelente"];
 
@@ -48,12 +49,12 @@ export default function ModalCalificar({ reserva, onCerrar, onGuardado }) {
       />
       {error && <p className="text-error font-body-sm text-body-sm">{error}</p>}
       <div className="flex items-center gap-2">
-        <button type="button" onClick={onCerrar} className="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">
+        <Boton variante="secundario" type="button" onClick={onCerrar} className="flex-1 py-2.5">
           {t("Cancelar")}
-        </button>
-        <button type="submit" disabled={guardando} className="flex-1 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors disabled:opacity-60">
+        </Boton>
+        <Boton type="submit" disabled={guardando} className="flex-1 py-2.5">
           {guardando ? t("Enviando...") : t("Enviar calificación")}
-        </button>
+        </Boton>
       </div>
     </Modal>
   );

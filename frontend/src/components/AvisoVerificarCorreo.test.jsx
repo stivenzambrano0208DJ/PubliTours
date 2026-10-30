@@ -36,6 +36,16 @@ describe("AvisoVerificarCorreo", () => {
     expect(ventana).toHaveTextContent("ana@test.com");
   });
 
+  it("también bloquea a un prestador sin el correo verificado, y se libera al verificarlo", async () => {
+    usuario = { id: 2, rol: "prestador", correo: "finca@test.com", correo_verificado: false };
+    api.verificarCorreo.mockResolvedValue({ correo_verificado: true });
+    render(<AvisoVerificarCorreo />);
+    expect(screen.getByRole("dialog", { name: "Verifica tu correo para continuar" })).toHaveTextContent("finca@test.com");
+    await userEvent.type(screen.getByLabelText("Código de verificación"), "654321");
+    await userEvent.click(screen.getByRole("button", { name: "Verificar" }));
+    expect(actualizarUsuario).toHaveBeenCalledWith({ correo_verificado: true });
+  });
+
   it("no se puede cerrar: ni con Escape ni tocando fuera; solo verificando o cerrando sesión", async () => {
     render(<AvisoVerificarCorreo />);
     await userEvent.keyboard("{Escape}");

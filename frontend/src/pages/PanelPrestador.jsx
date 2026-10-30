@@ -14,6 +14,7 @@ import PaquetesPrestador from "../components/prestador/PaquetesPrestador";
 import ModalProblema from "../components/reservas/ModalProblema";
 import MisCasos from "../components/reservas/MisCasos";
 import { useAvisos } from "../context/avisos";
+import Boton from "../components/ui/Boton";
 
 const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
@@ -112,14 +113,14 @@ export default function PanelPrestador() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => scrollTo("servicios")} className="px-4 py-2 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors flex items-center gap-1.5">
+          <Boton variante="secundario" onClick={() => scrollTo("servicios")} className="px-4 py-2 flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[18px]">cabin</span>
             <span>Mis Servicios</span>
-          </button>
-          <button onClick={() => scrollTo("reservas")} className="px-4 py-2 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors flex items-center gap-1.5">
+          </Boton>
+          <Boton variante="secundario" onClick={() => scrollTo("reservas")} className="px-4 py-2 flex items-center gap-1.5">
             <span className="material-symbols-outlined text-[18px]">confirmation_number</span>
             <span>Reservas</span>
-          </button>
+          </Boton>
         </div>
       </section>
 

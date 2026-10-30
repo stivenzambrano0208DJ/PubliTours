@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../../api/client";
 import { Estrellas } from "../Estrellas";
 import { useAvisos } from "../../context/avisos";
+import Tarjeta from "../ui/Tarjeta";
 
 export default function ResenasAdmin() {
   const { avisar, confirmar } = useAvisos();
@@ -27,7 +28,7 @@ export default function ResenasAdmin() {
   };
 
   return (
-    <section className="bg-surface-container-lowest rounded-2xl shadow-sm p-5">
+    <Tarjeta as="section" className="p-5">
       <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">Moderación de reseñas</h2>
       <p className="font-body-sm text-body-sm text-on-surface-variant mb-4">Retira reseñas ofensivas, falsas o que no correspondan al servicio.</p>
       {cargando ? (
@@ -59,6 +60,6 @@ export default function ResenasAdmin() {
           ))}
         </div>
       )}
-    </section>
+    </Tarjeta>
   );
 }

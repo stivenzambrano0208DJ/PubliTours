@@ -3,6 +3,8 @@ import { useConfiguracion } from "../../hooks/useConfiguracion";
 import { admitirFotos, TIPOS_FOTO } from "../../utils/fotos";
 import { prepararFoto } from "../../utils/imagenes";
 import { useIdioma } from "../../context/idioma";
+import Boton from "../ui/Boton";
+import Aviso from "../ui/Aviso";
 
 // Caja para escribir un mensaje, con fotos opcionales. Los topes (largo, cantidad y tamaño de fotos) los manda el servidor en /configuracion:
 // mientras no han llegado no se ofrece adjuntar fotos en vez de inventar números. `onEnviar(texto, fotos)` debe lanzar un error si falla.
@@ -95,17 +97,17 @@ export default function RedactorMensaje({ onEnviar, placeholder: placeholderProp
             className="w-full px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary resize-none font-body-md text-body-md disabled:opacity-60"
           />
         </div>
-        <button
+        <Boton
           type="submit" disabled={vacio || ocupado || deshabilitado}
-          className="shrink-0 h-11 px-4 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary-container transition-colors disabled:opacity-50 inline-flex items-center gap-1.5"
+          className="shrink-0 h-11 px-4 font-semibold inline-flex items-center gap-1.5"
         >
           <span className="material-symbols-outlined text-[18px]" aria-hidden="true">{ocupado ? "hourglass_top" : "send"}</span>
           {enviando ? t("Enviando…") : preparando ? t("Preparando foto…") : textoBoton}
-        </button>
+        </Boton>
       </div>
 
       <div className="flex items-start justify-between gap-3 min-h-[1.25rem]">
-        {error ? <p role="alert" className="font-label-xs text-label-xs text-error">{error}</p> : <span />}
+        {error ? <Aviso forma="pequeno">{error}</Aviso> : <span />}
         {cerca && <span className="font-label-xs text-label-xs text-on-surface-variant shrink-0">{texto.length}/{config.texto_max}</span>}
       </div>
     </form>

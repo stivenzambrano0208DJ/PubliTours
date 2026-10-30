@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../../api/client";
 import CamposNegocio from "../CamposNegocio";
+import Insignia from "../ui/Insignia";
 
 // Prestador sin perfil (caso de cuentas antiguas): crea lo básico y pasa a completar su perfil.
 export default function FormularioPerfil({ onCreado }) {
@@ -24,10 +25,10 @@ export default function FormularioPerfil({ onCreado }) {
   return (
     <div className="max-w-xl mx-auto px-gutter py-space-xl">
       <div className="bg-surface-container-lowest rounded-3xl p-6 sm:p-8 shadow-[0_10px_35px_-8px_rgba(0,0,0,0.08)]">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container/40 text-secondary font-label-xs text-label-xs font-semibold mb-3">
+        <Insignia tono="etiqueta" className="mb-3">
           <span className="material-symbols-outlined text-[14px]">storefront</span>
           Registro de prestador
-        </span>
+        </Insignia>
         <h1 className="font-headline-md text-headline-md text-primary tracking-tight">Crea tu negocio turístico</h1>
         <p className="font-body-sm text-body-sm text-on-surface-variant mt-1 mb-5">
           Empieza con lo básico. En el siguiente paso completarás el resto de tu perfil y lo enviarás a revisión.

@@ -1,13 +1,12 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "../../api/client";
 import { useAuth } from "../../context/auth";
 import CamposReserva from "../reservas/CamposReserva";
 import PoliticaCancelacion from "./PoliticaCancelacion";
-import { fechaMinima } from "../../constants";
+import { useSolicitudReserva } from "../../hooks/useSolicitudReserva";
 import { pesos } from "../../utils/moneda";
 import BotonPreguntar from "../mensajes/BotonPreguntar";
 import { useIdioma } from "../../context/idioma";
+import Boton from "../ui/Boton";
 
 
 function Aviso({ icono, color, children }) {
@@ -41,27 +40,12 @@ export default function PanelReserva({ sitio, esAdmin, esPropio }) {
   const { t } = useIdioma();
   const navigate = useNavigate();
   const { usuario } = useAuth();
-  const [valores, setValores] = useState({ fecha: fechaMinima(), personas: 1, ninos: 0, nota: "" });
-  const [enviando, setEnviando] = useState(false);
-  const [enviada, setEnviada] = useState(false);
-  const [error, setError] = useState("");
   const gratis = Number(sitio.precio) === 0;
 
-  const reservar = async (e) => {
-    e.preventDefault();
-    if (!usuario) { navigate("/login"); return; }
-    setEnviando(true);
-    setError("");
-    try {
-      await api.solicitarReserva({
-        sitio_id: sitio.id, fecha_servicio: valores.fecha, personas: Number(valores.personas) || 1, ninos: Number(valores.ninos) || 0, nota: valores.nota,
-      });
-      setEnviada(true);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setEnviando(false);
-    }
+  const { valores, setValores, enviando, enviada, error, enviar } = useSolicitudReserva(sitio);
+  const reservar = (e) => {
+    if (!usuario) { e.preventDefault(); navigate("/login"); return; }
+    enviar(e);
   };
 
   let contenido;
@@ -77,9 +61,9 @@ export default function PanelReserva({ sitio, esAdmin, esPropio }) {
         <span className="material-symbols-outlined text-secondary text-[40px]">check_circle</span>
         <h3 className="font-title-lg text-title-lg text-primary">{t("Solicitud enviada")}</h3>
         <p className="font-body-sm text-body-sm text-on-surface-variant">{t("Tu solicitud quedó pendiente de confirmación del prestador.")}</p>
-        <button onClick={() => navigate("/mis-reservas")} className="mt-2 w-full py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors">
+        <Boton onClick={() => navigate("/mis-reservas")} className="mt-2 w-full py-2.5">
           {t("Ver mis reservas")}
-        </button>
+        </Boton>
       </div>
     );
   } else {

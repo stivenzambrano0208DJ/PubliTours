@@ -1,11 +1,12 @@
 import { useIdioma } from "../../context/idioma";
+import Tarjeta from "../ui/Tarjeta";
 const BOTON_FLECHA = "w-10 h-10 rounded-xl bg-surface text-outline hover:text-on-surface flex items-center justify-center transition-colors disabled:opacity-40";
 
 // Navegación entre páginas de resultados.
 export default function Paginacion({ pagina, total, onIr }) {
   const { t } = useIdioma();
   return (
-    <div className="mt-space-xl pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-md bg-surface-container-lowest p-space-md rounded-2xl shadow-sm">
+    <Tarjeta className="mt-space-xl pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-md p-space-md">
       <div className="flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant">
         <span>{t("Página")} <strong className="text-on-surface">{pagina}</strong> {t("de")} <strong className="text-on-surface">{total}</strong></span>
       </div>
@@ -28,6 +29,6 @@ export default function Paginacion({ pagina, total, onIr }) {
           <span className="material-symbols-outlined text-[20px]">chevron_right</span>
         </button>
       </div>
-    </div>
+    </Tarjeta>
   );
 }

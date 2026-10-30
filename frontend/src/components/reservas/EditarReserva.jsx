@@ -3,6 +3,7 @@ import { api } from "../../api/client";
 import CamposReserva from "./CamposReserva";
 import Modal from "../Modal";
 import { useIdioma } from "../../context/idioma";
+import Boton from "../ui/Boton";
 
 // Ventana para cambiar la fecha, las personas o la nota de una reserva sin cancelarla.
 export default function EditarReserva({ reserva, onCerrar, onGuardada }) {
@@ -54,10 +55,10 @@ export default function EditarReserva({ reserva, onCerrar, onGuardada }) {
       />
       {error && <p className="text-error font-body-sm text-body-sm">{error}</p>}
       <div className="flex items-center gap-2 mt-1">
-        <button type="button" onClick={onCerrar} className="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">{t("Cancelar")}</button>
-        <button type="submit" disabled={guardando} className="flex-1 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors disabled:opacity-60">
+        <Boton variante="secundario" type="button" onClick={onCerrar} className="flex-1 py-2.5">{t("Cancelar")}</Boton>
+        <Boton type="submit" disabled={guardando} className="flex-1 py-2.5">
           {guardando ? t("Guardando...") : t("Guardar cambios")}
-        </button>
+        </Boton>
       </div>
     </Modal>
   );

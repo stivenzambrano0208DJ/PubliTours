@@ -6,6 +6,7 @@ import { CATEGORIA_ICONOS } from "../constants";
 import MisDatos from "../components/perfil/MisDatos";
 import Favoritos from "../components/perfil/Favoritos";
 import { useIdioma } from "../context/idioma";
+import Tarjeta from "../components/ui/Tarjeta";
 
 const TIPO_NOTIFICACION_ICONO = {
   nueva_reserva: "confirmation_number",
@@ -175,27 +176,27 @@ export default function PerfilTurista() {
         <>
           {/* KPIs reales */}
           <section className="grid grid-cols-1 sm:grid-cols-3 gap-space-md">
-            <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm">
+            <Tarjeta className="p-5">
               <div className="flex items-center justify-between">
                 <span className="font-label-xs text-label-xs uppercase tracking-wider text-outline font-semibold">{t("Reservas totales")}</span>
                 <span className="material-symbols-outlined text-[18px] text-primary">confirmation_number</span>
               </div>
               <span className="font-headline-xl text-headline-xl text-on-surface font-bold block mt-2">{kpis.total}</span>
-            </div>
-            <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm">
+            </Tarjeta>
+            <Tarjeta className="p-5">
               <div className="flex items-center justify-between">
                 <span className="font-label-xs text-label-xs uppercase tracking-wider text-outline font-semibold">{t("Confirmadas")}</span>
                 <span className="material-symbols-outlined text-[18px] text-secondary">check_circle</span>
               </div>
               <span className="font-headline-xl text-headline-xl text-on-surface font-bold block mt-2">{kpis.confirmadas}</span>
-            </div>
-            <div className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm">
+            </Tarjeta>
+            <Tarjeta className="p-5">
               <div className="flex items-center justify-between">
                 <span className="font-label-xs text-label-xs uppercase tracking-wider text-outline font-semibold">{t("Pendientes")}</span>
                 <span className="material-symbols-outlined text-[18px] text-on-tertiary-container">hourglass_top</span>
               </div>
               <span className="font-headline-xl text-headline-xl text-on-surface font-bold block mt-2">{kpis.pendientes}</span>
-            </div>
+            </Tarjeta>
           </section>
 
           {/* Tu próximo viaje (datos reales) */}
@@ -241,7 +242,7 @@ export default function PerfilTurista() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
                 {historial.map((r) => (
-                  <div key={r.id} className="bg-surface-container-lowest rounded-2xl p-space-md flex items-center gap-space-sm shadow-sm">
+                  <Tarjeta key={r.id} className="p-space-md flex items-center gap-space-sm">
                     <div className="w-11 h-11 rounded-xl overflow-hidden bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center shrink-0">
                       {r.sitio?.imagen_url ? <img loading="lazy" decoding="async" src={urlImagen(r.sitio.imagen_url)} alt="" className="w-full h-full object-cover" /> : (
 <span className="material-symbols-outlined text-on-primary text-[20px]">{CATEGORIA_ICONOS[r.sitio?.categoria] || "place"}</span>
@@ -251,7 +252,7 @@ export default function PerfilTurista() {
                       <span className="font-title-sm text-title-sm text-on-surface font-semibold block truncate">{r.paquete?.nombre || r.sitio?.nombre}</span>
                       <span className="font-label-xs text-label-xs text-outline">{r.fecha_servicio} · {r.sitio?.municipio}</span>
                     </div>
-                  </div>
+                  </Tarjeta>
                 ))}
               </div>
             )}

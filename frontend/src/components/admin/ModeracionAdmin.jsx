@@ -4,6 +4,8 @@ import { api, urlImagen } from "../../api/client";
 import { CATEGORIA_ICONOS } from "../../constants";
 import ModalMotivo from "../ModalMotivo";
 import { useAvisos } from "../../context/avisos";
+import Tarjeta from "../ui/Tarjeta";
+import Insignia from "../ui/Insignia";
 
 // Moderación de servicios y de paquetes: el administrador no los crea ni edita, solo oculta (con motivo) o vuelve a publicar.
 // La lista y el flujo son los mismos; cada tipo solo aporta sus textos, sus llamadas a la API y cómo se ve su primera columna.
@@ -32,7 +34,7 @@ function ListaModeracion({ cfg }) {
   };
 
   return (
-    <section className="bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden">
+    <Tarjeta as="section" className="overflow-hidden">
       <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">{cfg.titulo}</h2>
@@ -88,10 +90,9 @@ function ListaModeracion({ cfg }) {
                     <td className="py-3 px-3 text-on-surface-variant">{x.Prestador?.nombre_negocio || "—"}</td>
                     <td className="py-3 px-3 text-on-surface-variant">{x.total_resenas > 0 ? `${x.calificacion_promedio} (${x.total_resenas})` : "Sin reseñas"}</td>
                     <td className="py-3 px-3">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-label-xs text-label-xs font-semibold ${x.estado === "activo" ? "bg-secondary-container/50 text-on-secondary-container" : "bg-surface-container-high text-on-surface-variant"}`}>
-                        <span className={`w-2 h-2 rounded-full ${x.estado === "activo" ? "bg-secondary" : "bg-outline"}`} />
+                      <Insignia tono={x.estado === "activo" ? "activo" : "inactivo"} punto>
                         {x.estado === "activo" ? "Publicado" : x.estado === "oculto" ? "Oculto por ti" : "Pausado por el prestador"}
-                      </span>
+                      </Insignia>
                     </td>
                     <td className="py-3 px-5 text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -124,7 +125,7 @@ function ListaModeracion({ cfg }) {
           onCerrar={() => setOcultando(null)}
         />
       )}
-    </section>
+    </Tarjeta>
   );
 }
 

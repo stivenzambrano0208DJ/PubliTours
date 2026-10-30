@@ -86,6 +86,7 @@ export default function Home() {
                 </span>
                 <input
                   className="w-full bg-transparent font-title-sm text-title-sm text-on-surface placeholder:text-outline focus:outline-none pt-1"
+                  aria-label={t("¿Qué lugar quieres descubrir?")}
                   placeholder={t("Ej: cascadas, fincas, gastronomía...")}
                   type="text"
                   value={texto}

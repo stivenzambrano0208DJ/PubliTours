@@ -5,6 +5,7 @@ import { useConfiguracion } from "../../hooks/useConfiguracion";
 import { MOTIVOS_CASO, motivosPara } from "../../utils/soporte";
 import Modal from "../Modal";
 import { useIdioma } from "../../context/idioma";
+import Boton from "../ui/Boton";
 
 const CAMPO = "px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary";
 
@@ -72,10 +73,10 @@ export default function ModalProblema({ reserva, onCerrar, onAbierto }) {
           </label>
           {error && <p role="alert" className="text-error font-body-sm text-body-sm">{error}</p>}
           <div className="flex items-center gap-2">
-            <button type="button" onClick={onCerrar} className="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">{t("Volver")}</button>
-            <button type="submit" disabled={enviando || !motivo || detalle.trim().length < minimo} className="flex-1 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors disabled:opacity-60">
+            <Boton variante="secundario" type="button" onClick={onCerrar} className="flex-1 py-2.5">{t("Volver")}</Boton>
+            <Boton type="submit" disabled={enviando || !motivo || detalle.trim().length < minimo} className="flex-1 py-2.5">
               {enviando ? t("Enviando...") : t("Enviar caso")}
-            </button>
+            </Boton>
           </div>
         </form>
       )}

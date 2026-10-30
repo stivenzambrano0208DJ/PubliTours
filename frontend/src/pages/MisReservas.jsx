@@ -11,6 +11,7 @@ import PanelAyudaReservas from "../components/reservas/PanelAyudaReservas";
 import ModalProblema from "../components/reservas/ModalProblema";
 import MisCasos from "../components/reservas/MisCasos";
 import { useIdioma } from "../context/idioma";
+import Boton from "../components/ui/Boton";
 
 // Las reservas del turista: estado real de cada solicitud y lo que puede hacer con ella. La lógica vive en useMisReservas.
 export default function MisReservas() {
@@ -50,13 +51,13 @@ export default function MisReservas() {
                     : t("No hay reservas que coincidan con el filtro.")}
                 </p>
                 {mis.reservas.length === 0 && (
-                  <button
+                  <Boton
                     onClick={() => navigate("/itinerario")}
-                    className="mt-space-md inline-flex items-center gap-2 px-space-lg py-3 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-all"
+                    className="mt-space-md inline-flex items-center gap-2 px-space-lg py-3 transition-all"
                   >
                     <span className="material-symbols-outlined text-[18px]">auto_awesome</span>
                     <span>{t("Generar itinerario")}</span>
-                  </button>
+                  </Boton>
                 )}
               </div>
             )}

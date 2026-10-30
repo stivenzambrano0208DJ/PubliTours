@@ -39,7 +39,7 @@ export default function BarraFiltros({ filtros, categorias, municipios, totalCat
         <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative">
-              <select className={SELECT} value={filtros.municipio} onChange={(e) => onAplicar({ municipio: e.target.value })}>
+              <select aria-label={t("Municipio")} className={SELECT} value={filtros.municipio} onChange={(e) => onAplicar({ municipio: e.target.value })}>
                 <option value="">{t("Municipio: Todos")}</option>
                 {municipios.map((m) => <option key={m} value={m}>{m}</option>)}
               </select>
@@ -73,6 +73,7 @@ export default function BarraFiltros({ filtros, categorias, municipios, totalCat
             <div className="relative">
               <input
                 type="number"
+                aria-label={t("Presupuesto máx. (COP)")}
                 placeholder={t("Presupuesto máx. (COP)")}
                 className={SELECT}
                 value={filtros.presupuesto_max}
@@ -86,6 +87,7 @@ export default function BarraFiltros({ filtros, categorias, municipios, totalCat
             <span className="font-body-sm text-body-sm text-on-surface-variant hidden sm:inline">{t("Ordenar:")}</span>
             <div className="relative">
               <select
+                aria-label={t("Ordenar:")}
                 className="appearance-none pl-3 pr-8 py-2 rounded-xl bg-surface-container font-label-md text-label-md text-primary font-semibold focus:outline-none cursor-pointer"
                 value={filtros.orden}
                 onChange={(e) => onOrden(e.target.value)}

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import Comision from "../components/Comision";
 import { AvisoSoloEspanol } from "../components/PaginaLegal";
+import Tarjeta from "../components/ui/Tarjeta";
 
 const CATEGORIAS = [
   {
@@ -144,14 +145,14 @@ export default function ConviertetePrestador() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
           {CATEGORIAS.map((c) => (
-            <div key={c.titulo} className="rounded-2xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col gap-3">
+            <Tarjeta key={c.titulo} className="p-space-lg flex flex-col gap-3">
               <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary-container to-secondary flex items-center justify-center text-on-primary">
                 <span className="material-symbols-outlined text-[22px]">{c.icono}</span>
               </div>
               <span className="font-label-xs text-label-xs uppercase font-semibold text-secondary">{c.etiqueta}</span>
               <h3 className="font-title-lg text-title-lg text-on-surface">{c.titulo}</h3>
               <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">{c.descripcion}</p>
-            </div>
+            </Tarjeta>
           ))}
         </div>
       </section>
@@ -170,7 +171,7 @@ export default function ConviertetePrestador() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
             {PASOS.map((p) => (
-              <div key={p.numero} className="bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col gap-3">
+              <Tarjeta key={p.numero} className="p-space-lg flex flex-col gap-3">
                 <div className="w-9 h-9 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-title-sm text-title-sm font-bold">
                   {p.numero}
                 </div>
@@ -179,7 +180,7 @@ export default function ConviertetePrestador() {
                 </div>
                 <h4 className="font-title-sm text-title-sm text-on-surface font-semibold">{p.titulo}</h4>
                 <p className="font-body-sm text-body-sm text-on-surface-variant">{p.texto}</p>
-              </div>
+              </Tarjeta>
             ))}
           </div>
         </div>
@@ -213,10 +214,10 @@ export default function ConviertetePrestador() {
           </div>
           <div className="flex flex-col gap-space-sm">
             {FAQS.map((f) => (
-              <div key={f.pregunta} className="rounded-2xl bg-surface-container-lowest p-space-md shadow-sm">
+              <Tarjeta key={f.pregunta} className="p-space-md">
                 <h4 className="font-title-sm text-title-sm text-primary mb-1">{f.pregunta}</h4>
                 <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">{f.respuesta}</p>
-              </div>
+              </Tarjeta>
             ))}
           </div>
         </div>

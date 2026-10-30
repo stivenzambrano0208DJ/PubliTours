@@ -3,6 +3,7 @@ import { api } from "../api/client";
 import { useAuth } from "../context/auth";
 import Modal from "./Modal";
 import { useIdioma } from "../context/idioma";
+import Boton from "./ui/Boton";
 
 const ESPERA_REENVIO = 60;
 
@@ -77,9 +78,9 @@ export default function AvisoVerificarCorreo() {
           className="w-full px-3 py-3 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary tracking-[0.4em] text-center font-title-lg text-title-lg"
         />
         {mensaje && <p role="status" className={`font-label-md text-label-md text-center ${mensaje.ok ? "text-secondary" : "text-error"}`}>{mensaje.texto}</p>}
-        <button type="submit" disabled={enviando || codigo.length !== 6} className="w-full py-3 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary-container transition-colors disabled:opacity-50">
+        <Boton type="submit" disabled={enviando || codigo.length !== 6} className="w-full py-3 font-semibold">
           {enviando ? t("Verificando...") : t("Verificar")}
-        </button>
+        </Boton>
         <div className="flex items-center justify-between gap-2">
           <button type="button" onClick={reenviar} disabled={espera > 0} className="px-3 py-2 rounded-xl text-secondary font-label-md text-label-md hover:bg-surface-container transition-colors disabled:opacity-50">
             {espera > 0 ? t("Reenviar en {n} s", { n: espera }) : t("Reenviar código")}

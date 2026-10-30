@@ -3,8 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../../api/client";
 import { useAuth } from "../../context/auth";
 import { descargarArchivo } from "../../utils/descarga";
-import { CAMPO_ANCHO } from "../../estilos";
 import { useIdioma } from "../../context/idioma";
+import Boton from "../ui/Boton";
+import Tarjeta from "../ui/Tarjeta";
+import Aviso from "../ui/Aviso";
+import Campo from "../ui/Campo";
 
 
 // Datos personales: descargar una copia y eliminar la cuenta (con la contraseña como confirmación).
@@ -48,18 +51,18 @@ export default function ZonaPrivacidad() {
   };
 
   return (
-    <section aria-labelledby="privacidad" className="lg:col-span-2 bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm flex flex-col gap-5">
+    <Tarjeta as="section" aria-labelledby="privacidad" className="lg:col-span-2 p-space-lg flex flex-col gap-5">
       <h2 id="privacidad" className="font-title-lg text-title-lg text-on-surface font-semibold">{t("Tus datos y tu cuenta")}</h2>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <p className="font-body-md text-body-md text-on-surface-variant max-w-[60ch]">
           {t("Descarga una copia de lo que PubliTours guarda sobre ti: tu cuenta, reservas, reseñas, favoritos, itinerarios y notificaciones (y tu negocio, si tienes uno). No incluye contraseñas.")}
         </p>
-        <button type="button" onClick={descargar} disabled={descargando} className="shrink-0 px-5 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors disabled:opacity-60">
+        <Boton variante="secundario" type="button" onClick={descargar} disabled={descargando} className="shrink-0 px-5 py-2.5">
           {descargando ? t("Preparando...") : t("Descargar mis datos")}
-        </button>
+        </Boton>
       </div>
-      {errorDescarga && <p role="alert" className="font-body-sm text-body-sm text-error">{errorDescarga}</p>}
+      {errorDescarga && <Aviso>{errorDescarga}</Aviso>}
 
       <hr className="border-surface-container-high" />
 
@@ -76,19 +79,19 @@ export default function ZonaPrivacidad() {
         <form onSubmit={eliminar} className="flex flex-col gap-3 max-w-md">
           <label className="flex flex-col gap-1.5">
             <span className="font-label-md text-label-md text-on-surface font-semibold">{t("Escribe tu contraseña para confirmar")}</span>
-            <input type="password" className={CAMPO_ANCHO} required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Campo type="password" required autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </label>
-          {errorEliminar && <p role="alert" className="font-body-sm text-body-sm text-error">{errorEliminar}</p>}
+          {errorEliminar && <Aviso>{errorEliminar}</Aviso>}
           <div className="flex gap-2">
             <button type="submit" disabled={eliminando || !password} className="px-5 py-2.5 rounded-xl bg-error text-on-error font-label-md text-label-md disabled:opacity-60">
               {eliminando ? t("Eliminando...") : t("Sí, eliminar definitivamente")}
             </button>
-            <button type="button" onClick={() => { setConfirmando(false); setPassword(""); setErrorEliminar(""); }} className="px-5 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">
+            <Boton variante="secundario" type="button" onClick={() => { setConfirmando(false); setPassword(""); setErrorEliminar(""); }} className="px-5 py-2.5">
               {t("Cancelar")}
-            </button>
+            </Boton>
           </div>
         </form>
       )}
-    </section>
+    </Tarjeta>
   );
 }

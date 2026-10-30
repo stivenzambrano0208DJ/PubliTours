@@ -4,6 +4,8 @@ import { useConsulta } from "../../hooks/useConsulta";
 import { MOTIVOS_REPORTE } from "../../utils/mensajes";
 import VisorFoto from "../mensajes/VisorFoto";
 import { useAvisos } from "../../context/avisos";
+import Tarjeta from "../ui/Tarjeta";
+import Aviso from "../ui/Aviso";
 
 const ESTADOS = { pendiente: "Pendientes", descartado: "Descartados", retirado: "Retirados" };
 
@@ -33,7 +35,7 @@ export default function ReportesMensajesAdmin() {
   }, [confirmar]);
 
   return (
-    <section className="bg-surface-container-lowest rounded-2xl shadow-sm p-5">
+    <Tarjeta as="section" className="p-5">
       <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">Mensajes reportados</h2>
       <p className="font-body-sm text-body-sm text-on-surface-variant mb-4">Solo ves el mensaje reportado y sus fotos, no el resto de la conversación.</p>
 
@@ -52,7 +54,7 @@ export default function ReportesMensajesAdmin() {
       {cargando ? (
         <p role="status" className="font-body-sm text-body-sm text-on-surface-variant">Cargando…</p>
       ) : error ? (
-        <p role="alert" className="font-body-sm text-body-sm text-error">{error}</p>
+        <Aviso>{error}</Aviso>
       ) : reportes.length === 0 ? (
         <p className="font-body-sm text-body-sm text-on-surface-variant">{estado === "pendiente" ? "No hay mensajes reportados por revisar." : "No hay reportes en este estado."}</p>
       ) : (
@@ -95,6 +97,6 @@ export default function ReportesMensajesAdmin() {
         </div>
       )}
       {foto && <VisorFoto imagenId={foto} onCerrar={() => setFoto(null)} />}
-    </section>
+    </Tarjeta>
   );
 }

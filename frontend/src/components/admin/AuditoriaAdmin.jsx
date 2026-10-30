@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { api } from "../../api/client";
 import { useConsulta } from "../../hooks/useConsulta";
+import Tarjeta from "../ui/Tarjeta";
+import Aviso from "../ui/Aviso";
 
 const ACCIONES = {
   negocio_aprobado: "Negocio aprobado",
@@ -25,7 +27,7 @@ export default function AuditoriaAdmin() {
   const elegirAccion = (valor) => { setAccion(valor); setPage(1); };
 
   return (
-    <section className="bg-surface-container-lowest rounded-2xl shadow-sm p-5 flex flex-col gap-4">
+    <Tarjeta as="section" className="p-5 flex flex-col gap-4">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
           <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">Historial de acciones</h2>
@@ -40,7 +42,7 @@ export default function AuditoriaAdmin() {
         </label>
       </div>
 
-      {error && <p role="alert" className="font-body-sm text-body-sm text-error">{error}</p>}
+      {error && <Aviso>{error}</Aviso>}
       {cargando && <p className="font-body-sm text-body-sm text-on-surface-variant">Cargando...</p>}
       {datos && datos.resultados.length === 0 && <p className="font-body-sm text-body-sm text-on-surface-variant">Aún no hay acciones registradas.</p>}
 
@@ -67,6 +69,6 @@ export default function AuditoriaAdmin() {
           </div>
         </>
       )}
-    </section>
+    </Tarjeta>
   );
 }

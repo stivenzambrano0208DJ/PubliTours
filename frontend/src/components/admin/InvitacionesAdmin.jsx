@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { api } from "../../api/client";
 import { useConsulta } from "../../hooks/useConsulta";
+import Boton from "../ui/Boton";
+import Tarjeta from "../ui/Tarjeta";
+import Aviso from "../ui/Aviso";
 
 const CAMPO = "px-4 py-2.5 rounded-xl bg-surface-container-low border border-surface-container-high outline-none focus:border-secondary font-body-sm text-body-sm";
 const fecha = (iso) => new Date(iso).toLocaleDateString("es-CO", { day: "numeric", month: "short", year: "numeric" });
@@ -32,7 +35,7 @@ export default function InvitacionesAdmin() {
   const registradas = invitaciones?.filter((i) => i.como_negocio).length || 0;
 
   return (
-    <section className="bg-surface-container-lowest rounded-2xl shadow-sm p-5 flex flex-col gap-5">
+    <Tarjeta as="section" className="p-5 flex flex-col gap-5">
       <div>
         <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">Invitar negocios</h2>
         <p className="font-body-sm text-body-sm text-on-surface-variant">
@@ -54,10 +57,10 @@ export default function InvitacionesAdmin() {
           <textarea rows={3} maxLength={500} value={form.mensaje} onChange={(e) => setForm({ ...form, mensaje: e.target.value })} className={`${CAMPO} resize-none`} placeholder="Ej. Nos encantó su cabalgata en el festival de San Vicente." />
         </label>
         <div className="md:col-span-2 flex flex-wrap items-center gap-3">
-          <button type="submit" disabled={enviando} className="px-5 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold hover:bg-primary-container transition-colors disabled:opacity-60 flex items-center gap-2">
+          <Boton type="submit" disabled={enviando} className="px-5 py-2.5 font-semibold flex items-center gap-2">
             <span className="material-symbols-outlined text-[18px]" aria-hidden="true">send</span>
             {enviando ? "Enviando..." : "Enviar invitación"}
-          </button>
+          </Boton>
           {resultado && <p role={resultado.ok ? "status" : "alert"} className={`font-body-sm text-body-sm ${resultado.ok ? "text-secondary" : "text-error"}`}>{resultado.texto}</p>}
         </div>
       </form>
@@ -69,7 +72,7 @@ export default function InvitacionesAdmin() {
         {cargando ? (
           <p role="status" className="font-body-sm text-body-sm text-on-surface-variant">Cargando…</p>
         ) : error ? (
-          <p role="alert" className="font-body-sm text-body-sm text-error">{error}</p>
+          <Aviso>{error}</Aviso>
         ) : invitaciones.length === 0 ? (
           <p className="font-body-sm text-body-sm text-on-surface-variant">Aún no has invitado a ningún negocio.</p>
         ) : (
@@ -88,6 +91,6 @@ export default function InvitacionesAdmin() {
           </ul>
         )}
       </div>
-    </section>
+    </Tarjeta>
   );
 }

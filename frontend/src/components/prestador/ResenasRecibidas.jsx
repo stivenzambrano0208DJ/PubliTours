@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { api } from "../../api/client";
 import { Estrellas } from "../Estrellas";
 import { useAvisos } from "../../context/avisos";
+import Boton from "../ui/Boton";
+import Tarjeta from "../ui/Tarjeta";
 
 function Resena({ resena, onRespondida }) {
   const [editando, setEditando] = useState(false);
@@ -57,10 +59,10 @@ function Resena({ resena, onRespondida }) {
             className="px-4 py-2.5 rounded-xl bg-surface-container-lowest border border-surface-container-high outline-none focus:border-secondary resize-none"
           />
           <div className="flex gap-2">
-            <button type="button" onClick={() => setEditando(false)} className="px-4 py-2 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">Cancelar</button>
-            <button type="submit" disabled={guardando} className="px-4 py-2 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors disabled:opacity-60">
+            <Boton variante="secundario" type="button" onClick={() => setEditando(false)} className="px-4 py-2">Cancelar</Boton>
+            <Boton type="submit" disabled={guardando} className="px-4 py-2">
               {guardando ? "Enviando..." : "Publicar respuesta"}
-            </button>
+            </Boton>
           </div>
         </form>
       )}
@@ -76,7 +78,7 @@ export default function ResenasRecibidas() {
   }, []);
 
   return (
-    <section id="resenas" className="w-full bg-surface-container-lowest rounded-2xl p-5 shadow-sm scroll-mt-24">
+    <Tarjeta as="section" id="resenas" className="w-full p-5 scroll-mt-24">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">Reseñas de tus servicios</h2>
@@ -93,6 +95,6 @@ export default function ResenasRecibidas() {
           ))}
         </div>
       )}
-    </section>
+    </Tarjeta>
   );
 }

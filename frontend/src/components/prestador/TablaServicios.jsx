@@ -2,10 +2,12 @@ import { urlImagen } from "../../api/client";
 import { CATEGORIA_ICONOS } from "../../constants";
 
 import { Estrellas } from "../Estrellas";
+import Tarjeta from "../ui/Tarjeta";
+import Insignia from "../ui/Insignia";
 
 export default function TablaServicios({ sitios, resumen = {}, cargando, accionando, onNuevo, onEditar, onTogglePausa, onEliminar }) {
   return (
-    <section id="servicios" className="w-full bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden flex flex-col scroll-mt-24">
+    <Tarjeta as="section" id="servicios" className="w-full overflow-hidden flex flex-col scroll-mt-24">
       <div className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h2 className="font-title-lg text-title-lg text-on-surface font-semibold">Mis servicios en el catálogo</h2>
@@ -86,12 +88,9 @@ export default function TablaServicios({ sitios, resumen = {}, cargando, acciona
                     )}
                   </td>
                   <td className="py-3 px-3">
-                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-label-xs text-label-xs font-semibold ${
-                      s.estado === "activo" ? "bg-secondary-container/50 text-on-secondary-container" : "bg-surface-container-high text-on-surface-variant"
-                    }`}>
-                      <span className={`w-2 h-2 rounded-full ${s.estado === "activo" ? "bg-secondary" : "bg-outline"}`} />
+                    <Insignia tono={s.estado === "activo" ? "activo" : "inactivo"} punto>
                       {s.estado === "activo" ? "Activo" : s.estado === "oculto" ? "Oculto por el administrador" : "Pausado"}
-                    </span>
+                    </Insignia>
                     {s.estado === "oculto" && s.motivo_moderacion && (
                       <p className="mt-1 font-label-xs text-label-xs text-error max-w-[220px]">Motivo: {s.motivo_moderacion}</p>
                     )}
@@ -125,6 +124,6 @@ export default function TablaServicios({ sitios, resumen = {}, cargando, acciona
           </table>
         </div>
       )}
-    </section>
+    </Tarjeta>
   );
 }

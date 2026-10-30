@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useConfiguracion } from "../hooks/useConfiguracion";
 import { AvisoSoloEspanol } from "../components/PaginaLegal";
 import { NOMBRES_POLITICA, textoDias } from "../utils/politicas";
+import Insignia from "../components/ui/Insignia";
 
 // Preguntas frecuentes. Todo lo que afirma coincide con lo que hace la plataforma; las cifras (plazos de cancelación, días de gracia,
 // comisión) se leen de la configuración del servidor para que nunca se contradigan con las reglas reales.
@@ -123,10 +124,10 @@ export default function Ayuda() {
     <div className="max-w-3xl mx-auto px-gutter py-space-xl">
       <AvisoSoloEspanol />
       <header className="text-center mb-space-lg">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-container/40 text-secondary font-label-xs text-label-xs font-semibold mb-3">
+        <Insignia tono="etiqueta" className="mb-3">
           <span className="material-symbols-outlined text-[14px]" aria-hidden="true">help</span>
           Ayuda
-        </span>
+        </Insignia>
         <h1 className="font-headline-xl text-headline-xl text-primary tracking-tight">Preguntas frecuentes</h1>
         <p className="font-body-md text-body-md text-on-surface-variant mt-2">Lo básico para reservar, ofrecer tus servicios y cuidar tu cuenta.</p>
       </header>

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { api } from "../../api/client";
 import { fechaDelDia, fechaCorta } from "../../utils/fechas";
 import { useIdioma } from "../../context/idioma";
+import Tarjeta from "../ui/Tarjeta";
 
 // Itinerarios generados anteriormente por el turista (guardados en la base de datos).
 export default function HistorialItinerarios({ recargarKey }) {
@@ -25,7 +26,7 @@ export default function HistorialItinerarios({ recargarKey }) {
           const total = items.reduce((s, i) => s + Number(i.sitio?.precio || 0), 0);
           const expandido = abierto === it.id;
           return (
-            <div key={it.id} className="bg-surface-container-lowest rounded-2xl shadow-sm overflow-hidden">
+            <Tarjeta key={it.id} className="overflow-hidden">
               <button onClick={() => setAbierto(expandido ? null : it.id)} className="w-full flex items-center justify-between gap-3 p-space-md text-left hover:bg-surface-container-low transition-colors">
                 <div>
                   <p className="font-title-sm text-title-sm text-on-surface font-semibold">
@@ -54,7 +55,7 @@ export default function HistorialItinerarios({ recargarKey }) {
                   <p className="font-label-xs text-label-xs text-on-surface-variant text-right">{t("Costo estimado: {valor} COP", { valor: `$${total.toLocaleString(locale)}` })}</p>
                 </div>
               )}
-            </div>
+            </Tarjeta>
           );
         })}
       </div>

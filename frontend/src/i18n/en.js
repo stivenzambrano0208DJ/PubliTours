@@ -601,6 +601,9 @@ export default {
   "{n} destinos verificados en el catálogo": "{n} verified destinations in the catalog",
   "Verifica tu correo para continuar": "Verify your email to continue",
   "Para usar PubliTours necesitas confirmarlo. Si no lo ves, revisa también la carpeta de spam.": "To use PubliTours you need to confirm it. If you can't see it, check your spam folder too.",
+  "Buscar destinos": "Search destinations",
+  "Municipio": "Town",
+  "Fotos de {nombre}": "Photos of {nombre}",
 };
 
 // Valores que llegan de la base de datos (categorías y tipos de viaje). Se traducen al mostrarlos con td(valor).

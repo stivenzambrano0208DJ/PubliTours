@@ -76,7 +76,7 @@ export default function Login() {
           <CampoAuth
             id="password" etiqueta={t("Contraseña")} icono="lock"
             derecha={
-              <Link to="/olvide-password" className="font-label-xs text-label-xs text-secondary hover:text-primary transition-colors font-semibold">
+              <Link to="/olvide-password" className="font-label-xs text-label-xs text-secondary hover:text-primary transition-colors font-semibold py-2 -my-2">
                 {t("¿Olvidaste tu contraseña?")}
               </Link>
             }

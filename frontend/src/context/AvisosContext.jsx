@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AvisosContext } from "./avisos";
 import Modal from "../components/Modal";
 import { useIdioma } from "./idioma";
+import Boton from "../components/ui/Boton";
 
 const MAX_AVISOS = 3; // si llegan más, se descartan los más antiguos
 const DURACION_MS = { error: 9000, ok: 5000, info: 6000 };
@@ -45,12 +46,12 @@ function Confirmacion({ pregunta, onResponder }) {
         <p id="confirmacion-texto" className="font-body-md text-body-md text-on-surface-variant">{mensaje}</p>
       </div>
       <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-        <button
-          type="button" onClick={() => onResponder(false)}
-          className="px-4 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md font-semibold hover:bg-surface-container-high transition-colors"
+        <Boton
+          variante="secundario" type="button" onClick={() => onResponder(false)}
+          className="px-4 py-2.5 font-semibold"
         >
           {opciones.cancelar || t("Cancelar")}
-        </button>
+        </Boton>
         <button
           type="button" onClick={() => onResponder(true)}
           className={`px-4 py-2.5 rounded-xl font-label-md text-label-md font-semibold transition-colors ${opciones.peligro ? "bg-error text-on-error hover:opacity-90" : "bg-primary text-on-primary hover:bg-primary-container"}`}

@@ -9,6 +9,7 @@ import SelectorPolitica from "./SelectorPolitica";
 import { useAvisos } from "../../context/avisos";
 import { CAMPO } from "../../estilos";
 import Modal from "../Modal";
+import Boton from "../ui/Boton";
 
 const SITIO_VACIO = { nombre: "", categoria: "", municipio: "", precio: "", horario: "", descripcion: "", tipo_viaje: "", capacidad: "", politica_cancelacion: "flexible", latitud: "", longitud: "",
   precio_nino: "", grupo_min_personas: "", grupo_descuento_pct: "", temporadas: [] };
@@ -184,12 +185,12 @@ export default function ModalServicio({ perfil, sitio, ubicacionPrevia, onCerrar
       />
 
       <div className="flex items-center gap-2 mt-2">
-        <button type="button" onClick={onCerrar} className="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">
+        <Boton variante="secundario" type="button" onClick={onCerrar} className="flex-1 py-2.5">
           Cancelar
-        </button>
-        <button type="submit" disabled={guardando} className="flex-1 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors disabled:opacity-60">
+        </Boton>
+        <Boton type="submit" disabled={guardando} className="flex-1 py-2.5">
           {guardando ? (imagenFile ? "Subiendo foto..." : "Guardando...") : sitio ? "Guardar cambios" : "Crear servicio"}
-        </button>
+        </Boton>
       </div>
     </Modal>
   );

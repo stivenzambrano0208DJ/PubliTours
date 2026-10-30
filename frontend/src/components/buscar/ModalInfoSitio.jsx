@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Modal from "../Modal";
+import Boton from "../ui/Boton";
 
 const CAMPO = "p-3 rounded-xl bg-surface-container-low";
 
@@ -50,12 +51,12 @@ export default function ModalInfoSitio({ sitio, onCerrar }) {
       </div>
 
       <div className="flex items-center gap-2 mt-2">
-        <button onClick={onCerrar} className="flex-1 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">
+        <Boton variante="secundario" onClick={onCerrar} className="flex-1 py-2.5">
           Cerrar
-        </button>
-        <button onClick={() => navigate("/admin")} className="flex-1 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors">
+        </Boton>
+        <Boton onClick={() => navigate("/admin")} className="flex-1 py-2.5">
           Ir al Panel Admin
-        </button>
+        </Boton>
       </div>
     </Modal>
   );

@@ -161,16 +161,31 @@ describe("SitioDetalle", () => {
       await userEvent.click(screen.getByRole("button", { name: /Ver 3 fotos/ }));
       expect(screen.getByText("1 / 3")).toBeInTheDocument();
 
-      await userEvent.click(screen.getByRole("button", { name: "chevron_right" }));
+      const visor = within(screen.getByRole("dialog", { name: "Fotos de Cascada La Diabla" })); // el visor es un diálogo, con su propio nombre
+      await userEvent.click(visor.getByRole("button", { name: "Foto siguiente" }));
       expect(screen.getByText("2 / 3")).toBeInTheDocument();
-      await userEvent.click(screen.getByRole("button", { name: "chevron_right" }));
-      await userEvent.click(screen.getByRole("button", { name: "chevron_right" }));
+      await userEvent.click(visor.getByRole("button", { name: "Foto siguiente" }));
+      await userEvent.click(visor.getByRole("button", { name: "Foto siguiente" }));
       expect(screen.getByText("1 / 3")).toBeInTheDocument(); // vuelve al principio
-      await userEvent.click(screen.getByRole("button", { name: "chevron_left" }));
+      await userEvent.click(visor.getByRole("button", { name: "Foto anterior" }));
       expect(screen.getByText("3 / 3")).toBeInTheDocument(); // y hacia atrás da la vuelta
 
-      await userEvent.click(screen.getAllByRole("button", { name: "close" })[0]);
+      await userEvent.click(visor.getByRole("button", { name: "Cerrar visor" }));
       expect(screen.queryByText("3 / 3")).not.toBeInTheDocument();
+    });
+
+    it("el visor se maneja con el teclado: flechas para avanzar y retroceder, Escape para cerrar, y devuelve el foco", async () => {
+      await abrir({ imagenes: [{ imagen_url: "/a.jpg" }, { imagen_url: "/b.jpg" }, { imagen_url: "/c.jpg" }] });
+      const abrirVisor = screen.getByRole("button", { name: /Ver 3 fotos/ });
+      await userEvent.click(abrirVisor);
+      expect(screen.getByRole("dialog", { name: /Fotos de/ })).toHaveAttribute("aria-modal", "true");
+      await userEvent.keyboard("{ArrowRight}");
+      expect(screen.getByText("2 / 3")).toBeInTheDocument();
+      await userEvent.keyboard("{ArrowLeft}{ArrowLeft}");
+      expect(screen.getByText("3 / 3")).toBeInTheDocument();
+      await userEvent.keyboard("{Escape}");
+      expect(screen.queryByRole("dialog", { name: /Fotos de/ })).not.toBeInTheDocument();
+      expect(abrirVisor).toHaveFocus();
     });
   });
 

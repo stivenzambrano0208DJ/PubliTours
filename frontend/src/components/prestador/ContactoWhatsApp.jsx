@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { api } from "../../api/client";
 import { useAvisos } from "../../context/avisos";
+import Boton from "../ui/Boton";
+import Tarjeta from "../ui/Tarjeta";
 
 export default function ContactoWhatsApp({ perfil, onActualizado }) {
   const { avisar } = useAvisos();
@@ -26,7 +28,7 @@ export default function ContactoWhatsApp({ perfil, onActualizado }) {
   };
 
   return (
-    <section className="bg-surface-container-lowest rounded-2xl p-5 shadow-sm">
+    <Tarjeta as="section" className="p-5">
       {!editando ? (
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -57,15 +59,15 @@ export default function ContactoWhatsApp({ perfil, onActualizado }) {
             />
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <button type="button" onClick={() => setEditando(false)} className="px-4 py-2.5 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors">
+            <Boton variante="secundario" type="button" onClick={() => setEditando(false)} className="px-4 py-2.5">
               Cancelar
-            </button>
-            <button type="submit" disabled={guardando} className="px-4 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container transition-colors disabled:opacity-60">
+            </Boton>
+            <Boton type="submit" disabled={guardando} className="px-4 py-2.5">
               {guardando ? "Guardando..." : "Guardar"}
-            </button>
+            </Boton>
           </div>
         </form>
       )}
-    </section>
+    </Tarjeta>
   );
 }
