@@ -604,6 +604,11 @@ export default {
   "Buscar destinos": "Search destinations",
   "Municipio": "Town",
   "Fotos de {nombre}": "Photos of {nombre}",
+  "¡Te damos la bienvenida a PubliTours, {nombre}!": "Welcome to PubliTours, {nombre}!",
+  "Tu correo quedó verificado.": "Your email is verified.",
+  "Ya puedes completar tu negocio y publicar tus servicios.": "You can now complete your business profile and publish your services.",
+  "Ya puedes explorar los destinos del Caquetá y reservar tu próxima experiencia.": "You can now explore Caquetá's destinations and book your next experience.",
+  "Continuar": "Continue",
 };
 
 // Valores que llegan de la base de datos (categorías y tipos de viaje). Se traducen al mostrarlos con td(valor).

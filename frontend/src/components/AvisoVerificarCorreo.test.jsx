@@ -46,6 +46,19 @@ describe("AvisoVerificarCorreo", () => {
     expect(actualizarUsuario).toHaveBeenCalledWith({ correo_verificado: true });
   });
 
+  it("al verificar el código da la bienvenida con el nombre, según el rol, y se cierra con Continuar", async () => {
+    usuario = { id: 3, rol: "turista", nombre: "Ana", correo: "ana@test.com", correo_verificado: false };
+    api.verificarCorreo.mockResolvedValue({ correo_verificado: true });
+    actualizarUsuario.mockImplementation((cambios) => { usuario = { ...usuario, ...cambios }; });
+    render(<AvisoVerificarCorreo />);
+    await userEvent.type(screen.getByLabelText("Código de verificación"), "123456");
+    await userEvent.click(screen.getByRole("button", { name: "Verificar" }));
+    const bienvenida = await screen.findByRole("dialog", { name: "¡Te damos la bienvenida a PubliTours, Ana!" });
+    expect(bienvenida).toHaveTextContent("explorar los destinos");
+    await userEvent.click(screen.getByRole("button", { name: "Continuar" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
   it("no se puede cerrar: ni con Escape ni tocando fuera; solo verificando o cerrando sesión", async () => {
     render(<AvisoVerificarCorreo />);
     await userEvent.keyboard("{Escape}");

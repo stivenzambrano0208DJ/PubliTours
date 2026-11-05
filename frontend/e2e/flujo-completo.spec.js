@@ -499,7 +499,11 @@ test("15. un correo sin verificar no puede reservar; con el código de verificac
   );
   await aviso.getByLabel("Código de verificación").fill(codigo);
   await aviso.getByRole("button", { name: "Verificar" }).click();
-  await expect(aviso).toHaveCount(0); // la ventana desaparece y se puede usar el sitio
+  // La misma ventana pasa a dar la bienvenida con el nombre; al continuar, el sitio queda libre
+  const bienvenida = page.getByRole("dialog", { name: /Te damos la bienvenida a PubliTours, Sin Verificar E2E/ });
+  await expect(bienvenida).toBeVisible();
+  await bienvenida.getByRole("button", { name: "Continuar" }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
 
   // Ahora sí puede reservar
   await page.getByRole("button", { name: "Reservar" }).click();

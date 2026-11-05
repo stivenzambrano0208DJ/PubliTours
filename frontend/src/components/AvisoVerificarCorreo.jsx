@@ -9,6 +9,7 @@ const ESPERA_REENVIO = 60;
 
 // Ventana que bloquea la aplicación mientras el correo no esté confirmado: pide el código de 6 dígitos y permite reenviarlo o cerrar sesión.
 // No se puede cerrar (ni con Escape ni tocando fuera): hasta verificar, no se usa PubliTours. El administrador queda fuera de esta regla.
+// Al verificar, la misma ventana da la bienvenida (con lo siguiente que puede hacer según su rol) y ahí sí se puede cerrar.
 export default function AvisoVerificarCorreo() {
   const { t } = useIdioma();
   const { usuario, actualizarUsuario, logout } = useAuth();
@@ -16,12 +17,37 @@ export default function AvisoVerificarCorreo() {
   const [enviando, setEnviando] = useState(false);
   const [mensaje, setMensaje] = useState(null);
   const [espera, setEspera] = useState(0);
+  const [bienvenida, setBienvenida] = useState(false);
 
   useEffect(() => {
     if (espera <= 0) return;
     const t = setTimeout(() => setEspera((e) => e - 1), 1000);
     return () => clearTimeout(t);
   }, [espera]);
+
+  if (bienvenida && usuario) {
+    const prestador = usuario.rol === "prestador";
+    return (
+      <Modal
+        tituloId="titulo-bienvenida" onCerrar={() => setBienvenida(false)} fondo="bg-black/60 z-[80] items-center p-4"
+        className="w-full max-w-md max-h-[92vh] overflow-y-auto bg-surface-container-lowest rounded-2xl p-6 shadow-2xl flex flex-col items-center text-center gap-4"
+      >
+        <span className="w-14 h-14 rounded-full bg-secondary-container/50 text-secondary flex items-center justify-center">
+          <span className="material-symbols-outlined text-[30px]" aria-hidden="true">celebration</span>
+        </span>
+        <div className="flex flex-col gap-1">
+          <h2 id="titulo-bienvenida" className="font-headline-md text-headline-md text-primary">{t("¡Te damos la bienvenida a PubliTours, {nombre}!", { nombre: usuario.nombre })}</h2>
+          <p className="font-body-sm text-body-sm text-on-surface-variant">
+            {t("Tu correo quedó verificado.")}{" "}
+            {prestador ? t("Ya puedes completar tu negocio y publicar tus servicios.") : t("Ya puedes explorar los destinos del Caquetá y reservar tu próxima experiencia.")}
+          </p>
+        </div>
+        <Boton onClick={() => setBienvenida(false)} className="w-full py-3 font-semibold">
+          {t("Continuar")}
+        </Boton>
+      </Modal>
+    );
+  }
 
   if (!usuario || usuario.correo_verificado !== false || usuario.rol === "administrador") return null;
 
@@ -31,6 +57,7 @@ export default function AvisoVerificarCorreo() {
     setMensaje(null);
     try {
       await api.verificarCorreo(codigo);
+      setBienvenida(true);
       actualizarUsuario({ correo_verificado: true });
     } catch (err) {
       setMensaje({ ok: false, texto: err.message });
